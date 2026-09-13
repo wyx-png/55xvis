@@ -20,6 +20,10 @@
     <a class="nav-item" data-key="lesson-04" href="../lesson-04/index.html">第4章·低维可视化</a>
     <a class="nav-item" data-key="lesson-05" href="../lesson-05/index.html">第5章·时序可视化</a>
     <a class="nav-item" data-key="lesson-06" href="../lesson-06/index.html">第6章·网页页面布局</a>
+    <div class="lang-toggle" id="lang-toggle">
+      <button data-lang="zh" class="active">中</button>
+      <button data-lang="en">EN</button>
+    </div>
   </div>
 </header>
 
@@ -45,7 +49,7 @@
   <!-- 右侧主内容区 -->
   <main class="lesson-main">
       <section class="lesson-section" id="sec-4-1">
-        <h2 class="sec-title">4.1 Crime 数据坐标变换</h2>
+        <h2 class="sec-title" data-i18n="l4_s1_title">4.1 Crime 数据坐标变换</h2>
         <div class="sec-subtitle">把美国各州犯罪率数据映射到二维屏幕坐标</div>
         <div class="sec-subtitle en">Mapping US state crime rates to 2D screen coordinates</div>
 
@@ -114,7 +118,7 @@
         </div>
       </section>
       <section class="lesson-section" id="sec-4-2">
-        <h2 class="sec-title">4.2 三层坐标变换</h2>
+        <h2 class="sec-title" data-i18n="l4_s2_title">4.2 三层坐标变换</h2>
         <div class="sec-subtitle">把变换拆成三层，层层可换、可调试</div>
         <div class="sec-subtitle en">Split the transform into three swappable, debuggable layers</div>
 
@@ -172,7 +176,7 @@ svg.call(d3.zoom().on('zoom', function () {
         </div>
       </section>
       <section class="lesson-section" id="sec-4-3">
-        <h2 class="sec-title">4.3 10 种曲线拟合</h2>
+        <h2 class="sec-title" data-i18n="l4_s3_title">4.3 10 种曲线拟合</h2>
         <div class="sec-subtitle">同一份散点，用 10 种 d3.curve* 去拟合，结果大相径庭</div>
         <div class="sec-subtitle en">Fit the same scatter points with 10 d3.curve* generators — very different results</div>
 
@@ -246,7 +250,7 @@ curves.forEach(function (c) {
         </div>
       </section>
       <section class="lesson-section" id="sec-4-4">
-        <h2 class="sec-title">4.4 Cleveland 45° 倾角</h2>
+        <h2 class="sec-title" data-i18n="l4_s4_title">4.4 Cleveland 45° 倾角</h2>
         <div class="sec-subtitle">人眼对折线图斜率最敏感的角度约在 45°</div>
         <div class="sec-subtitle en">The human eye is most sensitive to line-chart slopes near 45°</div>
 
@@ -312,7 +316,7 @@ function adjustYAxis(targetAngle) {
         </div>
       </section>
       <section class="lesson-section" id="sec-4-5">
-        <h2 class="sec-title">4.5 Marching Squares 等值线</h2>
+        <h2 class="sec-title" data-i18n="l4_s5_title">4.5 Marching Squares 等值线</h2>
         <div class="sec-subtitle">从规则网格标量场提取等值线的经典算法</div>
         <div class="sec-subtitle en">A classic algorithm for extracting contour lines from a regular-grid scalar field</div>
 
@@ -379,7 +383,7 @@ svg.append('g').selectAll('path')
         </div>
       </section>
       <section class="lesson-section" id="sec-4-extra1">
-        <h2 class="sec-title">补充：demo 集合</h2>
+        <h2 class="sec-title" data-i18n="extra1_title">补充：demo 集合</h2>
         <div class="sec-subtitle">本章 8 个 demo 的索引</div>
         <div class="sec-subtitle en">Index of the 8 demos in this chapter</div>
 
@@ -422,7 +426,7 @@ window.registerDemo('sec-4-extra3', function () { /* demo 代码 */ });</code></
         </div>
       </section>
       <section class="lesson-section" id="sec-4-extra2">
-        <h2 class="sec-title">补充：common.demo-folder</h2>
+        <h2 class="sec-title" data-i18n="extra2_title">补充：common.demo-folder</h2>
         <div class="sec-subtitle">章节共享资源的目录约定</div>
         <div class="sec-subtitle en">Directory convention for shared chapter resources</div>
 
@@ -442,12 +446,12 @@ window.registerDemo('sec-4-extra3', function () { /* demo 代码 */ });</code></
         </div>
 
         <div class="sec-tab-panel" data-panel="code">
-          <pre class="code-block"><code data-raw">&lt;!-- lesson-04/index.html 中的相对路径 --&gt;
+          <pre class="code-block"><code data-raw>&lt;!-- lesson-04/index.html 中的相对路径 --&gt;
 &lt;link rel="stylesheet" href="../css/style.css" /&gt;
 &lt;script src="../js/main.js"&gt;&lt;/script&gt;
 &lt;script src="https://cdn.jsdelivr.net/npm/d3@7"&gt;&lt;/script&gt;</code></pre>
 
-        <pre class="code-block"><code data-raw">// D3 读取数据时的相对路径（基于 index.html 的位置）
+        <pre class="code-block"><code data-raw>// D3 读取数据时的相对路径（基于 index.html 的位置）
 d3.csv('../data/crime.csv').then(function (rows) {
   // rows 是美国各州犯罪率数据
 });</code></pre>
@@ -462,7 +466,7 @@ d3.csv('../data/crime.csv').then(function (rows) {
         </div>
       </section>
       <section class="lesson-section" id="sec-4-extra3">
-        <h2 class="sec-title">补充：完整讲义 markdown</h2>
+        <h2 class="sec-title" data-i18n="extra3_title">补充：完整讲义 markdown</h2>
         <div class="sec-subtitle">从讲义到网页的映射</div>
         <div class="sec-subtitle en">Mapping from lecture notes to web pages</div>
 
@@ -480,7 +484,7 @@ d3.csv('../data/crime.csv').then(function (rows) {
         </div>
 
         <div class="sec-tab-panel" data-panel="code">
-          <pre class="code-block"><code data-raw">// 引入 marked.js 渲染 markdown
+          <pre class="code-block"><code data-raw>// 引入 marked.js 渲染 markdown
 // <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 fetch('lesson-04-notes.md')
   .then(function (r) { return r.text(); })
@@ -501,8 +505,14 @@ fetch('lesson-04-notes.md')
 </main>
 </div>
 
+<script src="../js/i18n.js"></script>
 <script src="../js/main.js"></script>
 <script>
+/* i18n 辅助：取当前语言的翻译值 */
+function t(key) {
+  var dict = (window.getI18n && window.getI18n()) || {};
+  return dict[key] !== undefined ? dict[key] : key;
+}
 
 /* ============================================================
  * Demo 4.1：Crime 各州散点图（murder vs robbery）
@@ -586,7 +596,6 @@ window.registerDemo('sec-4-1', function () {
  * Demo 4.2：三层坐标变换可视化
  * ============================================================ */
 window.registerDemo('sec-4-2', function () {
-  var t = window.getI18n && window.getI18n();
   var svg = d3.select('#demo-4-2-svg');
   var W = 760, H = 300;
   var panelW = (W - 40) / 3;
@@ -607,7 +616,7 @@ window.registerDemo('sec-4-2', function () {
   var p1 = svg.append('g').attr('transform', 'translate(0,0)');
   p1.append('text').attr('x', panelW / 2).attr('y', 20)
     .attr('text-anchor', 'middle').attr('font-size', 12).attr('font-weight', 600)
-    .attr('fill', '#ef4444').text(t.l4_d2_p1_title);
+    .attr('fill', '#ef4444').text(t('l4_d2_p1_title'));
 
   var p1g = p1.append('g').attr('transform', 'translate(0,30)');
   p1g.append('rect').attr('x', M.l).attr('y', M.t)
@@ -619,13 +628,13 @@ window.registerDemo('sec-4-2', function () {
     .attr('r', 5).attr('fill', '#ef4444');
   p1g.append('text').attr('x', panelW / 2).attr('y', panelH - 5)
     .attr('text-anchor', 'middle').attr('font-size', 10).attr('fill', '#94a3b8')
-    .text(t.l4_d2_p1_note);
+    .text(t('l4_d2_p1_note'));
 
   // Panel 2：几何层
   var p2 = svg.append('g').attr('transform', 'translate(' + panelW + ',0)');
   p2.append('text').attr('x', panelW / 2).attr('y', 20)
     .attr('text-anchor', 'middle').attr('font-size', 12).attr('font-weight', 600)
-    .attr('fill', '#2563eb').text(t.l4_d2_p2_title);
+    .attr('fill', '#2563eb').text(t('l4_d2_p2_title'));
 
   var p2g = p2.append('g').attr('transform', 'translate(0,30)');
   p2g.append('rect').attr('x', 0).attr('y', 0)
@@ -644,7 +653,7 @@ window.registerDemo('sec-4-2', function () {
   var p3 = svg.append('g').attr('transform', 'translate(' + (panelW * 2) + ',0)');
   p3.append('text').attr('x', panelW / 2).attr('y', 20)
     .attr('text-anchor', 'middle').attr('font-size', 12).attr('font-weight', 600)
-    .attr('fill', '#10b981').text(t.l4_d2_p3_title);
+    .attr('fill', '#10b981').text(t('l4_d2_p3_title'));
 
   var viewLayer = p3.append('g').attr('transform', 'translate(' + 20 + ',30)');
   viewLayer.append('rect').attr('x', 0).attr('y', 0)
@@ -859,9 +868,6 @@ window.registerDemo('sec-4-5', function () {
   var yScale = d3.scaleLinear().domain([0, m]).range([H - 20, 20]);
   var pathGen = d3.geoPath();
 
-  var transform = d3.geoIdentity()
-    .scale(1).translate([0, 0]);
-
   var g = svg.append('g');
   g.selectAll('path').data(contours).enter().append('path')
     .attr('transform', function (d) {
@@ -870,8 +876,8 @@ window.registerDemo('sec-4-5', function () {
     .attr('d', pathGen)
     .attr('fill', 'none')
     .attr('stroke', function (d) {
-      var t = d3.min([d.value / 1.6, 1]);
-      return d3.interpolateViridis(t);
+      var tv = d3.min([d.value / 1.6, 1]);
+      return d3.interpolateViridis(tv);
     })
     .attr('stroke-width', 1.2)
     .attr('opacity', 0.85);
@@ -899,18 +905,17 @@ window.registerDemo('sec-4-5', function () {
  * Demo 补充1：demo 集合索引
  * ============================================================ */
 window.registerDemo('sec-4-extra1', function () {
-  var t = window.getI18n && window.getI18n();
   var svg = d3.select('#demo-extra1-svg');
   var W = 760, H = 200;
 
   var items = [
-    { no: '4.1', label: t.l4_e1_l1 },
-    { no: '4.2', label: t.l4_e1_l2 },
-    { no: '4.3', label: t.l4_e1_l3 },
-    { no: '4.4', label: t.l4_e1_l4 },
-    { no: '4.5', label: t.l4_e1_l5 },
-    { no: 'ex',  label: t.l4_e1_l6 },
-    { no: 'md',  label: t.l4_e1_l7 }
+    { no: '4.1', label: t('l4_e1_l1') },
+    { no: '4.2', label: t('l4_e1_l2') },
+    { no: '4.3', label: t('l4_e1_l3') },
+    { no: '4.4', label: t('l4_e1_l4') },
+    { no: '4.5', label: t('l4_e1_l5') },
+    { no: 'ex',  label: t('l4_e1_l6') },
+    { no: 'md',  label: t('l4_e1_l7') }
   ];
 
   var g = svg.selectAll('g.item').data(items).enter().append('g')
@@ -941,7 +946,6 @@ window.registerDemo('sec-4-extra1', function () {
  * Demo 补充2：common.demo-folder 目录结构
  * ============================================================ */
 window.registerDemo('sec-4-extra2', function () {
-  var t = window.getI18n && window.getI18n();
   var svg = d3.select('#demo-extra2-svg');
   var W = 760, H = 180;
 
@@ -977,25 +981,24 @@ window.registerDemo('sec-4-extra2', function () {
 
   svg.append('text').attr('x', 30).attr('y', H - 15)
     .attr('font-size', 11).attr('fill', '#94a3b8')
-    .text(t.l4_e2_note);
+    .text(t('l4_e2_note'));
 });
 
 /* ============================================================
  * Demo 补充3：完整讲义 markdown 结构
  * ============================================================ */
 window.registerDemo('sec-4-extra3', function () {
-  var t = window.getI18n && window.getI18n();
   var svg = d3.select('#demo-extra3-svg');
   var W = 760, H = 180;
 
   var mdItems = [
-    { mark: '#',  label: t.l4_e3_md1 },
-    { mark: '##', label: t.l4_e3_md2 },
-    { mark: '##', label: t.l4_e3_md3 },
-    { mark: '##', label: t.l4_e3_md4 },
-    { mark: '##', label: t.l4_e3_md5 },
-    { mark: '##', label: t.l4_e3_md6 },
-    { mark: '##', label: t.l4_e3_md7 }
+    { mark: '#',  label: t('l4_e3_md1') },
+    { mark: '##', label: t('l4_e3_md2') },
+    { mark: '##', label: t('l4_e3_md3') },
+    { mark: '##', label: t('l4_e3_md4') },
+    { mark: '##', label: t('l4_e3_md5') },
+    { mark: '##', label: t('l4_e3_md6') },
+    { mark: '##', label: t('l4_e3_md7') }
   ];
 
   var g = svg.append('g').attr('transform', 'translate(30,15)');
@@ -1014,17 +1017,16 @@ window.registerDemo('sec-4-extra3', function () {
 
   svg.append('text').attr('x', 30).attr('y', H - 10)
     .attr('font-size', 11).attr('fill', '#94a3b8')
-    .text(t.l4_e3_note);
+    .text(t('l4_e3_note'));
 });
 
 /* 语言切换时重渲染包含中文文本的 demo */
 document.addEventListener('langchange', function () {
-  window.rerunDemo && window.rerunDemo('sec-4-2');
-  window.rerunDemo && window.rerunDemo('sec-4-extra1');
-  window.rerunDemo && window.rerunDemo('sec-4-extra2');
-  window.rerunDemo && window.rerunDemo('sec-4-extra3');
+  ['sec-4-1','sec-4-2','sec-4-3','sec-4-4','sec-4-5',
+   'sec-4-extra1','sec-4-extra2','sec-4-extra3'].forEach(function (id) {
+    window.rerunDemo && window.rerunDemo(id);
+  });
 });
-
 </script>
 </body>
 </html>

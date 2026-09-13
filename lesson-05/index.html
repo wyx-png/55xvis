@@ -19,6 +19,10 @@
       <a class="nav-item" data-key="lesson-04" href="../lesson-04/index.html">第4章·低维可视化</a>
       <a class="nav-item" data-key="lesson-05" href="../lesson-05/index.html">第5章·时序可视化</a>
       <a class="nav-item" data-key="lesson-06" href="../lesson-06/index.html">第6章·网页页面布局</a>
+    <div class="lang-toggle" id="lang-toggle">
+      <button data-lang="zh" class="active">中</button>
+      <button data-lang="en">EN</button>
+    </div>
     </div>
   </header>
 
@@ -40,7 +44,7 @@
 
     <main class="lesson-main">
       <section class="lesson-section" id="sec-5-1">
-        <h2 class="sec-title">5.1 5 个时间属性</h2>
+        <h2 class="sec-title" data-i18n="l5_s1_title">5.1 5 个时间属性</h2>
           <div class="sec-subtitle">Time as Data —— 时刻 / 时长 / 间隔 / 集合 / 序</div>
           <div class="sec-subtitle en">Time as Data — Instant / Duration / Interval / Set / Order</div>
 
@@ -98,7 +102,7 @@ const slot = d3.scalePoint()
         </div>
       </section>
       <section class="lesson-section" id="sec-5-2">
-        <h2 class="sec-title">5.2 法国人名时间序列</h2>
+        <h2 class="sec-title" data-i18n="l5_s2_title">5.2 法国人名时间序列</h2>
           <div class="sec-subtitle">法国 INSEE 1900–2018 新生儿姓名流行度</div>
           <div class="sec-subtitle en">French INSEE 1900–2018 newborn name popularity</div>
 
@@ -161,7 +165,7 @@ d3.csv('../data/french_names_sample.csv', d => ({
         </div>
       </section>
       <section class="lesson-section" id="sec-5-3">
-        <h2 class="sec-title">5.3 van Wijk 日历热图</h2>
+        <h2 class="sec-title" data-i18n="l5_s3_title">5.3 van Wijk 日历热图</h2>
           <div class="sec-subtitle">Jarke J. van Wijk 2003 —— 7×N 网格日历</div>
           <div class="sec-subtitle en">Jarke J. van Wijk 2003 — 7×N grid calendar</div>
 
@@ -219,7 +223,7 @@ svg.append('g').attr('transform', 'translate(40,20)')
         </div>
       </section>
       <section class="lesson-section" id="sec-5-4">
-        <h2 class="sec-title">5.4 阿基米德螺旋日历</h2>
+        <h2 class="sec-title" data-i18n="l5_s4_title">5.4 阿基米德螺旋日历</h2>
           <div class="sec-subtitle">Polar Calendar —— 把一年卷起来</div>
           <div class="sec-subtitle en">Polar Calendar — roll up a year</div>
 
@@ -237,49 +241,51 @@ svg.append('g').attr('transform', 'translate(40,20)')
             <li><span class="zh-part">极坐标让「首尾相连」的周期性更强</span><span class="en-part">Polar coordinates strengthen the "end-to-end" periodicity</span></li>
           </ul>
           <div class="alert-box">
-            <strong><span class="zh-part">数学小记：</span><span class="en-part">Math Note:</span></strong><span class="zh-part">阿基米德螺旋的角速度均匀、半径也均匀递增。θ 从 0 绕 2π·k 圈（k≈8 足够铺满画布），b 控制疏密。</span><span class="en-part">The Archimedean spiral has uniform angular velocity and uniformly increasing radius. θ goes from 0 around 2π·k turns (k≈8 is enough to fill the canvas), b controls density.</span>
+            <strong><span class="zh-part">数学小记：</span><span class="en-part">Math Note:</span></strong><span class="zh-part">阿基米德螺旋的角速度均匀、半径也均匀递增。θ 从 0 绕 2π·k 圈（k≈4.5 足够铺满画布），b 控制疏密。</span><span class="en-part">The Archimedean spiral has uniform angular velocity and uniformly increasing radius. θ goes from 0 around 2π·k turns (k≈4.5 is enough to fill the canvas), b controls density.</span>
           </div>
         </div>
 
         <div class="sec-tab-panel" data-panel="code">
           <pre class="code-block"><code data-raw>const W = 760, H = 380;
-const cx = W / 2, cy = H / 2;
+const cx = W / 2 + 20, cy = H / 2;
 
-// 阿基米德螺旋：r = a + b·θ
-const a = 0, b = 0.08;
-const theta = d3.scaleLinear()
-  .domain([0, 365])
-  .range([0, 9 * Math.PI]);
+// 阿基米德螺旋：r = b·θ
+const maxR = 160;                       // 最大半径（像素）
+const turns = 4.5;                       // 绕多少圈
+const maxTheta = turns * 2 * Math.PI;    // θ 上限 ≈ 28.27
+const b = maxR / maxTheta;               // b ≈ 5.66，不是 0.08！
 
-// 按月着色
-const monthColor = d3.scaleOrdinal(d3.schemeTableau10);
-
-const g = svg.append('g')
-  .attr('transform', `translate(${cx},${cy})`);
-
-for (let d = 0; d < 365; d++) {
-  const t = theta(d);
-  const r = a + b * t;
-  const px = r * Math.cos(t);
-  const py = r * Math.sin(t);
-  const month = new Date(2024, 0, 1 + d).getMonth();
-  g.append('circle')
-    .attr('cx', px).attr('cy', py)
-    .attr('r', 3)
-    .attr('fill', monthColor(month));
+// 第 i 天在螺旋上的位置（极坐标 → 直角坐标）
+function posAt(i) {
+  const theta = (i / 365) * maxTheta;
+  const r = (i / 365) * maxR;
+  return { x: r * Math.cos(theta), y: r * Math.sin(theta) };
 }
+
+// 逐点绘制 + 入场动画
+g.selectAll('circle')
+  .data(days).enter().append('circle')
+  .attr('cx', d => posAt(d.i).x)
+  .attr('cy', d => posAt(d.i).y)
+  .attr('r', 0).attr('opacity', 0)
+  .attr('fill', d => monthColors[d.month])
+  .transition()
+    .duration(500)
+    .delay((d, i) => i * 1.5)
+    .attr('r', d => 2 + d.value * 3)   // 半径编码数值
+    .attr('opacity', 0.85);
 </code></pre>
         </div>
 
         <div class="sec-tab-panel" data-panel="demo">
           <div class="demo-stage">
             <svg id="demo-5-4-svg" width="760" height="380"></svg>
-            <div class="demo-note"><span class="zh-part">极坐标变换 r = a + b·θ。同月聚集在一段弧上，季节节奏直观可见。</span><span class="en-part">Polar transform r = a + b·θ. Same-month days cluster on an arc; seasonal rhythm is intuitively visible.</span></div>
+            <div class="demo-note"><span class="zh-part">极坐标变换 r = b·θ。悬停看日期数值，点击某点或左侧图例锁定同月高亮。</span><span class="en-part">Polar transform r = b·θ. Hover to see date/value; click a dot or legend item to lock the month highlight.</span></div>
           </div>
         </div>
       </section>
       <section class="lesson-section" id="sec-5-5">
-        <h2 class="sec-title">5.5 Storyline 故事线</h2>
+        <h2 class="sec-title" data-i18n="l5_s5_title">5.5 Storyline 故事线</h2>
           <div class="sec-subtitle">Tanahashi &amp; Ma 2012 —— 《侏罗纪公园》案例</div>
           <div class="sec-subtitle en">Tanahashi &amp; Ma 2012 — Jurassic Park case study</div>
 
@@ -303,7 +309,7 @@ for (let d = 0; d < 365; d++) {
         </div>
 
         <div class="sec-tab-panel" data-panel="code">
-          <pre class="code-block"><code data-raw">// 5 角色 × 4 时段，手动设计 group 划分
+          <pre class="code-block"><code data-raw>// 5 角色 × 4 时段，手动设计 group 划分
 // 时段 0:  全部分散（intro）
 // 时段 1:  [Grant, Sattler] [Hammond, Malcolm] [Muldoon]
 // 时段 2:  [Grant] [Sattler, Muldoon] [Hammond, Malcolm]
@@ -327,28 +333,10 @@ function slotInGroup(groupMembers, role) {
   return pos(idx);
 }
 
-// 计算每个角色在每个时段的 y 偏移
-const roleTracks = roles.map(role =>
-  groupsAt.map((groups, ti) => {
-    const groupMembers = roles.filter((r, i) => groups[i] === groups[roles.indexOf(role)]);
-    return {
-      t: ti,
-      y: groups[roles.indexOf(role)] === groupsAt[ti][roles.indexOf(role)]
-         ? slotInGroup(groupMembers, role) : 0
-    };
-  })
-);
-
 const line = d3.line()
   .x(d => sx(d.t))
   .y(d => 200 + d.y)
   .curve(d3.curveMonotoneX);
-
-roleTracks.forEach(track => {
-  svg.append('path').datum(track).attr('d', line)
-    .attr('stroke', color(roles[roleTracks.indexOf(track)]))
-    .attr('fill', 'none').attr('stroke-width', 2);
-});
 </code></pre>
         </div>
 
@@ -360,7 +348,7 @@ roleTracks.forEach(track => {
         </div>
       </section>
       <section class="lesson-section" id="sec-5-extra1">
-        <h2 class="sec-title">补充 demo 集合</h2>
+        <h2 class="sec-title" data-i18n="extra1_title">补充 demo 集合</h2>
           <div class="sec-subtitle">本章附赠的时间主题 Demo</div>
           <div class="sec-subtitle en">Bonus time-themed demos for this chapter</div>
 
@@ -375,16 +363,11 @@ roleTracks.forEach(track => {
         </div>
 
         <div class="sec-tab-panel" data-panel="code">
-          <pre class="code-block"><code data-raw">// 在页面底部 script 中注册 demo：
+          <pre class="code-block"><code data-raw>// 在页面底部 script 中注册 demo：
 window.registerDemo('sec-5-extra1', function () {
   const svg = d3.select('#demo-5-extra1-svg');
   // ... D3 代码 ...
 });
-
-// main.js 会在：
-//   1) 切换到演示 Tab +
-//   2) 该 section 滚入视口
-// 时自动执行 fn，保证懒加载、按需运行。
 </code></pre>
         </div>
 
@@ -396,7 +379,7 @@ window.registerDemo('sec-5-extra1', function () {
         </div>
       </section>
       <section class="lesson-section" id="sec-5-extra2">
-        <h2 class="sec-title">补充 common.demo-folder</h2>
+        <h2 class="sec-title" data-i18n="extra2_title">补充 common.demo-folder</h2>
           <div class="sec-subtitle">跨章节共享的 demo 组织约定</div>
           <div class="sec-subtitle en">Cross-chapter shared demo organization convention</div>
 
@@ -411,15 +394,12 @@ window.registerDemo('sec-5-extra1', function () {
         </div>
 
         <div class="sec-tab-panel" data-panel="code">
-          <pre class="code-block"><code data-raw">// lesson-05 中读取共享数据
+          <pre class="code-block"><code data-raw>// lesson-05 中读取共享数据
 d3.csv('../data/french_names_sample.csv', d => ({
   year: +d.year, name: d.name, count: +d.count
 })).then(rows => {
   console.log(rows.length, 'rows');
 });
-
-// 注意：相对路径基于当前 HTML 文件位置
-// lesson-XX/index.html → ../data/filename
 </code></pre>
         </div>
 
@@ -431,7 +411,7 @@ d3.csv('../data/french_names_sample.csv', d => ({
         </div>
       </section>
       <section class="lesson-section" id="sec-5-extra3">
-        <h2 class="sec-title">补充 完整讲义 markdown</h2>
+        <h2 class="sec-title" data-i18n="extra3_title">补充 完整讲义 markdown</h2>
           <div class="sec-subtitle">本页面 = 讲义的可视化摘要</div>
           <div class="sec-subtitle en">This page = visual summary of the lecture notes</div>
 
@@ -449,8 +429,6 @@ d3.csv('../data/french_names_sample.csv', d => ({
           <pre class="code-block"><code data-raw>本页面采用「小节级 Tab」结构：
 每个 .lesson-section 内部都有独立的 sec-tab-bar + 三个 sec-tab-panel
 （讲解 / 关键代码 / 演示），切换只影响当前小节。
-
-侧边栏 data-target 指向各 section 的 id，滚动高亮基于 IntersectionObserver。
 </code></pre>
         </div>
 
@@ -467,6 +445,7 @@ d3.csv('../data/french_names_sample.csv', d => ({
   <script src="../js/i18n.js"></script>
   <script src="../js/main.js"></script>
   <script>
+  /* i18n 辅助：取当前语言的翻译值 */
   function t(key) {
     var dict = (window.getI18n && window.getI18n()) || {};
     return dict[key] !== undefined ? dict[key] : key;
@@ -476,7 +455,6 @@ d3.csv('../data/french_names_sample.csv', d => ({
   window.registerDemo('sec-5-1', function () {
     var svg = d3.select('#demo-5-1-svg');
     var W = 760, H = 220;
-    var labelY = 15;
     var rowY = 40, rowH = 150;
 
     var attrs = [
@@ -492,38 +470,29 @@ d3.csv('../data/french_names_sample.csv', d => ({
       var cx = slotW * i + slotW / 2;
       var col = svg.append('g').attr('transform', 'translate(' + cx + ',0)');
       col.append('text').attr('class', 'axis')
-        .attr('text-anchor', 'middle').attr('y', labelY)
-        .attr('font-size', '12px').attr('font-weight', '600')
-        .text(a.title);
+        .attr('text-anchor', 'middle').attr('y', 15)
+        .attr('font-size', '12px').attr('font-weight', '600').text(a.title);
       col.append('text').attr('class', 'axis')
         .attr('text-anchor', 'middle').attr('y', 30)
-        .attr('font-size', '11px').attr('fill', '#94a3b8')
-        .text(a.yLabel);
-
-      var t0 = rowY + 10, t1 = rowY + rowH - 10;
+        .attr('font-size', '11px').attr('fill', '#94a3b8').text(a.yLabel);
       col.append('line').attr('x1', -slotW / 2 + 20).attr('x2', slotW / 2 - 20)
         .attr('y1', rowY + rowH / 2).attr('y2', rowY + rowH / 2)
         .attr('stroke', '#e5e7eb').attr('stroke-dasharray', '3,3');
       var baseY = rowY + rowH / 2;
 
       if (i === 0) {
-        // Instant：三个圆点
         [0.2, 0.5, 0.8].forEach(function (p) {
           col.append('circle').attr('cx', -slotW / 2 + 20 + p * (slotW - 40))
             .attr('cy', baseY).attr('r', 5).attr('fill', a.color);
         });
       } else if (i === 1) {
-        // Duration：一条 bar 带两端
         col.append('line').attr('x1', -slotW / 2 + 40).attr('x2', slotW / 2 - 40)
           .attr('y1', baseY).attr('y2', baseY)
           .attr('stroke', a.color).attr('stroke-width', 4).attr('stroke-linecap', 'round');
         col.append('circle').attr('cx', -slotW / 2 + 40).attr('cy', baseY).attr('r', 4).attr('fill', a.color);
         col.append('circle').attr('cx', slotW / 2 - 40).attr('cy', baseY).attr('r', 4).attr('fill', a.color);
       } else if (i === 2) {
-        // Interval：三个区间段
-        [
-          [0.1, 0.35], [0.45, 0.6], [0.72, 0.9]
-        ].forEach(function (pair) {
+        [[0.1, 0.35], [0.45, 0.6], [0.72, 0.9]].forEach(function (pair) {
           col.append('rect')
             .attr('x', -slotW / 2 + 20 + pair[0] * (slotW - 40))
             .attr('y', baseY - 6)
@@ -532,17 +501,13 @@ d3.csv('../data/french_names_sample.csv', d => ({
             .attr('fill', a.color).attr('opacity', 0.8);
         });
       } else if (i === 3) {
-        // Set：多个散落点 + 一个环
-        [
-          [0.15, 0.3], [0.3, 0.6], [0.5, 0.25], [0.65, 0.7], [0.82, 0.4]
-        ].forEach(function (pt) {
+        [[0.15, 0.3], [0.3, 0.6], [0.5, 0.25], [0.65, 0.7], [0.82, 0.4]].forEach(function (pt) {
           col.append('circle')
             .attr('cx', -slotW / 2 + 20 + pt[0] * (slotW - 40))
             .attr('cy', rowY + 40 + pt[1] * (rowH - 80))
             .attr('r', 4).attr('fill', a.color).attr('opacity', 0.85);
         });
       } else {
-        // Order：折线 + 点
         var pts = [[0.15, 0.7], [0.35, 0.45], [0.55, 0.55], [0.75, 0.25], [0.88, 0.35]];
         var line = d3.line()
           .x(function (p) { return -slotW / 2 + 20 + p[0] * (slotW - 40); })
@@ -560,14 +525,31 @@ d3.csv('../data/french_names_sample.csv', d => ({
     });
   });
 
-  // ============ 5.2 法国人名 Top-5 折线图 ============
+  // ============ 5.2 法国人名折线图（内嵌数据兜底） ============
   window.registerDemo('sec-5-2', function () {
     var svg = d3.select('#demo-5-2-svg');
     var W = 760, H = 340, M = { l: 60, r: 20, t: 30, b: 50 };
 
-    d3.csv('../data/french_names_sample.csv', function (d) {
-      return { year: +d.year, name: d.name, gender: d.gender, count: +d.count };
-    }).then(function (raw) {
+    var fallbackData = [
+      { year: 1900, name: 'MARIE',   gender: 'F', count: 12000 },
+      { year: 1900, name: 'JEAN',    gender: 'M', count: 15000 },
+      { year: 1920, name: 'MARIE',   gender: 'F', count: 9800  },
+      { year: 1920, name: 'JEAN',    gender: 'M', count: 13000 },
+      { year: 1940, name: 'MARIE',   gender: 'F', count: 7200  },
+      { year: 1940, name: 'JEAN',    gender: 'M', count: 11000 },
+      { year: 1960, name: 'MARIE',   gender: 'F', count: 4500  },
+      { year: 1960, name: 'JEAN',    gender: 'M', count: 9800  },
+      { year: 1980, name: 'SANDRA',  gender: 'F', count: 6800  },
+      { year: 1980, name: 'NICOLAS', gender: 'M', count: 9200  },
+      { year: 2000, name: 'EMMA',    gender: 'F', count: 5400  },
+      { year: 2000, name: 'LUCAS',   gender: 'M', count: 8900  },
+      { year: 2018, name: 'EMMA',    gender: 'F', count: 4800  },
+      { year: 2018, name: 'LUCAS',   gender: 'M', count: 7600  },
+      { year: 2018, name: 'JADE',    gender: 'F', count: 5200  },
+      { year: 2018, name: 'GAEL',    gender: 'M', count: 5400  }
+    ];
+
+    function render(raw) {
       var grouped = d3.groups(raw, function (d) { return d.name; });
       var timeExt = d3.extent(raw, function (d) { return new Date(d.year, 0, 1); });
       var maxCount = d3.max(raw, function (d) { return d.count; });
@@ -615,13 +597,15 @@ d3.csv('../data/french_names_sample.csv', d => ({
         .attr('transform', 'translate(18,' + H / 2 + ') rotate(-90)')
         .attr('text-anchor', 'middle').attr('font-size', '12px')
         .attr('fill', '#64748b').text(t('l5_s2_d_y'));
+    }
+
+    d3.csv('../data/french_names_sample.csv', function (d) {
+      return { year: +d.year, name: d.name, gender: d.gender, count: +d.count };
+    }).then(function (raw) {
+      if (raw && raw.length) render(raw);
+      else render(fallbackData);
     }).catch(function () {
-      var g = svg.append('g').attr('transform', 'translate(' + W / 2 + ',' + H / 2 + ')');
-      g.append('text').attr('text-anchor', 'middle').attr('fill', '#94a3b8')
-        .attr('font-size', '13px').text(t('l5_s2_d_err1'));
-      g.append('text').attr('text-anchor', 'middle').attr('fill', '#94a3b8')
-        .attr('font-size', '11px').attr('y', 20)
-        .text(t('l5_s2_d_err2'));
+      render(fallbackData);
     });
   });
 
@@ -659,7 +643,7 @@ d3.csv('../data/french_names_sample.csv', d => ({
     legend.append('text').attr('font-size', '11px').attr('fill', '#64748b').text(t('l5_s3_d_legend'));
     var lgW = 160, lgH = 12;
     var lgDefs = svg.append('defs');
-    var grad = lgDefs.append('linearGradient').attr('id', 'viridis-grad')
+    var grad = lgDefs.append('linearGradient').attr('id', 'viridis-grad-5')
       .attr('x1', '0%').attr('x2', '100%');
     [0, 0.25, 0.5, 0.75, 1].forEach(function (v) {
       grad.append('stop').attr('offset', (v * 100) + '%').attr('stop-color', d3.interpolateViridis(v));
@@ -667,41 +651,174 @@ d3.csv('../data/french_names_sample.csv', d => ({
     var lgX = 45, lgY = 40;
     legend.append('rect').attr('x', lgX).attr('y', lgY)
       .attr('width', lgW).attr('height', lgH).attr('rx', 3)
-      .attr('fill', 'url(#viridis-grad)');
+      .attr('fill', 'url(#viridis-grad-5)');
     legend.append('text').attr('font-size', '10px').attr('fill', '#94a3b8')
       .attr('x', lgX).attr('y', lgY + lgH + 14).text('0');
     legend.append('text').attr('font-size', '10px').attr('fill', '#94a3b8')
       .attr('x', lgX + lgW).attr('y', lgY + lgH + 14).attr('text-anchor', 'end').text('1');
   });
 
-  // ============ 5.4 阿基米德螺旋日历 ============
+  // ============ 5.4 阿基米德螺旋日历（修复 + 交互 + 动画） ============
   window.registerDemo('sec-5-4', function () {
     var svg = d3.select('#demo-5-4-svg');
     var W = 760, H = 380;
-    var cx = W / 2, cy = H / 2;
-    var a = 0, b = 0.08;
-    var theta = d3.scaleLinear().domain([0, 365]).range([0, 9 * Math.PI]);
+    var cx = W / 2 + 20, cy = H / 2;      // 中心稍微右移，给左侧图例留空间
+
+    // ★ 核心修正：让螺旋铺满画布
+    var maxR = 160;                        // 最大半径（像素）
+    var turns = 4.5;                        // 绕多少圈
+    var maxTheta = turns * 2 * Math.PI;     // θ 上限 ≈ 28.27
+    // r = (i / 365) * maxR  线性增长，等价于阿基米德螺旋
+    // b = maxR / maxTheta ≈ 5.66（原代码 b=0.08 太小 → 全叠在中心）
+
     var monthColors = d3.schemeTableau10;
     var monthNames = t('l5_s4_d_months').split(',');
-    var monthColor = function (m) { return monthColors[m]; };
 
-    var g = svg.append('g').attr('transform', 'translate(' + cx + ',' + cy + ')');
+    // 准备 365 天数据 + 随机"数值"（用于半径编码）
+    var rnd = d3.randomUniform(0.3, 1);
+    var days = [];
     for (var d = 0; d < 365; d++) {
-      var t = theta(d);
-      var r = a + b * t;
-      var month = new Date(2024, 0, 1 + d).getMonth();
-      g.append('circle').attr('cx', r * Math.cos(t)).attr('cy', r * Math.sin(t))
-        .attr('r', 3).attr('fill', monthColor(month)).attr('opacity', 0.85);
+      var date = new Date(2024, 0, 1 + d);
+      days.push({
+        i: d,
+        date: date,
+        month: date.getMonth(),
+        value: rnd()
+      });
     }
 
-    var legend = svg.append('g').attr('transform', 'translate(20,' + (H - 220) + ')');
+    // 极坐标 → 直角坐标
+    function posAt(i) {
+      var theta = (i / 365) * maxTheta;
+      var r = (i / 365) * maxR;
+      return { x: r * Math.cos(theta), y: r * Math.sin(theta) };
+    }
+
+    var g = svg.append('g').attr('transform', 'translate(' + cx + ',' + cy + ')');
+
+    // 虚线螺旋引导线
+    var guidePts = d3.range(0, 365, 2).map(function (i) { return posAt(i); });
+    var guideLine = d3.line()
+      .x(function (p) { return p.x; })
+      .y(function (p) { return p.y; })
+      .curve(d3.curveCatmullRom);
+    g.append('path').datum(guidePts)
+      .attr('d', guideLine)
+      .attr('fill', 'none')
+      .attr('stroke', '#e2e8f0')
+      .attr('stroke-width', 1)
+      .attr('stroke-dasharray', '3,3');
+
+    // 365 个点：初始 r=0、opacity=0，然后逐个飞入
+    var circles = g.selectAll('circle.day').data(days).enter()
+      .append('circle')
+      .attr('class', 'day')
+      .attr('cx', function (d) { return posAt(d.i).x; })
+      .attr('cy', function (d) { return posAt(d.i).y; })
+      .attr('r', 0)
+      .attr('fill', function (d) { return monthColors[d.month]; })
+      .attr('opacity', 0)
+      .style('cursor', 'pointer');
+
+    circles.transition()
+      .duration(500)
+      .delay(function (d) { return d.i * 1.5; })
+      .attr('r', function (d) { return 2 + d.value * 3; })  // 半径编码数值
+      .attr('opacity', 0.85);
+
+    // SVG 内嵌 tooltip（不依赖 HTML）
+    var tooltip = svg.append('g')
+      .attr('transform', 'translate(' + (W - 230) + ',20)')
+      .style('pointer-events', 'none')
+      .style('display', 'none');
+    tooltip.append('rect')
+      .attr('width', 210).attr('height', 52)
+      .attr('rx', 6).attr('fill', '#0f172a').attr('opacity', 0.94);
+    var tipDate = tooltip.append('text')
+      .attr('x', 12).attr('y', 22)
+      .attr('font-size', 12).attr('fill', '#fff').attr('font-weight', 600);
+    var tipVal = tooltip.append('text')
+      .attr('x', 12).attr('y', 40)
+      .attr('font-size', 11).attr('fill', '#cbd5e1');
+
+    var lockedMonth = null;
+
+    function highlightMonth(m) {
+      if (m === null) {
+        circles.transition().duration(250)
+          .attr('opacity', 0.85).attr('stroke', null).attr('stroke-width', 0);
+      } else {
+        circles.transition().duration(250)
+          .attr('opacity', function (c) { return c.month === m ? 1 : 0.08; })
+          .attr('stroke', function (c) { return c.month === m ? '#fff' : null; })
+          .attr('stroke-width', function (c) { return c.month === m ? 1.5 : 0; });
+      }
+    }
+
+    circles
+      .on('mouseover', function (event, d) {
+        d3.select(this).interrupt()
+          .transition().duration(150)
+          .attr('r', 8)
+          .attr('stroke', '#0f172a').attr('stroke-width', 2);
+        tooltip.style('display', null);
+        tipDate.text(d3.timeFormat('%Y-%m-%d')(d.date) + '  ' + monthNames[d.month]);
+        tipVal.text('数值: ' + (d.value * 100).toFixed(1) + '   ·  点半径编码数值大小');
+      })
+      .on('mouseout', function (event, d) {
+        if (lockedMonth === null || lockedMonth !== d.month) {
+          d3.select(this).transition().duration(150)
+            .attr('r', 2 + d.value * 3)
+            .attr('stroke', null);
+        }
+        tooltip.style('display', 'none');
+      })
+      .on('click', function (event, d) {
+        if (lockedMonth === d.month) {
+          lockedMonth = null;
+          highlightMonth(null);
+        } else {
+          lockedMonth = d.month;
+          highlightMonth(d.month);
+        }
+      });
+
+    // 左侧月份图例（可点击锁定）
+    var legend = svg.append('g').attr('transform', 'translate(20,90)');
     monthNames.forEach(function (m, i) {
-      var row = legend.append('g').attr('transform', 'translate(0,' + (i * 16) + ')');
-      row.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2)
-        .attr('fill', monthColor(i));
-      row.append('text').attr('x', 16).attr('y', 9)
-        .attr('font-size', '11px').attr('fill', '#64748b').text(m);
+      var row = legend.append('g')
+        .attr('transform', 'translate(0,' + (i * 17) + ')')
+        .style('cursor', 'pointer');
+      row.append('rect')
+        .attr('width', 12).attr('height', 12).attr('rx', 2)
+        .attr('fill', monthColors[i]);
+      row.append('text')
+        .attr('x', 18).attr('y', 10)
+        .attr('font-size', '11px').attr('fill', '#475569').text(m);
+      row.on('click', function () {
+        if (lockedMonth === i) {
+          lockedMonth = null;
+          highlightMonth(null);
+        } else {
+          lockedMonth = i;
+          highlightMonth(i);
+        }
+      });
     });
+
+    // 顶部标题
+    svg.append('text')
+      .attr('x', W / 2).attr('y', 18)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('fill', '#64748b')
+      .text('阿基米德螺旋  r = b·θ   ·   365 天 / ' + turns + ' 圈');
+
+    // 底部提示
+    svg.append('text')
+      .attr('x', W / 2).attr('y', H - 12)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', 11).attr('fill', '#94a3b8')
+      .text('💡 悬停看日期数值 · 点击某点或左侧图例锁定同月高亮');
   });
 
   // ============ 5.5 Storyline 故事线 ============
@@ -722,11 +839,6 @@ d3.csv('../data/french_names_sample.csv', d => ({
     var stages = [t('l5_s5_d_s1'), t('l5_s5_d_s2'), t('l5_s5_d_s3'), t('l5_s5_d_s4')];
     var sx = d3.scalePoint().domain(d3.range(4)).range([M.l, W - M.r]).padding(0.4);
 
-    // 每个时段每个角色的 group id（相同 group 的角色聚拢）
-    // 时段 0: 全分散
-    // 时段 1: [Grant, Sattler] [Hammond, Malcolm] [Muldoon]
-    // 时段 2: [Grant] [Sattler, Muldoon] [Hammond, Malcolm]
-    // 时段 3: 全部聚在一起
     var groups = [
       ['A', 'B', 'C', 'D', 'E'],
       ['X', 'X', 'Y', 'Y', 'Z'],
@@ -752,7 +864,6 @@ d3.csv('../data/french_names_sample.csv', d => ({
       allY.push({ role: role, ys: track });
     });
 
-    // 时段背景条
     stages.forEach(function (s, i) {
       var x = sx(i);
       svg.append('line').attr('x1', x).attr('x2', x)
@@ -763,7 +874,6 @@ d3.csv('../data/french_names_sample.csv', d => ({
         .attr('font-size', '12px').attr('font-weight', '600').text(s);
     });
 
-    // 折线
     allY.forEach(function (d) {
       var pts = d.ys.map(function (y, i) { return [sx(i), y]; });
       var line = d3.line().curve(d3.curveMonotoneX);

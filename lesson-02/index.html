@@ -19,6 +19,10 @@
       <a class="nav-item" data-key="lesson-04" href="../lesson-04/index.html">第4章·低维可视化</a>
       <a class="nav-item" data-key="lesson-05" href="../lesson-05/index.html">第5章·时序可视化</a>
       <a class="nav-item" data-key="lesson-06" href="../lesson-06/index.html">第6章·网页页面布局</a>
+    <div class="lang-toggle" id="lang-toggle">
+      <button data-lang="zh" class="active">中</button>
+      <button data-lang="en">EN</button>
+    </div>
     </div>
   </header>
 
@@ -40,7 +44,7 @@
 
     <main class="lesson-main">
       <section class="lesson-section" id="sec-2-1">
-        <h2 class="sec-title">2.1 Card 数据流模型</h2>
+        <h2 class="sec-title" data-i18n="l2_s1_title">2.1 Card 数据流模型</h2>
           <div class="sec-subtitle">把可视化流程抽象为一串可组合的 Card，每张 Card 接收上一张的输出、产出给下一张</div>
           <div class="sec-subtitle en">Abstract the visualization pipeline into a chain of composable Cards; each Card takes the previous Card's output and produces output for the next.</div>
 
@@ -93,7 +97,7 @@ const pipeline = [
         </div>
       </section>
       <section class="lesson-section" id="sec-2-2">
-        <h2 class="sec-title">2.2 新生数据 → 分类树</h2>
+        <h2 class="sec-title" data-i18n="l2_s2_title">2.2 新生数据 → 分类树</h2>
           <div class="sec-subtitle">用 d3.rollup 把扁平的新生记录按专业 → 性别 → 学位递归分组</div>
           <div class="sec-subtitle en">Use d3.rollup to recursively group flat student records by major → gender → degree</div>
 
@@ -155,7 +159,7 @@ root.descendants().forEach(d => console.log(d.data.name, d.depth, d.parent));
         </div>
       </section>
       <section class="lesson-section" id="sec-2-3">
-        <h2 class="sec-title">2.3 树形列表</h2>
+        <h2 class="sec-title" data-i18n="l2_s3_title">2.3 树形列表</h2>
           <div class="sec-subtitle">分类树既可以渲染成嵌套 ul，也可以喂给 d3.hierarchy 转成布局输入</div>
           <div class="sec-subtitle en">Classification trees can be rendered as nested ul or fed to d3.hierarchy for layout input</div>
 
@@ -181,7 +185,7 @@ root.descendants().forEach(d => console.log(d.data.name, d.depth, d.parent));
 
         <div class="sec-tab-panel" data-panel="code">
           <h3 class="sub-title">递归渲染树形 HTML 列表<span class="sub-en">Recursively Render Tree HTML List</span></h3>
-<pre class="code-block"><code data-raw">function renderTree(root, container) {
+<pre class="code-block"><code data-raw>function renderTree(root, container) {
   const ul = d3.select(container).append('ul')
     .attr('class', 'tree-list').style('padding-left', '16px');
   const items = ul.selectAll('li').data(root.children);
@@ -207,7 +211,7 @@ renderTree(root, '#tree-root');
         </div>
       </section>
       <section class="lesson-section" id="sec-2-4">
-        <h2 class="sec-title">2.4 Reingold-Tilford 布局</h2>
+        <h2 class="sec-title" data-i18n="l2_s4_title">2.4 Reingold-Tilford 布局</h2>
           <div class="sec-subtitle">D3 的 d3.tree() / d3.cluster() 实现，同层等距、子树不重叠、整体居中</div>
           <div class="sec-subtitle en">Implemented by D3's d3.tree() / d3.cluster(): equal spacing at the same level, non-overlapping subtrees, centered overall</div>
 
@@ -282,7 +286,7 @@ node.append('text').attr('x', 10).attr('y', 4)
         </div>
       </section>
       <section class="lesson-section" id="sec-2-5">
-        <h2 class="sec-title">2.5 DOM 事件机制与事件委托</h2>
+        <h2 class="sec-title" data-i18n="l2_s5_title">2.5 DOM 事件机制与事件委托</h2>
           <div class="sec-subtitle">冒泡 / 捕获 / 委托：父容器绑一个监听器管理所有子节点</div>
           <div class="sec-subtitle en">Bubbling / Capturing / Delegation: one listener on the parent manages all children</div>
 
@@ -344,7 +348,7 @@ ul.addEventListener('click', function (e) {
         </div>
       </section>
       <section class="lesson-section" id="sec-2-extra1">
-        <h2 class="sec-title">补充 demo 集合</h2>
+        <h2 class="sec-title" data-i18n="extra1_title">补充 demo 集合</h2>
           <div class="sec-subtitle">本章额外可扩展的演示方向</div>
           <div class="sec-subtitle en">Additional extensible demo directions for this chapter</div>
 
@@ -379,7 +383,7 @@ node.append('circle').on('click', function (event, d) {
         </div>
       </section>
       <section class="lesson-section" id="sec-2-extra2">
-        <h2 class="sec-title">common.demo-folder</h2>
+        <h2 class="sec-title" data-i18n="extra2_title">common.demo-folder</h2>
           <div class="sec-subtitle">跨章节共享数据与样式的约定</div>
           <div class="sec-subtitle en">Conventions for sharing data and styles across chapters</div>
 
@@ -394,7 +398,7 @@ node.append('circle').on('click', function (event, d) {
         </div>
 
         <div class="sec-tab-panel" data-panel="code">
-          <pre class="code-block"><code data-raw">// 所有章节通过相对路径读取共享数据
+          <pre class="code-block"><code data-raw>// 所有章节通过相对路径读取共享数据
 d3.csv('../data/students_synthetic.csv').then(rows => {
   console.log(rows.length);
 });
@@ -408,7 +412,7 @@ d3.csv('../data/students_synthetic.csv').then(rows => {
         </div>
       </section>
       <section class="lesson-section" id="sec-2-extra3">
-        <h2 class="sec-title">完整讲义 markdown</h2>
+        <h2 class="sec-title" data-i18n="extra3_title">完整讲义 markdown</h2>
           <div class="sec-subtitle">从 markdown 到可视化网页的渲染路线</div>
           <div class="sec-subtitle en">Rendering pipeline from markdown to visual web page</div>
 
@@ -423,7 +427,7 @@ d3.csv('../data/students_synthetic.csv').then(rows => {
         </div>
 
         <div class="sec-tab-panel" data-panel="code">
-          <pre class="code-block"><code data-raw">// 后续可引入 marked.js 渲染 markdown
+          <pre class="code-block"><code data-raw>// 后续可引入 marked.js 渲染 markdown
 fetch('lesson-02.md')
   .then(r => r.text())
   .then(md => {
@@ -442,8 +446,15 @@ fetch('lesson-02.md')
 </main>
   </div>
 
+  <script src="../js/i18n.js"></script>
   <script src="../js/main.js"></script>
   <script>
+  /* i18n 辅助：取当前语言的翻译值 */
+  function t(key) {
+    var dict = (window.getI18n && window.getI18n()) || {};
+    return dict[key] !== undefined ? dict[key] : key;
+  }
+
   /* =========================================================
    * 第2章全部 demo 注册 —— main.js 会在 demo panel 可见 +
    * 对应 section 进入视口时懒加载执行
@@ -451,7 +462,6 @@ fetch('lesson-02.md')
 
   // 2.1 Card 数据流模型：横向流程节点
   window.registerDemo('sec-2-1', function () {
-    var t = window.getI18n();
     var svg = d3.select('#demo-2-1-svg');
     var W = 760, H = 220;
     var nodes = [
@@ -472,7 +482,6 @@ fetch('lesson-02.md')
       .attr('rx', 10).attr('fill', function (d) { return d.color; }).attr('opacity', 0.9);
     g.append('text').attr('text-anchor', 'middle').attr('dy', 5).attr('fill', '#fff')
       .attr('font-size', 13).attr('font-weight', 600).text(function (d) { return d.name; });
-    // 箭头
     var links = [];
     for (var i = 0; i < nodes.length - 1; i++) {
       links.push({ x1: cx + stepX * i + 56, x2: cx + stepX * (i + 1) - 56 });
@@ -481,19 +490,16 @@ fetch('lesson-02.md')
       .attr('class', 'arrow').attr('x1', function (d) { return d.x1; })
       .attr('y1', cy).attr('x2', function (d) { return d.x2; }).attr('y2', cy)
       .attr('stroke', '#94a3b8').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
-    // 三角形箭头 marker
     svg.append('defs').append('marker').attr('id', 'arrowhead')
       .attr('viewBox', '0 0 10 10').attr('refX', 8).attr('refY', 5)
       .attr('markerWidth', 6).attr('markerHeight', 6).attr('orient', 'auto')
       .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', '#94a3b8');
-    // 数据流方向标签
     svg.append('text').attr('x', W / 2).attr('y', H - 12).attr('text-anchor', 'middle')
       .attr('fill', '#64748b').attr('font-size', 12).text(t('l2_d2_1_flow'));
   });
 
   // 2.2 d3.rollup 构建的分类树（用 d3.tree 展示层级关系）
   window.registerDemo('sec-2-2', function () {
-    var t = window.getI18n();
     var svg = d3.select('#demo-2-2-svg');
     var W = 760, H = 280;
     var students = [
@@ -540,7 +546,6 @@ fetch('lesson-02.md')
 
   // 2.3 树形列表 HTML：可点击展开/折叠
   window.registerDemo('sec-2-3', function () {
-    var t = window.getI18n();
     var container = d3.select('#demo-2-3-root');
     container.selectAll('*').remove();
     var treeData = {
@@ -587,7 +592,6 @@ fetch('lesson-02.md')
 
   // 2.4 Reingold-Tilford：d3.tree / d3.cluster 切换
   window.registerDemo('sec-2-4', function () {
-    var t = window.getI18n();
     var svg = d3.select('#demo-2-4-svg');
     var W = 760, H = 340;
     var treeData = {
@@ -618,7 +622,6 @@ fetch('lesson-02.md')
         .attr('transform', function (d) { return 'translate(' + d.y + ',' + d.x + ')'; });
       node.append('circle').attr('r', 5).attr('fill', '#2563eb');
       node.append('text').attr('x', 10).attr('y', 4).attr('font-size', 12).text(function (d) { return d.data.name; });
-      // 点击高亮祖先
       node.on('click', function (event, d) {
         d3.selectAll('g.node circle').attr('fill', '#2563eb');
         d.ancestors().forEach(function (a) {
@@ -640,7 +643,6 @@ fetch('lesson-02.md')
 
   // 2.5 事件委托：一个 ul 一个监听器
   window.registerDemo('sec-2-5', function () {
-    var t = window.getI18n();
     var list = document.getElementById('demo-2-5-list');
     list.innerHTML = '';
     var items = [
@@ -662,7 +664,6 @@ fetch('lesson-02.md')
       li.textContent = it.label;
       list.appendChild(li);
     });
-    // 事件委托：只绑 ul 这一个监听器
     list.addEventListener('click', function (e) {
       var li = e.target.closest('li');
       if (!li) return;
@@ -678,19 +679,16 @@ fetch('lesson-02.md')
 
   // 补充项 demo（占位）
   window.registerDemo('sec-2-extra1', function () {
-    var t = window.getI18n();
     var svg = d3.select('#demo-2-extra1-svg');
     svg.append('text').attr('x', 380).attr('y', 45).attr('text-anchor', 'middle')
       .attr('fill', '#94a3b8').attr('font-size', 14).text(t('l2_d2_extra1'));
   });
   window.registerDemo('sec-2-extra2', function () {
-    var t = window.getI18n();
     var svg = d3.select('#demo-2-extra2-svg');
     svg.append('text').attr('x', 380).attr('y', 45).attr('text-anchor', 'middle')
       .attr('fill', '#94a3b8').attr('font-size', 14).text(t('l2_d2_extra2'));
   });
   window.registerDemo('sec-2-extra3', function () {
-    var t = window.getI18n();
     var svg = d3.select('#demo-2-extra3-svg');
     svg.append('text').attr('x', 380).attr('y', 45).attr('text-anchor', 'middle')
       .attr('fill', '#94a3b8').attr('font-size', 14).text(t('l2_d2_extra3'));
