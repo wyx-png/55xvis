@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>第4章 低维数据可视化 · 数据可视化课程</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<!-- ============ 顶部导航 ============ -->
+<header class="site-nav">
+  <div class="nav-inner">
+    <span class="brand">📊 DV 课程</span>
+    <a class="nav-item" data-key="home" href="../index.html">课程门户</a>
+    <a class="nav-item" data-key="lesson-01" href="../lesson-01/index.html">第1章·数据</a>
+    <a class="nav-item" data-key="lesson-02" href="../lesson-02/index.html">第2章·数据可视化流程</a>
+    <a class="nav-item" data-key="lesson-03" href="../lesson-03/index.html">第3章·色彩专题</a>
+    <a class="nav-item" data-key="lesson-04" href="../lesson-04/index.html">第4章·低维可视化</a>
+    <a class="nav-item" data-key="lesson-05" href="../lesson-05/index.html">第5章·时序可视化</a>
+    <a class="nav-item" data-key="lesson-06" href="../lesson-06/index.html">第6章·网页页面布局</a>
+  </div>
+</header>
+
+<!-- ============ 双栏布局 ============ -->
+<div class="lesson-layout">
+
+  <!-- 左侧目录 -->
+  <aside class="lesson-sidebar">
+    <div class="side-title">本章目录</div>
+    <a class="side-link" data-target="sec-4-1" href="#sec-4-1"><span class="zh-part">4.1 Crime 数据坐标变换</span><span class="en-part">4.1 Crime Data Coordinate Transform</span></a>
+    <a class="side-link" data-target="sec-4-2" href="#sec-4-2"><span class="zh-part">4.2 三层坐标变换</span><span class="en-part">4.2 Three-Layer Coordinate Transform</span></a>
+    <a class="side-link" data-target="sec-4-3" href="#sec-4-3"><span class="zh-part">4.3 10 种曲线拟合</span><span class="en-part">4.3 Ten Curve Fitting Methods</span></a>
+    <a class="side-link" data-target="sec-4-4" href="#sec-4-4"><span class="zh-part">4.4 Cleveland 45° 倾角</span><span class="en-part">4.4 Cleveland 45° Banking</span></a>
+    <a class="side-link" data-target="sec-4-5" href="#sec-4-5"><span class="zh-part">4.5 Marching Squares 等值线</span><span class="en-part">4.5 Marching Squares Contours</span></a>
+    <div class="side-group">
+      <div class="side-sub"><span class="zh-part">补充</span><span class="en-part">Extras</span></div>
+      <a class="side-link" data-target="sec-4-extra1" href="#sec-4-extra1"><span class="zh-part">补充 demo 集合</span><span class="en-part">Demo Collection</span></a>
+      <a class="side-link" data-target="sec-4-extra2" href="#sec-4-extra2"><span class="zh-part">common.demo-folder</span><span class="en-part">common.demo-folder</span></a>
+      <a class="side-link" data-target="sec-4-extra3" href="#sec-4-extra3"><span class="zh-part">完整讲义 markdown</span><span class="en-part">Full Lecture Notes (markdown)</span></a>
+    </div>
+  </aside>
+
+  <!-- 右侧主内容区 -->
+  <main class="lesson-main">
+      <section class="lesson-section" id="sec-4-1">
+        <h2 class="sec-title">4.1 Crime 数据坐标变换</h2>
+        <div class="sec-subtitle">把美国各州犯罪率数据映射到二维屏幕坐标</div>
+        <div class="sec-subtitle en">Mapping US state crime rates to 2D screen coordinates</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">本章使用经典的 <strong>Crime 数据集</strong>（美国 21 个州的谋杀率、抢劫率、入室盗窃、人口等字段），任务是画出「各州谋杀率 vs 抢劫率」的散点图。</span><span class="en-part">This chapter uses the classic <strong>Crime dataset</strong> (murder rate, robbery rate, burglary, population, etc. for 21 US states). The task is to draw a scatter plot of "murder rate vs robbery rate" for each state.</span></p>
+        <p><span class="zh-part">散点图看似简单，但背后隐藏了可视化的核心问题 —— <strong>坐标变换（Coordinate Transform）</strong>：数据空间 <code>[0, 1000]</code> 的数值范围如何翻译到屏幕上 <code>[0, 760]</code> 的像素范围？</span><span class="en-part">A scatter plot looks simple, but it hides the core problem of visualization — <strong>Coordinate Transform</strong>: how do we map the numerical range of data space <code>[0, 1000]</code> to the pixel range of screen space <code>[0, 760]</code>?</span></p>
+        <div class="alert-box">
+          <span class="zh-part"><strong>核心问题：</strong>数据范围 <code>[0, 1000]</code> 与屏幕范围 <code>[0, 760]</code> 不一致 —— 必须用 <code>d3.scaleLinear()</code> 把前者「挤压/拉伸」到后者。</span><span class="en-part"><strong>Core Problem:</strong> The data range <code>[0, 1000]</code> does not match the screen range <code>[0, 760]</code> — we must use <code>d3.scaleLinear()</code> to "squeeze/stretch" the former into the latter.</span>
+        </div>
+        <ul class="checklist">
+          <li><span class="zh-part">X 轴：<code>murder</code> 字段，范围约 <code>[1, 10]</code> → 横向 700px</span><span class="en-part">X axis: <code>murder</code> field, range roughly <code>[1, 10]</code> → 700px wide</span></li>
+          <li><span class="zh-part">Y 轴：<code>robbery</code> 字段，范围约 <code>[20, 180]</code> → 纵向 240px（注意 Y 轴要翻转）</span><span class="en-part">Y axis: <code>robbery</code> field, range roughly <code>[20, 180]</code> → 240px tall (note: Y axis must be flipped)</span></li>
+          <li><span class="zh-part">每个点的半径可以映射到 <code>population</code>（州人口），形成气泡图</span><span class="en-part">Each point's radius can be mapped to <code>population</code> (state population), forming a bubble chart</span></li>
+        </ul>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title">读取 Crime 数据 + 定义 scale<span class="sub-en">Read Crime Data + Define Scales</span></h3>
+        <pre class="code-block"><code data-raw>d3.csv('../data/crime.csv').then(function (rows) {
+  // rows 是数组，每个元素是一个州的对象
+  // { state: 'AL', murder: '8.6', robbery: '90',
+  //   burglary: '700', theft: '2500', population: '4900' }
+
+  var M = { l: 50, r: 20, t: 30, b: 50 };
+  var W = 720, H = 280;
+
+  // X 轴：murder 谋杀率 [1, 10]
+  var sx = d3.scaleLinear()
+    .domain([1, 10])
+    .range([M.l, W - M.r]);
+
+  // Y 轴：robbery 抢劫率 [20, 180]，注意翻转
+  var sy = d3.scaleLinear()
+    .domain([20, 180])
+    .range([H - M.b, M.t]);
+
+  // 画散点：sx(8.6) → 像素 x，sy(90) → 像素 y
+  rows.forEach(function (d) {
+    d3.select('svg').append('circle')
+      .attr('cx', sx(+d.murder))
+      .attr('cy', sy(+d.robbery))
+      .attr('r', 6);
+  });
+});</code></pre>
+
+        <h3 class="sub-title">Y 轴为什么要翻转？<span class="sub-en">Why Flip the Y Axis?</span></h3>
+        <pre class="code-block"><code data-raw>// 数学坐标系：y 越大越往上
+// 屏幕坐标系：y 越大越往下
+// d3.scaleLinear().range([H - M.b, M.t]) 等价于把大值映射到小像素
+// 这样 y=180 会出现在顶部（M.t），y=20 出现在底部（H-M.b）
+// → 视觉上就和数学坐标系一致了</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+          <div class="demo-title"><span class="zh-part">Demo 4.1 · Crime 各州散点图（murder vs robbery）</span><span class="en-part">Demo 4.1 · Crime State Scatter Plot (murder vs robbery)</span></div>
+          <svg id="demo-4-1-svg" width="760" height="340"></svg>
+          <div class="demo-note"><span class="zh-part">每个圆点代表一个美国州，X=谋杀率，Y=抢劫率，半径=州人口（平方根映射）。</span><span class="en-part">Each dot represents a US state. X = murder rate, Y = robbery rate, radius = state population (square-root scale).</span></div>
+        </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-4-2">
+        <h2 class="sec-title">4.2 三层坐标变换</h2>
+        <div class="sec-subtitle">把变换拆成三层，层层可换、可调试</div>
+        <div class="sec-subtitle en">Split the transform into three swappable, debuggable layers</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">直接写一个 <code>scale = d3.scaleLinear().domain(...).range(...)</code> 虽然能跑，但后续改 margin、改坐标轴方向、加 zoom 时会牵一发动全身。</span><span class="en-part">Writing a single <code>scale = d3.scaleLinear().domain(...).range(...)</code> works, but later changes to margins, axis direction, or adding zoom will have cascading effects.</span></p>
+        <p><span class="zh-part">更好的做法是把坐标变换拆成 <strong>三层</strong>，每层只干一件事：</span><span class="en-part">A better approach is to split the coordinate transform into <strong>three layers</strong>, each doing one thing:</span></p>
+        <ul class="checklist">
+          <li><span class="zh-part"><strong>数据层 Data-scale：</strong>原始数据 → 归一化 <code>[0, 1]</code>，只关心数据本身</span><span class="en-part"><strong>Data layer (Data-scale):</strong> raw data → normalized <code>[0, 1]</code>, concerns only the data itself</span></li>
+          <li><span class="zh-part"><strong>几何层 Geometry-scale：</strong>归一化值 → 屏幕像素，处理 margin、翻转 Y 轴</span><span class="en-part"><strong>Geometry layer (Geometry-scale):</strong> normalized values → screen pixels, handles margins and Y-axis flipping</span></li>
+          <li><span class="zh-part"><strong>视图层 View-transform：</strong>SVG <code>transform</code> 属性，处理平移、旋转、缩放（zoom）</span><span class="en-part"><strong>View layer (View-transform):</strong> SVG <code>transform</code> attribute, handles translation, rotation, and zoom</span></li>
+        </ul>
+        <div class="alert-box">
+          <span class="zh-part"><strong>好处：</strong>三层解耦后，改数据范围只碰数据层，改画布尺寸只碰几何层，加交互只碰视图层。调试时每层都可以单独画出来验证。</span><span class="en-part"><strong>Benefit:</strong> With three decoupled layers, changing the data range only touches the data layer, changing canvas size only touches the geometry layer, and adding interaction only touches the view layer. Each layer can be drawn and verified independently during debugging.</span>
+        </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>// ===== 第一层：数据层 =====
+// 只管数据本身，把原值归一化到 [0, 1]
+var dataScaleX = d3.scaleLinear().domain([1, 10]).range([0, 1]);
+var dataScaleY = d3.scaleLinear().domain([20, 180]).range([0, 1]);
+
+// ===== 第二层：几何层 =====
+// 归一化值 → 屏幕像素，处理 margin 和翻转
+var geoScaleX = d3.scaleLinear().domain([0, 1]).range([M.l, W - M.r]);
+var geoScaleY = d3.scaleLinear().domain([0, 1]).range([H - M.b, M.t]);
+
+// 组合：值 → 像素
+function x(v) { return geoScaleX(dataScaleX(v)); }
+function y(v) { return geoScaleY(dataScaleY(v)); }
+
+// ===== 第三层：视图层 =====
+// SVG transform，处理整体平移、缩放、旋转
+var viewGroup = svg.append('g').attr('class', 'view-layer')
+  .attr('transform', 'translate(0,0)');
+
+// 如果要加 zoom，只改视图层
+svg.call(d3.zoom().on('zoom', function () {
+  viewGroup.attr('transform', d3.event.transform);
+}));</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+          <div class="demo-title"><span class="zh-part">Demo 4.2 · 三层坐标变换可视化（数据层 / 几何层 / 视图层）</span><span class="en-part">Demo 4.2 · Three-Layer Coordinate Transform (Data / Geometry / View)</span></div>
+          <svg id="demo-4-2-svg" width="760" height="300"></svg>
+          <div class="demo-note"><span class="zh-part">左：数据层（[0,1] 归一化空间）· 中：几何层（含 margin 的像素空间）· 右：视图层（加了 transform 平移/缩放）。</span><span class="en-part">Left: data layer ([0,1] normalized space) · Center: geometry layer (pixel space with margins) · Right: view layer (with transform translate/scale).</span></div>
+        </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-4-3">
+        <h2 class="sec-title">4.3 10 种曲线拟合</h2>
+        <div class="sec-subtitle">同一份散点，用 10 种 d3.curve* 去拟合，结果大相径庭</div>
+        <div class="sec-subtitle en">Fit the same scatter points with 10 d3.curve* generators — very different results</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">给定一组散点，我们可以用不同的曲线生成器（curve generator）连接它们。D3 内置了 <strong>10+ 种 d3.curve*</strong>，每种背后对应一种插值算法：</span><span class="en-part">Given a set of scatter points, we can connect them with different curve generators. D3 ships with <strong>10+ d3.curve*</strong> generators, each backed by a different interpolation algorithm:</span></p>
+        <ul class="checklist">
+          <li><span class="zh-part"><strong>线性 Linear：</strong>最朴素，两点之间直线</span><span class="en-part"><strong>Linear:</strong> the simplest, straight line between two points</span></li>
+          <li><span class="zh-part"><strong>Basis：</strong>B 样条，平滑但可能不经过原始点</span><span class="en-part"><strong>Basis:</strong> B-spline, smooth but may not pass through original points</span></li>
+          <li><span class="zh-part"><strong>BumpX / BumpY：</strong>光滑的凸起过渡，常用于 step 图</span><span class="en-part"><strong>BumpX / BumpY:</strong> smooth bump transitions, often used in step charts</span></li>
+          <li><span class="zh-part"><strong>Cardinal / CatmullRom：</strong>Cardinal 样条，保证经过所有控制点</span><span class="en-part"><strong>Cardinal / CatmullRom:</strong> Cardinal spline, guaranteed to pass through all control points</span></li>
+          <li><span class="zh-part"><strong>MonotoneX / MonotoneY：</strong>单调插值，不会产生不自然的震荡</span><span class="en-part"><strong>MonotoneX / MonotoneY:</strong> monotonic interpolation, no unnatural oscillation</span></li>
+          <li><span class="zh-part"><strong>Natural：</strong>自然三次样条，端点二阶导数为零</span><span class="en-part"><strong>Natural:</strong> natural cubic spline, second derivative is zero at endpoints</span></li>
+          <li><span class="zh-part"><strong>Step：</strong>阶梯函数，常量段连接</span><span class="en-part"><strong>Step:</strong> step function, connected by constant segments</span></li>
+        </ul>
+        <div class="alert-box">
+          <span class="zh-part"><strong>实践建议：</strong>折线图首选 <code>d3.curveMonotoneX</code>（不会过冲）；需要强调「经过每个点」用 <code>d3.curveCardinal</code>；柱状图的连线用 <code>d3.curveStep</code>。</span><span class="en-part"><strong>Practical Advice:</strong> For line charts, prefer <code>d3.curveMonotoneX</code> (no overshoot); when emphasizing "passing through every point", use <code>d3.curveCardinal</code>; for bar chart connectors, use <code>d3.curveStep</code>.</span>
+        </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>var points = [
+  { x: 0, y: 5 }, { x: 1, y: 9 }, { x: 2, y: 13 },
+  { x: 3, y: 14 }, { x: 4, y: 18 }, { x: 5, y: 21 },
+  { x: 6, y: 19 }, { x: 7, y: 24 }, { x: 8, y: 26 }
+];
+
+var curves = [
+  ['Linear',       d3.curveLinear],
+  ['Basis',        d3.curveBasis],
+  ['BumpX',        d3.curveBumpX],
+  ['BumpY',        d3.curveBumpY],
+  ['Cardinal',     d3.curveCardinal],
+  ['CatmullRom',   d3.curveCatmullRom],
+  ['MonotoneX',    d3.curveMonotoneX],
+  ['MonotoneY',    d3.curveMonotoneY],
+  ['Natural',      d3.curveNatural],
+  ['Step',         d3.curveStep]
+];
+
+curves.forEach(function (c) {
+  var name = c[0], curve = c[1];
+  var lineGen = d3.line()
+    .x(function (d) { return sx(d.x); })
+    .y(function (d) { return sy(d.y); })
+    .curve(curve);
+  svg.append('path')
+    .attr('d', lineGen(points))
+    .attr('fill', 'none')
+    .attr('stroke', '...')
+    .attr('data-curve', name);
+});</code></pre>
+
+        <div class="alert-box">
+          <span class="zh-part"><strong>对比：</strong>Basis 曲线<strong>不经过</strong>原始数据点（只逼近），Cardinal 和 MonotoneX <strong>必须经过</strong>每个点。拟合实验时注意这个区别。</span><span class="en-part"><strong>Comparison:</strong> The Basis curve <strong>does not pass through</strong> the original data points (it only approximates); Cardinal and MonotoneX <strong>must pass through</strong> every point. Keep this distinction in mind during fitting experiments.</span>
+        </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+          <div class="demo-title"><span class="zh-part">Demo 4.3 · 10 种 d3.curve 拟合同一组散点</span><span class="en-part">Demo 4.3 · 10 d3.curve Generators Fitting the Same Scatter Points</span></div>
+          <div class="demo-controls" id="demo-4-3-controls"></div>
+          <svg id="demo-4-3-svg" width="760" height="280"></svg>
+          <div class="demo-note"><span class="zh-part">勾选下方复选框，叠加或隐藏对应曲线。Basis 曲线不经过原始点，Cardinal/MonotoneX 必须经过。</span><span class="en-part">Check the boxes below to overlay or hide each curve. The Basis curve does not pass through original points; Cardinal/MonotoneX must pass through them.</span></div>
+        </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-4-4">
+        <h2 class="sec-title">4.4 Cleveland 45° 倾角</h2>
+        <div class="sec-subtitle">人眼对折线图斜率最敏感的角度约在 45°</div>
+        <div class="sec-subtitle en">The human eye is most sensitive to line-chart slopes near 45°</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">统计学家 William Cleveland 在 1984 年通过用户实验发现：人眼判断两条折线之间的角度差异时，当角度接近 <strong>45°</strong> 时判别力最强，过陡（>70°）或过平（<20°）都会让趋势判断失真。</span><span class="en-part">Statistician William Cleveland found in a 1984 user study that when judging the angular difference between two line charts, discrimination is strongest when the angle is near <strong>45°</strong>. Too steep (>70°) or too flat (<20°) both distort trend perception.</span></p>
+        <ul class="checklist">
+          <li><span class="zh-part"><strong>过陡：</strong>趋势被放大、噪点也被放大，微小波动看起来像大地震</span><span class="en-part"><strong>Too steep:</strong> trends and noise are both amplified; tiny fluctuations look like major shocks</span></li>
+          <li><span class="zh-part"><strong>过平：</strong>趋势被抹平、变化不可见，重要差异被压成一条线</span><span class="en-part"><strong>Too flat:</strong> trends are smoothed out, changes become invisible, and important differences collapse into a single line</span></li>
+          <li><span class="zh-part"><strong>45° 黄金区：</strong>视觉权重分配合理，人眼判别斜率最准</span><span class="en-part"><strong>45° sweet spot:</strong> visual weight is well balanced, and the human eye judges slope most accurately</span></li>
+        </ul>
+        <p><span class="zh-part">实践中，我们通过<strong>调整 Y 轴范围</strong>来把折线的平均斜率压到 45° 附近 —— 这比盲目扩大/缩小画布尺寸更科学。</span><span class="en-part">In practice, we <strong>adjust the Y-axis range</strong> to push the average slope of the lines toward 45° — this is more scientific than blindly enlarging or shrinking the canvas.</span></p>
+        <div class="alert-box">
+          <span class="zh-part"><strong>切换到演示 Tab：</strong>拖动「斜率调节」滑块，观察 Y 轴范围变化如何把一组折线从过陡调到 45° 黄金区再调到过平。</span><span class="en-part"><strong>Switch to the Demo tab:</strong> drag the "slope" slider and watch how changing the Y-axis range moves a set of lines from too steep, through the 45° sweet spot, to too flat.</span>
+        </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>// 核心思想：让 Y 轴的像素跨度和 X 轴差不多
+// 这样数据变化 1 单位，视觉上也变化差不多 1 单位 → 45°
+
+var xDomain = [0, 100];   // 时间轴：0~100 月
+var yRange  = [0, 500];   // 初始 Y 轴范围（可能过陡或过平）
+
+// 根据用户调整，动态重算 y 轴
+function adjustYAxis(targetAngle) {
+  // targetAngle 接近 45° → dy/dx ≈ 1
+  // y 的像素跨度 / x 的像素跨度 = tan(angle)
+  var xPixel = W - M.l - M.r;
+  var yPixel = xPixel * Math.tan(targetAngle * Math.PI / 180);
+
+  var yMax = d3.max(data, function (d) { return d.value; });
+  var yMin = d3.min(data, function (d) { return d.value; });
+  var yDataSpan = yMax - yMin;
+
+  // 在给定像素跨度下，Y 轴应该覆盖的数据范围
+  var yDomainSpan = yDataSpan * (yPixel / (H - M.t - M.b));
+
+  y.domain([yMin - yDomainSpan / 2 + yDataSpan / 2,
+            yMax + yDomainSpan / 2 - yDataSpan / 2]);
+  render();
+}</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+          <div class="demo-title"><span class="zh-part">Demo 4.4 · Cleveland 45° 折线（滑块调整 Y 轴范围）</span><span class="en-part">Demo 4.4 · Cleveland 45° Banking (slider adjusts Y-axis range)</span></div>
+          <div class="demo-controls">
+            <label style="font-size:12px;color:#475569;"><span class="zh-part">斜率目标角：</span><span class="en-part">Target slope angle: </span>
+              <input type="range" id="demo-4-4-slider" min="15" max="75" value="45" step="5" />
+              <span id="demo-4-4-val" style="display:inline-block;width:40px;font-weight:700;color:#2563eb;">45°</span>
+            </label>
+            <button id="demo-4-4-reset"><span class="zh-part">↺ 重置到 45°</span><span class="en-part">↺ Reset to 45°</span></button>
+          </div>
+          <svg id="demo-4-4-svg" width="760" height="300"></svg>
+          <div class="demo-note"><span class="zh-part">滑块从左往右拖动：过平 → 45° 黄金区 → 过陡。观察 Y 轴范围如何随之变化。</span><span class="en-part">Drag the slider left to right: too flat → 45° sweet spot → too steep. Watch how the Y-axis range changes accordingly.</span></div>
+        </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-4-5">
+        <h2 class="sec-title">4.5 Marching Squares 等值线</h2>
+        <div class="sec-subtitle">从规则网格标量场提取等值线的经典算法</div>
+        <div class="sec-subtitle en">A classic algorithm for extracting contour lines from a regular-grid scalar field</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">Marching Squares（行军方格）是 Lorensen &amp; Cline 在 1987 年提出的算法，最初用于医学影像的三维重建（Marching Cubes），二维版本就是 Marching Squares。</span><span class="en-part">Marching Squares is an algorithm proposed by Lorensen &amp; Cline in 1987, originally used for 3D reconstruction in medical imaging (Marching Cubes). The 2D version is Marching Squares.</span></p>
+        <p><span class="zh-part">核心思想：对一个 <strong>2×2 的方格单元</strong>，根据四个角点的值是否大于阈值，得到 2⁴ = 16 种 case，每种 case 预存了连线段的方式。遍历整个网格、拼接线段，就得到一条完整的等值线。</span><span class="en-part">Core idea: for a <strong>2×2 grid cell</strong>, based on whether each of the four corner values exceeds the threshold, there are 2⁴ = 16 cases, each with a pre-stored line-segment connection pattern. Traverse the whole grid and stitch the segments together to get a complete contour line.</span></p>
+        <ul class="checklist">
+          <li><span class="zh-part">输入：二维标量场（如高斯函数 z = e^(-x²-y²)）</span><span class="en-part">Input: 2D scalar field (e.g. Gaussian z = e^(-x²-y²))</span></li>
+          <li><span class="zh-part">处理：<code>d3.contours().size([w, h]).thresholds(n)</code></span><span class="en-part">Process: <code>d3.contours().size([w, h]).thresholds(n)</code></span></li>
+          <li><span class="zh-part">输出：GeoJSON MultiLineString，用 <code>d3.geoPath</code> 直接渲染</span><span class="en-part">Output: GeoJSON MultiLineString, rendered directly with <code>d3.geoPath</code></span></li>
+        </ul>
+        <div class="alert-box">
+          <span class="zh-part"><strong>D3 实现：</strong><code>d3.contours</code> 已经封装了 Marching Squares 算法，阈值数组决定了等值线的数量和位置。配合 <code>d3.interpolateViridis</code> 可画出漂亮的彩色等值线图。</span><span class="en-part"><strong>D3 Implementation:</strong> <code>d3.contours</code> already wraps the Marching Squares algorithm; the threshold array determines the number and position of contour lines. Combined with <code>d3.interpolateViridis</code>, you can draw beautiful colored contour plots.</span>
+        </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>// 1) 生成二维标量场（以高斯函数为例）
+var n = 80, m = 40;
+var values = new Array(n * m);
+var cx = n / 2, cy = m / 2, sigma = 12;
+
+for (var j = 0; j < m; j++) {
+  for (var i = 0; i < n; i++) {
+    var dx = i - cx, dy = j - cy;
+    values[j * n + i] = Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma));
+  }
+}
+
+// 2) d3.contours —— Marching Squares 实现
+var contours = d3.contours()
+  .size([n, m])
+  .thresholds(d3.range(0.05, 0.95, 0.05))(values);
+
+// 3) d3.geoPath 渲染 GeoJSON MultiLineString
+var pathGen = d3.geoPath();
+var colorScale = d3.scaleSequential(d3.interpolateViridis)
+  .domain([0, 1]);
+
+svg.append('g').selectAll('path')
+  .data(contours).enter().append('path')
+  .attr('d', pathGen)
+  .attr('fill', 'none')
+  .attr('stroke', function (d) { return colorScale(d.value); })
+  .attr('stroke-width', 1.2);</code></pre>
+
+        <div class="alert-box">
+          <span class="zh-part"><strong>16 种 Case：</strong>每个 2×2 方格根据四角二进制值（0/1）决定连哪条对角线。d3.contours 内部已经处理了这些边界情况和 saddle point 歧义。</span><span class="en-part"><strong>16 Cases:</strong> Each 2×2 cell decides which diagonal to connect based on the four corner binary values (0/1). <code>d3.contours</code> already handles these edge cases and saddle-point ambiguities internally.</span>
+        </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+          <div class="demo-title"><span class="zh-part">Demo 4.5 · Marching Squares 高斯场等值线</span><span class="en-part">Demo 4.5 · Marching Squares Contours on a Gaussian Field</span></div>
+          <svg id="demo-4-5-svg" width="760" height="320"></svg>
+          <div class="demo-note"><span class="zh-part">二维高斯函数 z = e^(-(x-x₀)²-(y-y₀)²) 生成的标量场，20 条等值线按 Viridis 色阶着色。</span><span class="en-part">A scalar field generated by the 2D Gaussian z = e^(-(x-x₀)²-(y-y₀)²), with 20 contour lines colored by the Viridis scale.</span></div>
+        </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-4-extra1">
+        <h2 class="sec-title">补充：demo 集合</h2>
+        <div class="sec-subtitle">本章 8 个 demo 的索引</div>
+        <div class="sec-subtitle en">Index of the 8 demos in this chapter</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">本章在演示 Tab 中共提供 <strong>8 个 D3 demo</strong>，分别对应 5 个正节 + 3 个补充项。</span><span class="en-part">This chapter provides <strong>8 D3 demos</strong> in the Demo tab, corresponding to 5 main sections + 3 extra items.</span></p>
+        <ul class="checklist">
+          <li><span class="zh-part">4.1 Crime 各州散点图（murder vs robbery）</span><span class="en-part">4.1 Crime state scatter plot (murder vs robbery)</span></li>
+          <li><span class="zh-part">4.2 三层坐标变换可视化（数据层 / 几何层 / 视图层三图并排）</span><span class="en-part">4.2 Three-layer coordinate transform visualization (data / geometry / view side by side)</span></li>
+          <li><span class="zh-part">4.3 10 种 d3.curve 拟合同一组散点（复选框叠加）</span><span class="en-part">4.3 10 d3.curve generators fitting the same scatter points (checkbox overlay)</span></li>
+          <li><span class="zh-part">4.4 Cleveland 45° 折线（滑块调整 Y 轴范围）</span><span class="en-part">4.4 Cleveland 45° banking line chart (slider adjusts Y-axis range)</span></li>
+          <li><span class="zh-part">4.5 Marching Squares 高斯场等值线</span><span class="en-part">4.5 Marching Squares contours on a Gaussian field</span></li>
+          <li><span class="zh-part">补充项：目录结构可视化 / markdown 结构等</span><span class="en-part">Extras: directory structure visualization / markdown structure, etc.</span></li>
+        </ul>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>// window.registerDemo 来自 main.js
+// 按 section id 注册，main.js 在切到演示 Tab 时自动懒加载
+
+window.registerDemo('sec-4-1', function () { /* demo 代码 */ });
+window.registerDemo('sec-4-2', function () { /* demo 代码 */ });
+// ... 4-3, 4-4, 4-5
+window.registerDemo('sec-4-extra1', function () { /* demo 代码 */ });
+window.registerDemo('sec-4-extra2', function () { /* demo 代码 */ });
+window.registerDemo('sec-4-extra3', function () { /* demo 代码 */ });</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+          <div class="demo-title"><span class="zh-part">Demo 索引 · 本章共 8 个 demo</span><span class="en-part">Demo Index · 8 demos in this chapter</span></div>
+          <svg id="demo-extra1-svg" width="760" height="200"></svg>
+          <div class="demo-note"><span class="zh-part">点击左侧侧边栏任意条目，跳转到对应小节查看详细讲解和代码。</span><span class="en-part">Click any item in the left sidebar to jump to the corresponding section for detailed explanation and code.</span></div>
+        </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-4-extra2">
+        <h2 class="sec-title">补充：common.demo-folder</h2>
+        <div class="sec-subtitle">章节共享资源的目录约定</div>
+        <div class="sec-subtitle en">Directory convention for shared chapter resources</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">所有章节共用一个 <code>common/demo</code> 思路：每章的 demo 自治，但可通过相对路径 <code>../data/</code> 读取共享 CSV。</span><span class="en-part">All chapters share a <code>common/demo</code> philosophy: each chapter's demos are self-contained, but can read shared CSVs via the relative path <code>../data/</code>.</span></p>
+        <ul class="checklist">
+          <li><span class="zh-part"><code>../css/style.css</code> —— 共享样式</span><span class="en-part"><code>../css/style.css</code> — shared styles</span></li>
+          <li><span class="zh-part"><code>../js/main.js</code> —— 共享交互逻辑（Tab / 目录 / demo 注册）</span><span class="en-part"><code>../js/main.js</code> — shared interaction logic (tabs / sidebar / demo registration)</span></li>
+          <li><span class="zh-part"><code>../data/crime.csv</code> —— 本章主要数据源（美国各州犯罪率）</span><span class="en-part"><code>../data/crime.csv</code> — main data source for this chapter (US state crime rates)</span></li>
+        </ul>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">&lt;!-- lesson-04/index.html 中的相对路径 --&gt;
+&lt;link rel="stylesheet" href="../css/style.css" /&gt;
+&lt;script src="../js/main.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/d3@7"&gt;&lt;/script&gt;</code></pre>
+
+        <pre class="code-block"><code data-raw">// D3 读取数据时的相对路径（基于 index.html 的位置）
+d3.csv('../data/crime.csv').then(function (rows) {
+  // rows 是美国各州犯罪率数据
+});</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+          <div class="demo-title"><span class="zh-part">目录结构可视化</span><span class="en-part">Directory Structure Visualization</span></div>
+          <svg id="demo-extra2-svg" width="760" height="180"></svg>
+          <div class="demo-note"><span class="zh-part">lesson-01 ~ lesson-06 共享 css / js / data 三个目录，本章还额外使用 data/crime.csv。</span><span class="en-part">lesson-01 ~ lesson-06 share the css / js / data directories; this chapter additionally uses data/crime.csv.</span></div>
+        </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-4-extra3">
+        <h2 class="sec-title">补充：完整讲义 markdown</h2>
+        <div class="sec-subtitle">从讲义到网页的映射</div>
+        <div class="sec-subtitle en">Mapping from lecture notes to web pages</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">课堂完整讲义以 markdown 形式提供，本页面是其可视化摘要版本。后续可引入 <code>marked.js</code> 把 <code>.md</code> 文件渲染进讲解 Tab，实现讲义 → 网页的自动生成。</span><span class="en-part">The full lecture notes are provided in markdown; this page is a visual summary version. In the future, <code>marked.js</code> can be introduced to render <code>.md</code> files into the Read tab, automating the notes → web page generation.</span></p>
+        <div class="alert-box">
+          <span class="zh-part"><strong>注意：</strong>本课程站点纯静态、无后端，所有内容均为手写 HTML + D3。</span><span class="en-part"><strong>Note:</strong> This course site is purely static with no backend; all content is hand-written HTML + D3.</span>
+        </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 引入 marked.js 渲染 markdown
+// <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+fetch('lesson-04-notes.md')
+  .then(function (r) { return r.text(); })
+  .then(function (md) {
+    document.querySelector('#sec-4-1 .sec-tab-panel[data-panel="read"]')
+      .innerHTML = marked.parse(md);
+  });</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+          <div class="demo-title"><span class="zh-part">Markdown 结构示意</span><span class="en-part">Markdown Structure Illustration</span></div>
+          <svg id="demo-extra3-svg" width="760" height="180"></svg>
+          <div class="demo-note"><span class="zh-part">讲义 markdown 按 ## 小节切分，可自动映射为页面 section。</span><span class="en-part">Lecture markdown is split by ## sections and can be automatically mapped to page sections.</span></div>
+        </div>
+        </div>
+      </section>
+</main>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+
+/* ============================================================
+ * Demo 4.1：Crime 各州散点图（murder vs robbery）
+ * ============================================================ */
+window.registerDemo('sec-4-1', function () {
+  var svg = d3.select('#demo-4-1-svg');
+  var W = 760, H = 340;
+  var M = { l: 60, r: 30, t: 30, b: 60 };
+
+  var crimeData = [
+    { state: 'AL', murder: 8.6, robbery: 90, pop: 4900 },
+    { state: 'AK', murder: 9.0, robbery: 80, pop: 730 },
+    { state: 'AZ', murder: 7.5, robbery: 110, pop: 7000 },
+    { state: 'AR', murder: 7.8, robbery: 90, pop: 3000 },
+    { state: 'CA', murder: 6.0, robbery: 180, pop: 39500 },
+    { state: 'CO', murder: 4.5, robbery: 75, pop: 5800 },
+    { state: 'CT', murder: 3.0, robbery: 90, pop: 3500 },
+    { state: 'DE', murder: 4.5, robbery: 80, pop: 980 },
+    { state: 'FL', murder: 7.5, robbery: 150, pop: 21500 },
+    { state: 'GA', murder: 7.5, robbery: 95, pop: 10700 },
+    { state: 'HI', murder: 2.5, robbery: 40, pop: 1420 },
+    { state: 'ID', murder: 2.0, robbery: 20, pop: 1800 },
+    { state: 'IL', murder: 6.5, robbery: 150, pop: 12700 },
+    { state: 'IN', murder: 6.0, robbery: 75, pop: 6700 },
+    { state: 'IA', murder: 1.5, robbery: 30, pop: 3160 },
+    { state: 'KS', murder: 3.5, robbery: 50, pop: 2940 },
+    { state: 'KY', murder: 5.0, robbery: 60, pop: 4490 },
+    { state: 'LA', murder: 10.0, robbery: 120, pop: 4650 },
+    { state: 'ME', murder: 1.5, robbery: 20, pop: 1360 },
+    { state: 'MD', murder: 7.5, robbery: 160, pop: 6050 },
+    { state: 'MI', murder: 6.2, robbery: 110, pop: 10000 }
+  ];
+
+  var sx = d3.scaleLinear()
+    .domain([0, d3.max(crimeData, function (d) { return d.murder; }) + 1])
+    .range([M.l, W - M.r]);
+  var sy = d3.scaleLinear()
+    .domain([0, d3.max(crimeData, function (d) { return d.robbery; }) + 10])
+    .range([H - M.b, M.t]);
+  var sr = d3.scaleSqrt()
+    .domain([0, d3.max(crimeData, function (d) { return d.pop; })])
+    .range([4, 20]);
+
+  svg.append('g').attr('class', 'axis')
+    .attr('transform', 'translate(0,' + (H - M.b) + ')')
+    .call(d3.axisBottom(sx));
+  svg.append('g').attr('class', 'axis')
+    .attr('transform', 'translate(' + M.l + ',0)')
+    .call(d3.axisLeft(sy));
+
+  svg.append('text').attr('x', W / 2).attr('y', H - 15)
+    .attr('text-anchor', 'middle').attr('font-size', 12).attr('fill', '#64748b')
+    .text('Murder Rate (per 100k)');
+  svg.append('text').attr('transform', 'rotate(-90)')
+    .attr('x', -(H / 2)).attr('y', 18)
+    .attr('text-anchor', 'middle').attr('font-size', 12).attr('fill', '#64748b')
+    .text('Robbery Rate (per 100k)');
+
+  var circles = svg.selectAll('circle.pt').data(crimeData).enter().append('circle')
+    .attr('class', 'pt')
+    .attr('cx', function (d) { return sx(d.murder); })
+    .attr('cy', function (d) { return sy(d.robbery); })
+    .attr('r', function (d) { return sr(d.pop); })
+    .attr('fill', '#60a5fa')
+    .attr('fill-opacity', 0.6)
+    .attr('stroke', '#1d4ed8')
+    .attr('stroke-width', 1)
+    .append('title').text(function (d) {
+      return d.state + ' · Murder=' + d.murder + ' · Robbery=' + d.robbery + 'k · Pop=' + d.pop + 'k';
+    });
+
+  svg.selectAll('text.lbl').data(crimeData).enter().append('text')
+    .attr('class', 'lbl')
+    .attr('x', function (d) { return sx(d.murder) + sr(d.pop) + 3; })
+    .attr('y', function (d) { return sy(d.robbery) + 3; })
+    .attr('font-size', 10).attr('fill', '#475569')
+    .text(function (d) { return d.state; });
+});
+
+/* ============================================================
+ * Demo 4.2：三层坐标变换可视化
+ * ============================================================ */
+window.registerDemo('sec-4-2', function () {
+  var t = window.getI18n && window.getI18n();
+  var svg = d3.select('#demo-4-2-svg');
+  var W = 760, H = 300;
+  var panelW = (W - 40) / 3;
+  var panelH = H - 50;
+  var M = { l: 40, r: 10, t: 40, b: 30 };
+
+  var rawData = [
+    { x: 2.5, y: 110 }, { x: 5.0, y: 150 }, { x: 7.5, y: 80 },
+    { x: 4.0, y: 130 }, { x: 9.0, y: 170 }, { x: 1.5, y: 40 }
+  ];
+
+  var dataScaleX = d3.scaleLinear().domain([0, 10]).range([0, 1]);
+  var dataScaleY = d3.scaleLinear().domain([0, 200]).range([0, 1]);
+  var geoScaleX = d3.scaleLinear().domain([0, 1]).range([M.l, panelW - M.r]);
+  var geoScaleY = d3.scaleLinear().domain([0, 1]).range([panelH - M.b, M.t]);
+
+  // Panel 1：数据层
+  var p1 = svg.append('g').attr('transform', 'translate(0,0)');
+  p1.append('text').attr('x', panelW / 2).attr('y', 20)
+    .attr('text-anchor', 'middle').attr('font-size', 12).attr('font-weight', 600)
+    .attr('fill', '#ef4444').text(t.l4_d2_p1_title);
+
+  var p1g = p1.append('g').attr('transform', 'translate(0,30)');
+  p1g.append('rect').attr('x', M.l).attr('y', M.t)
+    .attr('width', panelW - M.l - M.r).attr('height', panelH - M.t - M.b)
+    .attr('fill', '#fef2f2').attr('stroke', '#fecaca').attr('stroke-dasharray', '4,3');
+  p1g.selectAll('circle').data(rawData).enter().append('circle')
+    .attr('cx', function (d) { return dataScaleX(d.x) * (panelW - M.l - M.r) + M.l; })
+    .attr('cy', function (d) { return (1 - dataScaleY(d.y)) * (panelH - M.t - M.b) + M.t; })
+    .attr('r', 5).attr('fill', '#ef4444');
+  p1g.append('text').attr('x', panelW / 2).attr('y', panelH - 5)
+    .attr('text-anchor', 'middle').attr('font-size', 10).attr('fill', '#94a3b8')
+    .text(t.l4_d2_p1_note);
+
+  // Panel 2：几何层
+  var p2 = svg.append('g').attr('transform', 'translate(' + panelW + ',0)');
+  p2.append('text').attr('x', panelW / 2).attr('y', 20)
+    .attr('text-anchor', 'middle').attr('font-size', 12).attr('font-weight', 600)
+    .attr('fill', '#2563eb').text(t.l4_d2_p2_title);
+
+  var p2g = p2.append('g').attr('transform', 'translate(0,30)');
+  p2g.append('rect').attr('x', 0).attr('y', 0)
+    .attr('width', panelW - M.r).attr('height', panelH)
+    .attr('fill', '#eff6ff').attr('stroke', '#bfdbfe');
+  p2g.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (panelH - M.b) + ')')
+    .call(d3.axisBottom(d3.scaleLinear().range([M.l, panelW - M.r])).ticks(4));
+  p2g.append('g').attr('class', 'axis').attr('transform', 'translate(' + M.l + ',0)')
+    .call(d3.axisLeft(d3.scaleLinear().range([panelH - M.b, M.t])).ticks(4));
+  p2g.selectAll('circle').data(rawData).enter().append('circle')
+    .attr('cx', function (d) { return geoScaleX(dataScaleX(d.x)); })
+    .attr('cy', function (d) { return geoScaleY(dataScaleY(d.y)); })
+    .attr('r', 5).attr('fill', '#2563eb');
+
+  // Panel 3：视图层（整体平移 + 缩放）
+  var p3 = svg.append('g').attr('transform', 'translate(' + (panelW * 2) + ',0)');
+  p3.append('text').attr('x', panelW / 2).attr('y', 20)
+    .attr('text-anchor', 'middle').attr('font-size', 12).attr('font-weight', 600)
+    .attr('fill', '#10b981').text(t.l4_d2_p3_title);
+
+  var viewLayer = p3.append('g').attr('transform', 'translate(' + 20 + ',30)');
+  viewLayer.append('rect').attr('x', 0).attr('y', 0)
+    .attr('width', panelW - M.r - 20).attr('height', panelH)
+    .attr('fill', '#ecfdf5').attr('stroke', '#a7f3d0');
+
+  var innerG = viewLayer.append('g').attr('transform', 'translate(0,0) scale(0.85)');
+  innerG.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (panelH - M.b) + ')')
+    .call(d3.axisBottom(d3.scaleLinear().range([M.l, panelW - M.r])).ticks(4));
+  innerG.append('g').attr('class', 'axis').attr('transform', 'translate(' + M.l + ',0)')
+    .call(d3.axisLeft(d3.scaleLinear().range([panelH - M.b, M.t])).ticks(4));
+  innerG.selectAll('circle').data(rawData).enter().append('circle')
+    .attr('cx', function (d) { return geoScaleX(dataScaleX(d.x)); })
+    .attr('cy', function (d) { return geoScaleY(dataScaleY(d.y)); })
+    .attr('r', 6).attr('fill', '#10b981');
+});
+
+/* ============================================================
+ * Demo 4.3：10 种 d3.curve 拟合
+ * ============================================================ */
+window.registerDemo('sec-4-3', function () {
+  var svg = d3.select('#demo-4-3-svg');
+  var W = 760, H = 280;
+  var M = { l: 50, r: 20, t: 25, b: 45 };
+
+  var points = [
+    { x: 0, y: 5 }, { x: 1, y: 9 }, { x: 2, y: 13 },
+    { x: 3, y: 14 }, { x: 4, y: 18 }, { x: 5, y: 21 },
+    { x: 6, y: 19 }, { x: 7, y: 24 }, { x: 8, y: 26 }
+  ];
+
+  var sx = d3.scaleLinear().domain([0, 8]).range([M.l, W - M.r]);
+  var sy = d3.scaleLinear().domain([0, 30]).range([H - M.b, M.t]);
+
+  svg.append('g').attr('class', 'axis')
+    .attr('transform', 'translate(0,' + (H - M.b) + ')').call(d3.axisBottom(sx));
+  svg.append('g').attr('class', 'axis')
+    .attr('transform', 'translate(' + M.l + ',0)').call(d3.axisLeft(sy).ticks(5));
+
+  var curves = [
+    ['Linear',     d3.curveLinear,     '#ef4444'],
+    ['Basis',      d3.curveBasis,      '#f97316'],
+    ['BumpX',      d3.curveBumpX,      '#eab308'],
+    ['BumpY',      d3.curveBumpY,      '#84cc16'],
+    ['Cardinal',   d3.curveCardinal,   '#22c55e'],
+    ['CatmullRom', d3.curveCatmullRom, '#14b8a6'],
+    ['MonotoneX',  d3.curveMonotoneX,  '#3b82f6'],
+    ['MonotoneY',  d3.curveMonotoneY,  '#6366f1'],
+    ['Natural',    d3.curveNatural,    '#a855f7'],
+    ['Step',       d3.curveStep,       '#ec4899']
+  ];
+
+  svg.selectAll('circle.pt').data(points).enter().append('circle')
+    .attr('class', 'pt')
+    .attr('cx', function (d) { return sx(d.x); })
+    .attr('cy', function (d) { return sy(d.y); })
+    .attr('r', 4).attr('fill', '#1f2937')
+    .attr('stroke', '#fff').attr('stroke-width', 1);
+
+  var controls = document.getElementById('demo-4-3-controls');
+  var pathEls = {};
+  curves.forEach(function (c) {
+    var line = d3.line()
+      .x(function (d) { return sx(d.x); })
+      .y(function (d) { return sy(d.y); })
+      .curve(c[1]);
+    var p = svg.append('path').attr('d', line(points))
+      .attr('fill', 'none')
+      .attr('stroke', c[2]).attr('stroke-width', 2)
+      .attr('opacity', 0).style('display', 'none');
+    pathEls[c[0]] = p;
+
+    var lbl = document.createElement('label');
+    lbl.style.fontSize = '12px';
+    lbl.style.color = c[2];
+    lbl.style.marginRight = '10px';
+    lbl.innerHTML = '<input type="checkbox" data-curve="' + c[0] + '" style="margin-right:3px"> ' + c[0];
+    controls.appendChild(lbl);
+  });
+
+  controls.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      var p = pathEls[cb.dataset.curve];
+      if (cb.checked) {
+        p.style('display', null).transition().duration(300).attr('opacity', 0.9);
+      } else {
+        p.transition().duration(200).attr('opacity', 0)
+          .on('end', function () { d3.select(this).style('display', 'none'); });
+      }
+    });
+  });
+
+  controls.querySelectorAll('input[type=checkbox]')[0].click();
+  controls.querySelectorAll('input[type=checkbox]')[6].click();
+  controls.querySelectorAll('input[type=checkbox]')[8].click();
+});
+
+/* ============================================================
+ * Demo 4.4：Cleveland 45° 折线
+ * ============================================================ */
+window.registerDemo('sec-4-4', function () {
+  var svg = d3.select('#demo-4-4-svg');
+  var W = 760, H = 300;
+  var M = { l: 55, r: 20, t: 25, b: 50 };
+
+  var series = [
+    { name: 'A', color: '#ef4444', values: [20, 28, 35, 32, 45, 52, 48, 55, 60, 65, 70, 72, 78, 82, 88] },
+    { name: 'B', color: '#2563eb', values: [10, 15, 22, 28, 30, 35, 42, 48, 55, 58, 62, 68, 70, 75, 80] },
+    { name: 'C', color: '#10b981', values: [30, 32, 38, 45, 50, 48, 55, 60, 58, 65, 72, 78, 75, 82, 88] }
+  ];
+
+  var n = series[0].values.length;
+  var xData = d3.range(n);
+  var sx = d3.scaleLinear().domain([0, n - 1]).range([M.l, W - M.r]);
+
+  var yBase = d3.scaleLinear().domain([0, 100]).range([H - M.b, M.t]);
+  var yActual = yBase;
+
+  svg.append('g').attr('class', 'axis')
+    .attr('transform', 'translate(0,' + (H - M.b) + ')')
+    .call(d3.axisBottom(sx).ticks(n - 1).tickFormat(function (d) { return 'W' + d; }));
+
+  var yAxisG = svg.append('g').attr('class', 'axis')
+    .attr('transform', 'translate(' + M.l + ',0)')
+    .call(d3.axisLeft(yActual));
+
+  var pathGroup = svg.append('g');
+
+  function renderLines() {
+    pathGroup.selectAll('*').remove();
+    series.forEach(function (s) {
+      var lineGen = d3.line()
+        .x(function (d, i) { return sx(xData[i]); })
+        .y(function (d) { return yActual(d); })
+        .curve(d3.curveMonotoneX);
+      pathGroup.append('path')
+        .datum(s.values)
+        .attr('d', lineGen)
+        .attr('fill', 'none')
+        .attr('stroke', s.color).attr('stroke-width', 2);
+
+      s.values.forEach(function (v, i) {
+        pathGroup.append('circle')
+          .attr('cx', sx(xData[i])).attr('cy', yActual(v))
+          .attr('r', 3).attr('fill', s.color).attr('stroke', '#fff').attr('stroke-width', 1);
+      });
+
+      pathGroup.append('text')
+        .attr('x', sx(xData[n - 1]) + 6)
+        .attr('y', yActual(s.values[n - 1]))
+        .attr('font-size', 11).attr('fill', s.color).attr('font-weight', 600)
+        .text(s.name);
+    });
+  }
+
+  function adjustYForAngle(angleDeg) {
+    var yPixel = H - M.t - M.b;
+    var xPixel = W - M.l - M.r;
+    var ratio = xPixel / Math.tan(angleDeg * Math.PI / 180);
+    var oldRange = yBase.range();
+    yActual = d3.scaleLinear().domain([0, 100])
+      .range([oldRange[1] + (oldRange[0] - oldRange[1]) * (yPixel / ratio), oldRange[1]]);
+    yAxisG.call(d3.axisLeft(yActual));
+    renderLines();
+  }
+
+  renderLines();
+
+  var slider = document.getElementById('demo-4-4-slider');
+  var valEl = document.getElementById('demo-4-4-val');
+  var resetBtn = document.getElementById('demo-4-4-reset');
+
+  slider.addEventListener('input', function () {
+    var v = +slider.value;
+    valEl.textContent = v + '°';
+    adjustYForAngle(v);
+  });
+  resetBtn.addEventListener('click', function () {
+    slider.value = 45;
+    valEl.textContent = '45°';
+    adjustYForAngle(45);
+  });
+});
+
+/* ============================================================
+ * Demo 4.5：Marching Squares 高斯场等值线
+ * ============================================================ */
+window.registerDemo('sec-4-5', function () {
+  var svg = d3.select('#demo-4-5-svg');
+  var W = 760, H = 320;
+  var n = 100, m = 40;
+
+  var values = new Array(n * m);
+  var cx = n / 2, cy = m / 2;
+  var sigma1 = 15, sigma2 = 12;
+  var cx2 = n * 0.75, cy2 = m * 0.65;
+
+  for (var j = 0; j < m; j++) {
+    for (var i = 0; i < n; i++) {
+      var dx1 = i - cx, dy1 = j - cy;
+      var g1 = Math.exp(-(dx1 * dx1 + dy1 * dy1) / (2 * sigma1 * sigma1));
+      var dx2 = i - cx2, dy2 = j - cy2;
+      var g2 = 0.7 * Math.exp(-(dx2 * dx2 + dy2 * dy2) / (2 * sigma2 * sigma2));
+      values[j * n + i] = g1 + g2;
+    }
+  }
+
+  var thresholds = d3.range(0.05, 1.6, 0.06);
+  var contours = d3.contours().size([n, m]).thresholds(thresholds)(values);
+
+  var xScale = d3.scaleLinear().domain([0, n]).range([20, W - 20]);
+  var yScale = d3.scaleLinear().domain([0, m]).range([H - 20, 20]);
+  var pathGen = d3.geoPath();
+
+  var transform = d3.geoIdentity()
+    .scale(1).translate([0, 0]);
+
+  var g = svg.append('g');
+  g.selectAll('path').data(contours).enter().append('path')
+    .attr('transform', function (d) {
+      return 'translate(20,' + 20 + ') scale(' + ((W - 40) / n) + ',' + ((H - 40) / m) + ')';
+    })
+    .attr('d', pathGen)
+    .attr('fill', 'none')
+    .attr('stroke', function (d) {
+      var t = d3.min([d.value / 1.6, 1]);
+      return d3.interpolateViridis(t);
+    })
+    .attr('stroke-width', 1.2)
+    .attr('opacity', 0.85);
+
+  svg.append('rect').attr('x', 20).attr('y', 20)
+    .attr('width', W - 40).attr('height', H - 40)
+    .attr('fill', 'none').attr('stroke', '#cbd5e1');
+
+  var legendW = 120, legendH = 12;
+  var legendG = svg.append('g').attr('transform', 'translate(' + (W - legendW - 20) + ',35)');
+  var defs = svg.append('defs');
+  var grad = defs.append('linearGradient').attr('id', 'viridis-grad');
+  grad.append('stop').attr('offset', '0%').attr('stop-color', d3.interpolateViridis(0));
+  grad.append('stop').attr('offset', '50%').attr('stop-color', d3.interpolateViridis(0.5));
+  grad.append('stop').attr('offset', '100%').attr('stop-color', d3.interpolateViridis(1));
+  legendG.append('rect').attr('width', legendW).attr('height', legendH)
+    .attr('fill', 'url(#viridis-grad)');
+  legendG.append('text').attr('x', 0).attr('y', legendH + 12)
+    .attr('font-size', 10).attr('fill', '#64748b').text('0');
+  legendG.append('text').attr('x', legendW).attr('y', legendH + 12)
+    .attr('font-size', 10).attr('fill', '#64748b').attr('text-anchor', 'end').text('1.6');
+});
+
+/* ============================================================
+ * Demo 补充1：demo 集合索引
+ * ============================================================ */
+window.registerDemo('sec-4-extra1', function () {
+  var t = window.getI18n && window.getI18n();
+  var svg = d3.select('#demo-extra1-svg');
+  var W = 760, H = 200;
+
+  var items = [
+    { no: '4.1', label: t.l4_e1_l1 },
+    { no: '4.2', label: t.l4_e1_l2 },
+    { no: '4.3', label: t.l4_e1_l3 },
+    { no: '4.4', label: t.l4_e1_l4 },
+    { no: '4.5', label: t.l4_e1_l5 },
+    { no: 'ex',  label: t.l4_e1_l6 },
+    { no: 'md',  label: t.l4_e1_l7 }
+  ];
+
+  var g = svg.selectAll('g.item').data(items).enter().append('g')
+    .attr('class', 'item')
+    .attr('transform', function (d, i) {
+      return 'translate(' + (30 + i * 102) + ',25)';
+    });
+
+  g.append('rect').attr('width', 92).attr('height', 150)
+    .attr('rx', 8).attr('fill', '#f1f5f9').attr('stroke', '#e2e8f0');
+
+  g.append('text').attr('x', 46).attr('y', 50)
+    .attr('text-anchor', 'middle').attr('font-size', 20).attr('font-weight', 700)
+    .attr('fill', '#2563eb').text(function (d) { return d.no; });
+
+  g.append('text').attr('x', 46).attr('y', 78)
+    .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#475569')
+    .text(function (d) { return d.label; });
+
+  g.append('circle').attr('cx', 46).attr('cy', 108).attr('r', 10)
+    .attr('fill', '#10b981');
+  g.append('text').attr('x', 46).attr('y', 112)
+    .attr('text-anchor', 'middle').attr('font-size', 12).attr('fill', '#fff')
+    .text('▶');
+});
+
+/* ============================================================
+ * Demo 补充2：common.demo-folder 目录结构
+ * ============================================================ */
+window.registerDemo('sec-4-extra2', function () {
+  var t = window.getI18n && window.getI18n();
+  var svg = d3.select('#demo-extra2-svg');
+  var W = 760, H = 180;
+
+  var root = svg.append('g').attr('transform', 'translate(30,20)');
+  root.append('rect').attr('width', 700).attr('height', 50)
+    .attr('rx', 6).attr('fill', '#1e293b');
+  root.append('text').attr('x', 20).attr('y', 30)
+    .attr('font-size', 13).attr('font-weight', 600).attr('fill', '#fbbf24')
+    .text('📁 vis-course/');
+
+  var folders = [
+    { name: 'lesson-04/', color: '#2563eb' },
+    { name: 'lesson-05/', color: '#2563eb' },
+    { name: 'lesson-06/', color: '#2563eb' },
+    { name: 'css/',       color: '#10b981' },
+    { name: 'js/',        color: '#10b981' },
+    { name: 'data/',      color: '#10b981' }
+  ];
+
+  var fG = root.selectAll('g.f').data(folders).enter().append('g')
+    .attr('class', 'f')
+    .attr('transform', function (d, i) {
+      return 'translate(' + (10 + i * 115) + ',75)';
+    });
+
+  fG.append('rect').attr('width', 105).attr('height', 80)
+    .attr('rx', 6).attr('fill', '#f8fafc').attr('stroke', '#e2e8f0');
+
+  fG.append('text').attr('x', 52).attr('y', 45)
+    .attr('text-anchor', 'middle').attr('font-size', 14).attr('font-weight', 600)
+    .attr('fill', function (d) { return d.color; })
+    .text(function (d) { return d.name; });
+
+  svg.append('text').attr('x', 30).attr('y', H - 15)
+    .attr('font-size', 11).attr('fill', '#94a3b8')
+    .text(t.l4_e2_note);
+});
+
+/* ============================================================
+ * Demo 补充3：完整讲义 markdown 结构
+ * ============================================================ */
+window.registerDemo('sec-4-extra3', function () {
+  var t = window.getI18n && window.getI18n();
+  var svg = d3.select('#demo-extra3-svg');
+  var W = 760, H = 180;
+
+  var mdItems = [
+    { mark: '#',  label: t.l4_e3_md1 },
+    { mark: '##', label: t.l4_e3_md2 },
+    { mark: '##', label: t.l4_e3_md3 },
+    { mark: '##', label: t.l4_e3_md4 },
+    { mark: '##', label: t.l4_e3_md5 },
+    { mark: '##', label: t.l4_e3_md6 },
+    { mark: '##', label: t.l4_e3_md7 }
+  ];
+
+  var g = svg.append('g').attr('transform', 'translate(30,15)');
+  g.append('rect').attr('width', 700).attr('height', 155)
+    .attr('rx', 8).attr('fill', '#0f172a');
+
+  var items = g.selectAll('g.md').data(mdItems).enter().append('g')
+    .attr('transform', function (d, i) {
+      return 'translate(20,' + (18 + i * 18) + ')';
+    });
+
+  items.append('text').attr('font-size', 12)
+    .attr('fill', function (d) { return d.mark === '#' ? '#fbbf24' : '#60a5fa'; })
+    .attr('font-weight', function (d) { return d.mark === '#' ? 700 : 400; })
+    .text(function (d) { return d.label; });
+
+  svg.append('text').attr('x', 30).attr('y', H - 10)
+    .attr('font-size', 11).attr('fill', '#94a3b8')
+    .text(t.l4_e3_note);
+});
+
+/* 语言切换时重渲染包含中文文本的 demo */
+document.addEventListener('langchange', function () {
+  window.rerunDemo && window.rerunDemo('sec-4-2');
+  window.rerunDemo && window.rerunDemo('sec-4-extra1');
+  window.rerunDemo && window.rerunDemo('sec-4-extra2');
+  window.rerunDemo && window.rerunDemo('sec-4-extra3');
+});
+
+</script>
+</body>
+</html>

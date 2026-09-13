@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>第5章 时序数据可视化 · 数据可视化课程</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="site-nav">
+    <div class="nav-inner">
+      <span class="brand">📊 DV 课程</span>
+      <a class="nav-item" data-key="home" href="../index.html">课程门户</a>
+      <a class="nav-item" data-key="lesson-01" href="../lesson-01/index.html">第1章·数据</a>
+      <a class="nav-item" data-key="lesson-02" href="../lesson-02/index.html">第2章·数据可视化流程</a>
+      <a class="nav-item" data-key="lesson-03" href="../lesson-03/index.html">第3章·色彩专题</a>
+      <a class="nav-item" data-key="lesson-04" href="../lesson-04/index.html">第4章·低维可视化</a>
+      <a class="nav-item" data-key="lesson-05" href="../lesson-05/index.html">第5章·时序可视化</a>
+      <a class="nav-item" data-key="lesson-06" href="../lesson-06/index.html">第6章·网页页面布局</a>
+    </div>
+  </header>
+
+  <div class="lesson-layout">
+    <aside class="lesson-sidebar">
+      <div class="side-title">本章目录</div>
+      <a class="side-link active" data-target="sec-5-1" href="#sec-5-1"><span class="zh-part">5.1 5 个时间属性</span><span class="en-part">5.1 Five Time Attributes</span></a>
+      <a class="side-link" data-target="sec-5-2" href="#sec-5-2"><span class="zh-part">5.2 法国人名时间序列</span><span class="en-part">5.2 French Name Time Series</span></a>
+      <a class="side-link" data-target="sec-5-3" href="#sec-5-3"><span class="zh-part">5.3 van Wijk 日历热图</span><span class="en-part">5.3 van Wijk Calendar Heatmap</span></a>
+      <a class="side-link" data-target="sec-5-4" href="#sec-5-4"><span class="zh-part">5.4 阿基米德螺旋日历</span><span class="en-part">5.4 Archimedean Spiral Calendar</span></a>
+      <a class="side-link" data-target="sec-5-5" href="#sec-5-5"><span class="zh-part">5.5 Storyline 故事线</span><span class="en-part">5.5 Storyline</span></a>
+      <div class="side-group">
+        <div class="side-sub"><span class="zh-part">补充</span><span class="en-part">Extras</span></div>
+        <a class="side-link" data-target="sec-5-extra1" href="#sec-5-extra1"><span class="zh-part">补充 demo 集合</span><span class="en-part">Demo Collection</span></a>
+        <a class="side-link" data-target="sec-5-extra2" href="#sec-5-extra2"><span class="zh-part">common.demo-folder</span><span class="en-part">common.demo-folder</span></a>
+        <a class="side-link" data-target="sec-5-extra3" href="#sec-5-extra3"><span class="zh-part">完整讲义 markdown</span><span class="en-part">Full Lecture Notes (markdown)</span></a>
+      </div>
+    </aside>
+
+    <main class="lesson-main">
+      <section class="lesson-section" id="sec-5-1">
+        <h2 class="sec-title">5.1 5 个时间属性</h2>
+          <div class="sec-subtitle">Time as Data —— 时刻 / 时长 / 间隔 / 集合 / 序</div>
+          <div class="sec-subtitle en">Time as Data — Instant / Duration / Interval / Set / Order</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">时间不只是「年月日」。在做时序可视化前，必须先把数据拆成 5 个时间属性。不同属性适配不同图表——选错了属性映射，图形就会别扭。</span><span class="en-part">Time is more than just "year/month/day". Before visualizing time-series data, you must first decompose the data into 5 time attributes. Different attributes suit different charts — choosing the wrong attribute mapping makes the visualization awkward.</span></p>
+          <ul class="checklist">
+            <li><strong><span class="zh-part">时刻 Instant：</span><span class="en-part">Instant:</span></strong><span class="zh-part">某一瞬间的事件（如地震发生时间、点击时刻）→ 适合用点、圆点、事件标记</span><span class="en-part">an event at a single moment (e.g., earthquake time, click timestamp) → suited for points, dots, event markers</span></li>
+            <li><strong><span class="zh-part">时长 Duration：</span><span class="en-part">Duration:</span></strong><span class="zh-part">区间的长度（如通话持续 3 分 20 秒）→ 适合用条形、长度编码</span><span class="en-part">the length of an interval (e.g., a call lasts 3 min 20 sec) → suited for bars, length encoding</span></li>
+            <li><strong><span class="zh-part">间隔 Interval：</span><span class="en-part">Interval:</span></strong>起止时刻对 <code>[start, end]</code><span class="zh-part">（如会议 09:00–10:30）→ 适合用区间条、甘特图</span><span class="en-part"> (e.g., a meeting 09:00–10:30) → suited for interval bars, Gantt charts</span></li>
+            <li><strong><span class="zh-part">集合 Set：</span><span class="en-part">Set:</span></strong><span class="zh-part">无序的时刻集（如一年内所有感冒发烧的日子）→ 适合用日历热图、点图</span><span class="en-part">an unordered collection of instants (e.g., all days with fever in a year) → suited for calendar heatmaps, dot plots</span></li>
+            <li><strong><span class="zh-part">序 Order：</span><span class="en-part">Order:</span></strong><span class="zh-part">带先后关系的序列（如排名随年份变化、剧情线）→ 适合用折线、Storyline</span><span class="en-part">a sequence with ordering (e.g., ranking over years, plot lines) → suited for line charts, Storyline</span></li>
+          </ul>
+          <div class="alert-box">
+            <strong><span class="zh-part">核心提醒：</span><span class="en-part">Key Reminder:</span></strong><span class="zh-part">把原始时间字段映射成哪个属性，决定了你后面用什么 mark + channel。例如同样是「每天访问量」，可当作集合（日历热图）也可当作序（折线图）—— 要看分析目标。</span><span class="en-part">Which attribute you map the raw time field to determines what mark + channel you use later. For example, the same "daily visits" can be treated as a Set (calendar heatmap) or an Order (line chart) — depending on the analysis goal.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>// 时刻 Instant：d3.scaleTime + d3.timeMillisecond
+const sx = d3.scaleTime()
+  .domain([new Date(2024, 0, 1), new Date(2025, 0, 1)])
+  .range([40, 720]);
+
+// 时长 Duration：d3.scaleTime 域为 [0, 3600000]（毫秒）
+const sDur = d3.scaleTime()
+  .domain([0, 3600000]).range([0, 200]);
+
+// 间隔 Interval：d3.timeDays / timeWeeks 生成序列
+const days = d3.timeDays(
+  new Date(2024, 0, 1),
+  new Date(2025, 0, 1)
+);
+
+// 集合 Set：日历热图用 %U 周序号 + %w 星期
+const fmtWeek = d3.timeFormat('%U');
+const fmtDow  = d3.timeFormat('%w');
+
+// 序 Order：d3.scalePoint() + padding 做槽位
+const slot = d3.scalePoint()
+  .domain(['A','B','C']).range([0, 120]).padding(0.5);
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-5-1-svg" width="760" height="220"></svg>
+            <div class="demo-note"><span class="zh-part">从左到右依次：时刻圆点、时长条、间隔区间、集合散点、序折线。分别对应不同 mark + channel。</span><span class="en-part">From left to right: instant dots, duration bar, interval ranges, set scatter, order line. Each corresponds to a different mark + channel.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-5-2">
+        <h2 class="sec-title">5.2 法国人名时间序列</h2>
+          <div class="sec-subtitle">法国 INSEE 1900–2018 新生儿姓名流行度</div>
+          <div class="sec-subtitle en">French INSEE 1900–2018 newborn name popularity</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">经典教学数据集：法国国家统计署（INSEE）发布的 1900–2018 各年份、各名字的新生儿登记数。原始形态是「长表」</span><span class="en-part">Classic teaching dataset: newborn registration counts by year and name (1900–2018) published by the French National Institute of Statistics (INSEE). The raw form is a "long table" </span><code>(year, name, gender, count)</code><span class="zh-part">，可经 <code>d3.rollup</code> 透视成宽表，直接喂给 <code>d3.line()</code>。</span><span class="en-part">, which can be pivoted to a wide table via <code>d3.rollup</code> and fed directly to <code>d3.line()</code>.</span></p>
+          <ul class="checklist">
+            <li><span class="zh-part">每条线 = 一个名字，X 轴年份、Y 轴新生儿数</span><span class="en-part">Each line = one name, X-axis = year, Y-axis = newborn count</span></li>
+            <li><span class="zh-part">峰值标注：每个名字的「流行顶点」年份</span><span class="en-part">Peak annotation: the "peak popularity" year for each name</span></li>
+            <li><span class="zh-part">整体对比：同名的「流行 → 衰退」曲线差异</span><span class="en-part">Overall comparison: differences in the "rise → decline" curves of names</span></li>
+          </ul>
+          <div class="alert-box">
+            <strong><span class="zh-part">D3 关键点：</span><span class="en-part">D3 Key Point:</span></strong><span class="zh-part">时间轴用 <code>d3.scaleTime()</code>，配合 <code>d3.timeYears</code> / <code>d3.timeDecades</code> 生成好看的刻度线。</span><span class="en-part">Use <code>d3.scaleTime()</code> for the time axis, paired with <code>d3.timeYears</code> / <code>d3.timeDecades</code> to generate nice tick lines.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>// 1) 读 CSV
+d3.csv('../data/french_names_sample.csv', d => ({
+  year: +d.year, name: d.name, gender: d.gender, count: +d.count
+})).then(raw => {
+
+  // 2) d3.group 按名字分组
+  const grouped = d3.groups(raw, d => d.name);
+
+  // 3) 多折线
+  const timeExt = d3.extent(raw, d => new Date(d.year, 0, 1));
+  const sx = d3.scaleTime().domain(timeExt).range([60, 720]);
+  const sy = d3.scaleLinear()
+    .domain([0, d3.max(raw, d => d.count) * 1.1])
+    .range([340, 40]);
+
+  const line = d3.line()
+    .x(d => sx(new Date(d.year, 0, 1)))
+    .y(d => sy(d.count))
+    .curve(d3.curveMonotoneX);
+
+  const color = d3.scaleOrdinal(d3.schemeTableau10);
+  grouped.forEach(([name, rows]) => {
+    svg.append('path')
+      .datum(rows)
+      .attr('d', line)
+      .attr('stroke', color(name))
+      .attr('fill', 'none');
+  });
+});
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-5-2-svg" width="760" height="340"></svg>
+            <div class="demo-note"><span class="zh-part">使用 <code>../data/french_names_sample.csv</code> 数据，展示 MARIE / JEAN / EMMA / LUCAS 等名字的流行趋势。</span><span class="en-part">Uses <code>../data/french_names_sample.csv</code> data, showing popularity trends for names like MARIE / JEAN / EMMA / LUCAS.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-5-3">
+        <h2 class="sec-title">5.3 van Wijk 日历热图</h2>
+          <div class="sec-subtitle">Jarke J. van Wijk 2003 —— 7×N 网格日历</div>
+          <div class="sec-subtitle en">Jarke J. van Wijk 2003 — 7×N grid calendar</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">van Wijk 在 <em>IEEE TVCG 2003</em> 提出的日历视图：把一年的所有日子排成 <strong>7 行 × 约 52 列</strong> 的网格 —— 行 = 星期几（周日到周六），列 = 第几周。每格的颜色编码当日数值（如日照、温度、PM2.5）。</span><span class="en-part">The calendar view proposed by van Wijk in <em>IEEE TVCG 2003</em>: arrange all days of a year into a grid of <strong>7 rows × ~52 columns</strong> — rows = day of week (Sunday to Saturday), columns = week number. Each cell's color encodes the day's value (e.g., sunshine, temperature, PM2.5).</span></p>
+          <ul class="checklist">
+            <li><span class="zh-part">周末效应一眼可见（周六周日列可能颜色不同）</span><span class="en-part">Weekend effect visible at a glance (Sat/Sun columns may differ in color)</span></li>
+            <li><span class="zh-part">月度模式沿列方向成块</span><span class="en-part">Monthly patterns form blocks along columns</span></li>
+            <li><span class="zh-part">年度整体分布比折线更紧凑</span><span class="en-part">Annual overall distribution is more compact than a line chart</span></li>
+          </ul>
+          <div class="alert-box">
+            <strong><span class="zh-part">D3 实现：</span><span class="en-part">D3 Implementation:</span></strong><span class="zh-part">用 <code>d3.timeDays()</code> 生成全年日期，<code>d3.timeFormat('%U')</code> 得周序号（列），<code>d3.timeFormat('%w')</code> 得星期（行），然后逐格填色。</span><span class="en-part">Use <code>d3.timeDays()</code> to generate all dates of the year, <code>d3.timeFormat('%U')</code> for week number (column), <code>d3.timeFormat('%w')</code> for weekday (row), then fill each cell with color.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>const year = 2024;
+const days = d3.timeDays(
+  new Date(year, 0, 1),
+  new Date(year + 1, 0, 1)
+);
+
+const cellW = 14, cellH = 14, pad = 2;
+const fmtWeek = d3.timeFormat('%U');
+const fmtDow  = d3.timeFormat('%w');
+
+// 假设我们有每天的数值函数 value(day)
+const color = d3.scaleSequential(d3.interpolateViridis)
+  .domain([0, 1]);
+
+svg.append('g').attr('transform', 'translate(40,20)')
+  .selectAll('rect.day').data(days).enter().append('rect')
+  .attr('class', 'day')
+  .attr('x', d => +fmtWeek(d) * (cellW + pad))
+  .attr('y', d => +fmtDow(d)  * (cellH + pad))
+  .attr('width', cellW).attr('height', cellH)
+  .attr('rx', 2)
+  .attr('fill', d => color(value(d)))
+  .append('title')
+  .text(d => d3.timeFormat('%Y-%m-%d')(d) + ': ' + value(d).toFixed(2));
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-5-3-svg" width="760" height="220"></svg>
+            <div class="demo-note"><span class="zh-part">行 = 星期几（日到六），列 = 第几周。颜色编码当日模拟数值，鼠标悬停看日期与数值。</span><span class="en-part">Rows = day of week (Sun to Sat), columns = week number. Color encodes simulated daily values; hover to see date and value.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-5-4">
+        <h2 class="sec-title">5.4 阿基米德螺旋日历</h2>
+          <div class="sec-subtitle">Polar Calendar —— 把一年卷起来</div>
+          <div class="sec-subtitle en">Polar Calendar — roll up a year</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">日历也可以从二维网格卷进极坐标。把 365 天沿阿基米德螺旋 </span><span class="en-part">A calendar can also be rolled from a 2D grid into polar coordinates. Arrange 365 days along an Archimedean spiral </span><code>r = a + b·θ</code><span class="zh-part"> 排列：从中心往外、同时顺时针旋转。同月聚集在一段弧上，相邻月在螺旋上自然衔接。</span><span class="en-part">: outward from the center while rotating clockwise. Same-month days cluster on an arc; adjacent months connect naturally on the spiral.</span></p>
+          <ul class="checklist">
+            <li><span class="zh-part">季节模式（春夏秋冬四段弧）直观可见</span><span class="en-part">Seasonal patterns (four arcs for spring/summer/autumn/winter) are intuitively visible</span></li>
+            <li><span class="zh-part">全年数值变化呈环形节奏</span><span class="en-part">Annual value changes show a circular rhythm</span></li>
+            <li><span class="zh-part">极坐标让「首尾相连」的周期性更强</span><span class="en-part">Polar coordinates strengthen the "end-to-end" periodicity</span></li>
+          </ul>
+          <div class="alert-box">
+            <strong><span class="zh-part">数学小记：</span><span class="en-part">Math Note:</span></strong><span class="zh-part">阿基米德螺旋的角速度均匀、半径也均匀递增。θ 从 0 绕 2π·k 圈（k≈8 足够铺满画布），b 控制疏密。</span><span class="en-part">The Archimedean spiral has uniform angular velocity and uniformly increasing radius. θ goes from 0 around 2π·k turns (k≈8 is enough to fill the canvas), b controls density.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>const W = 760, H = 380;
+const cx = W / 2, cy = H / 2;
+
+// 阿基米德螺旋：r = a + b·θ
+const a = 0, b = 0.08;
+const theta = d3.scaleLinear()
+  .domain([0, 365])
+  .range([0, 9 * Math.PI]);
+
+// 按月着色
+const monthColor = d3.scaleOrdinal(d3.schemeTableau10);
+
+const g = svg.append('g')
+  .attr('transform', `translate(${cx},${cy})`);
+
+for (let d = 0; d < 365; d++) {
+  const t = theta(d);
+  const r = a + b * t;
+  const px = r * Math.cos(t);
+  const py = r * Math.sin(t);
+  const month = new Date(2024, 0, 1 + d).getMonth();
+  g.append('circle')
+    .attr('cx', px).attr('cy', py)
+    .attr('r', 3)
+    .attr('fill', monthColor(month));
+}
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-5-4-svg" width="760" height="380"></svg>
+            <div class="demo-note"><span class="zh-part">极坐标变换 r = a + b·θ。同月聚集在一段弧上，季节节奏直观可见。</span><span class="en-part">Polar transform r = a + b·θ. Same-month days cluster on an arc; seasonal rhythm is intuitively visible.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-5-5">
+        <h2 class="sec-title">5.5 Storyline 故事线</h2>
+          <div class="sec-subtitle">Tanahashi &amp; Ma 2012 —— 《侏罗纪公园》案例</div>
+          <div class="sec-subtitle en">Tanahashi &amp; Ma 2012 — Jurassic Park case study</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">Storyline 是把多角色的「相遇/分离/重聚」编码成一组平行折线的可视化方法。本章以《侏罗纪公园》为例：Grant、Sattler、Hammond、Malcolm、Muldoon 五个角色，在 4 个时间段（开场 / 参观恐龙 / 逃跑 / 结局）的同框关系。</span><span class="en-part">Storyline is a visualization method that encodes multiple characters' "meetings/separations/reunions" as a set of parallel lines. This chapter uses Jurassic Park as an example: five characters — Grant, Sattler, Hammond, Malcolm, Muldoon — and their co-occurrence across 4 time periods (opening / dinosaur tour / escape / ending).</span></p>
+          <ul class="checklist">
+            <li><span class="zh-part">每条线 = 一个角色，颜色编码身份</span><span class="en-part">Each line = one character, color encodes identity</span></li>
+            <li><span class="zh-part">线条聚拢 = 角色同场（同一 group）</span><span class="en-part">Lines converging = characters in the same scene (same group)</span></li>
+            <li><span class="zh-part">线条分开 = 角色分散（不同 group）</span><span class="en-part">Lines separating = characters dispersed (different groups)</span></li>
+            <li><span class="zh-part">group 内用 </span><span class="en-part">Within a group, use </span><code>d3.scalePoint().padding(0.5)</code><span class="zh-part"> 均匀排</span><span class="en-part"> to arrange evenly</span></li>
+          </ul>
+          <div class="alert-box">
+            <strong><span class="zh-part">D3 实现思路：</span><span class="en-part">D3 Implementation:</span></strong><span class="zh-part">先手动设计每个时段的 group 划分，再用折线生成器 <code>d3.line()</code> 把「(时段, 纵向槽位)」连成角色轨迹。</span><span class="en-part">First manually design the group division for each period, then use the line generator <code>d3.line()</code> to connect "(period, vertical slot)" into character trajectories.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 5 角色 × 4 时段，手动设计 group 划分
+// 时段 0:  全部分散（intro）
+// 时段 1:  [Grant, Sattler] [Hammond, Malcolm] [Muldoon]
+// 时段 2:  [Grant] [Sattler, Muldoon] [Hammond, Malcolm]
+// 时段 3:  [Grant, Sattler, Hammond, Malcolm, Muldoon]
+
+const roles = ['Grant', 'Sattler', 'Hammond', 'Malcolm', 'Muldoon'];
+const groupsAt = [
+  ['A','B','C','D','E'],           // 时段 0
+  ['X','X','Y','Y','Z'],           // 时段 1
+  ['P','Q','R','R','Q'],           // 时段 2
+  ['S','S','S','S','S'],           // 时段 3
+];
+
+// 每个 group 内的纵向槽位
+function slotInGroup(groupMembers, role) {
+  const idx = groupMembers.indexOf(role);
+  const total = groupMembers.length;
+  const pos = d3.scalePoint()
+    .domain(d3.range(total))
+    .range([-60, 60]).padding(0.5);
+  return pos(idx);
+}
+
+// 计算每个角色在每个时段的 y 偏移
+const roleTracks = roles.map(role =>
+  groupsAt.map((groups, ti) => {
+    const groupMembers = roles.filter((r, i) => groups[i] === groups[roles.indexOf(role)]);
+    return {
+      t: ti,
+      y: groups[roles.indexOf(role)] === groupsAt[ti][roles.indexOf(role)]
+         ? slotInGroup(groupMembers, role) : 0
+    };
+  })
+);
+
+const line = d3.line()
+  .x(d => sx(d.t))
+  .y(d => 200 + d.y)
+  .curve(d3.curveMonotoneX);
+
+roleTracks.forEach(track => {
+  svg.append('path').datum(track).attr('d', line)
+    .attr('stroke', color(roles[roleTracks.indexOf(track)]))
+    .attr('fill', 'none').attr('stroke-width', 2);
+});
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-5-5-svg" width="760" height="300"></svg>
+            <div class="demo-note"><span class="zh-part">X 轴 = 时间段（开场 → 参观恐龙 → 逃跑 → 结局）。线条聚拢表示角色同场，分开表示分散。</span><span class="en-part">X-axis = time period (opening → dinosaur tour → escape → ending). Converging lines mean characters share a scene; separating lines mean they disperse.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-5-extra1">
+        <h2 class="sec-title">补充 demo 集合</h2>
+          <div class="sec-subtitle">本章附赠的时间主题 Demo</div>
+          <div class="sec-subtitle en">Bonus time-themed demos for this chapter</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">除了上面 5 个正节 demo，本章还额外提供：5 个时间属性对照表、法国人名 top-10 折线、Storyline 编辑器原型。这些 demo 都可以通过 </span><span class="en-part">In addition to the 5 main-section demos above, this chapter also provides: a 5-time-attribute comparison table, French name top-10 line chart, and a Storyline editor prototype. These demos can be loaded on demand via the </span><code>window.registerDemo()</code><span class="zh-part"> 机制按需加载。</span><span class="en-part"> mechanism.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 在页面底部 script 中注册 demo：
+window.registerDemo('sec-5-extra1', function () {
+  const svg = d3.select('#demo-5-extra1-svg');
+  // ... D3 代码 ...
+});
+
+// main.js 会在：
+//   1) 切换到演示 Tab +
+//   2) 该 section 滚入视口
+// 时自动执行 fn，保证懒加载、按需运行。
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-5-extra1-svg" width="760" height="120"></svg>
+            <div class="demo-note"><span class="zh-part">本章额外 demo 的预留位置，后续可添加 Storyline 编辑器、更多名字对比等。</span><span class="en-part">Reserved space for extra chapter demos; a Storyline editor, more name comparisons, etc. can be added later.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-5-extra2">
+        <h2 class="sec-title">补充 common.demo-folder</h2>
+          <div class="sec-subtitle">跨章节共享的 demo 组织约定</div>
+          <div class="sec-subtitle en">Cross-chapter shared demo organization convention</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">所有章节共用一个 </span><span class="en-part">All chapters share a </span><code>common/demo</code><span class="zh-part"> 思路：每章的 demo 自治（HTML 内嵌），但可通过相对路径 </span><span class="en-part"> approach: each chapter's demos are self-contained (embedded in HTML), but can read shared CSVs via the relative path </span><code>../data/</code><span class="zh-part"> 读取共享 CSV（如 </span><span class="en-part"> (e.g., </span><code>french_names_sample.csv</code><span class="zh-part">、</span><span class="en-part">, </span><code>crime.csv</code><span class="zh-part">）。这样既保持页面纯静态可独立部署，又避免数据重复拷贝。</span><span class="en-part">). This keeps pages purely static and independently deployable while avoiding duplicate data copies.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// lesson-05 中读取共享数据
+d3.csv('../data/french_names_sample.csv', d => ({
+  year: +d.year, name: d.name, count: +d.count
+})).then(rows => {
+  console.log(rows.length, 'rows');
+});
+
+// 注意：相对路径基于当前 HTML 文件位置
+// lesson-XX/index.html → ../data/filename
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-5-extra2-svg" width="760" height="120"></svg>
+            <div class="demo-note"><span class="zh-part">演示从 <code>../data/</code> 读取共享 CSV 的机制。</span><span class="en-part">Demonstrates the mechanism of reading shared CSVs from <code>../data/</code>.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-5-extra3">
+        <h2 class="sec-title">补充 完整讲义 markdown</h2>
+          <div class="sec-subtitle">本页面 = 讲义的可视化摘要</div>
+          <div class="sec-subtitle en">This page = visual summary of the lecture notes</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">课堂完整讲义以 markdown 形式提供，本页面是其可视化摘要版本。切换到 ⌨️ 关键代码 和 ▶️ 演示 Tab 可看到本节对应的 D3 实现和可交互 Demo。</span><span class="en-part">The full classroom lecture notes are provided in markdown form; this page is their visual summary version. Switch to the ⌨️ Code and ▶️ Demo tabs to see the corresponding D3 implementation and interactive demo for this section.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>本页面采用「小节级 Tab」结构：
+每个 .lesson-section 内部都有独立的 sec-tab-bar + 三个 sec-tab-panel
+（讲解 / 关键代码 / 演示），切换只影响当前小节。
+
+侧边栏 data-target 指向各 section 的 id，滚动高亮基于 IntersectionObserver。
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-5-extra3-svg" width="760" height="80"></svg>
+            <div class="demo-note"><span class="zh-part">本小节为说明性内容，无独立交互 demo。</span><span class="en-part">This section is explanatory content with no standalone interactive demo.</span></div>
+          </div>
+        </div>
+      </section>
+</main>
+  </div>
+
+  <script src="../js/i18n.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+  function t(key) {
+    var dict = (window.getI18n && window.getI18n()) || {};
+    return dict[key] !== undefined ? dict[key] : key;
+  }
+
+  // ============ 5.1 五个时间属性小图示 ============
+  window.registerDemo('sec-5-1', function () {
+    var svg = d3.select('#demo-5-1-svg');
+    var W = 760, H = 220;
+    var labelY = 15;
+    var rowY = 40, rowH = 150;
+
+    var attrs = [
+      { title: t('l5_s1_d_t1'), yLabel: t('l5_s1_d_y1'), color: '#3b82f6' },
+      { title: t('l5_s1_d_t2'), yLabel: t('l5_s1_d_y2'), color: '#10b981' },
+      { title: t('l5_s1_d_t3'), yLabel: t('l5_s1_d_y3'), color: '#f59e0b' },
+      { title: t('l5_s1_d_t4'), yLabel: t('l5_s1_d_y4'), color: '#ef4444' },
+      { title: t('l5_s1_d_t5'), yLabel: t('l5_s1_d_y5'), color: '#a855f7' }
+    ];
+    var slotW = W / attrs.length;
+
+    attrs.forEach(function (a, i) {
+      var cx = slotW * i + slotW / 2;
+      var col = svg.append('g').attr('transform', 'translate(' + cx + ',0)');
+      col.append('text').attr('class', 'axis')
+        .attr('text-anchor', 'middle').attr('y', labelY)
+        .attr('font-size', '12px').attr('font-weight', '600')
+        .text(a.title);
+      col.append('text').attr('class', 'axis')
+        .attr('text-anchor', 'middle').attr('y', 30)
+        .attr('font-size', '11px').attr('fill', '#94a3b8')
+        .text(a.yLabel);
+
+      var t0 = rowY + 10, t1 = rowY + rowH - 10;
+      col.append('line').attr('x1', -slotW / 2 + 20).attr('x2', slotW / 2 - 20)
+        .attr('y1', rowY + rowH / 2).attr('y2', rowY + rowH / 2)
+        .attr('stroke', '#e5e7eb').attr('stroke-dasharray', '3,3');
+      var baseY = rowY + rowH / 2;
+
+      if (i === 0) {
+        // Instant：三个圆点
+        [0.2, 0.5, 0.8].forEach(function (p) {
+          col.append('circle').attr('cx', -slotW / 2 + 20 + p * (slotW - 40))
+            .attr('cy', baseY).attr('r', 5).attr('fill', a.color);
+        });
+      } else if (i === 1) {
+        // Duration：一条 bar 带两端
+        col.append('line').attr('x1', -slotW / 2 + 40).attr('x2', slotW / 2 - 40)
+          .attr('y1', baseY).attr('y2', baseY)
+          .attr('stroke', a.color).attr('stroke-width', 4).attr('stroke-linecap', 'round');
+        col.append('circle').attr('cx', -slotW / 2 + 40).attr('cy', baseY).attr('r', 4).attr('fill', a.color);
+        col.append('circle').attr('cx', slotW / 2 - 40).attr('cy', baseY).attr('r', 4).attr('fill', a.color);
+      } else if (i === 2) {
+        // Interval：三个区间段
+        [
+          [0.1, 0.35], [0.45, 0.6], [0.72, 0.9]
+        ].forEach(function (pair) {
+          col.append('rect')
+            .attr('x', -slotW / 2 + 20 + pair[0] * (slotW - 40))
+            .attr('y', baseY - 6)
+            .attr('width', (pair[1] - pair[0]) * (slotW - 40))
+            .attr('height', 12).attr('rx', 3)
+            .attr('fill', a.color).attr('opacity', 0.8);
+        });
+      } else if (i === 3) {
+        // Set：多个散落点 + 一个环
+        [
+          [0.15, 0.3], [0.3, 0.6], [0.5, 0.25], [0.65, 0.7], [0.82, 0.4]
+        ].forEach(function (pt) {
+          col.append('circle')
+            .attr('cx', -slotW / 2 + 20 + pt[0] * (slotW - 40))
+            .attr('cy', rowY + 40 + pt[1] * (rowH - 80))
+            .attr('r', 4).attr('fill', a.color).attr('opacity', 0.85);
+        });
+      } else {
+        // Order：折线 + 点
+        var pts = [[0.15, 0.7], [0.35, 0.45], [0.55, 0.55], [0.75, 0.25], [0.88, 0.35]];
+        var line = d3.line()
+          .x(function (p) { return -slotW / 2 + 20 + p[0] * (slotW - 40); })
+          .y(function (p) { return rowY + 40 + p[1] * (rowH - 80); })
+          .curve(d3.curveMonotoneX);
+        col.append('path').datum(pts).attr('d', line)
+          .attr('fill', 'none').attr('stroke', a.color).attr('stroke-width', 2);
+        pts.forEach(function (p) {
+          col.append('circle')
+            .attr('cx', -slotW / 2 + 20 + p[0] * (slotW - 40))
+            .attr('cy', rowY + 40 + p[1] * (rowH - 80))
+            .attr('r', 3.5).attr('fill', a.color);
+        });
+      }
+    });
+  });
+
+  // ============ 5.2 法国人名 Top-5 折线图 ============
+  window.registerDemo('sec-5-2', function () {
+    var svg = d3.select('#demo-5-2-svg');
+    var W = 760, H = 340, M = { l: 60, r: 20, t: 30, b: 50 };
+
+    d3.csv('../data/french_names_sample.csv', function (d) {
+      return { year: +d.year, name: d.name, gender: d.gender, count: +d.count };
+    }).then(function (raw) {
+      var grouped = d3.groups(raw, function (d) { return d.name; });
+      var timeExt = d3.extent(raw, function (d) { return new Date(d.year, 0, 1); });
+      var maxCount = d3.max(raw, function (d) { return d.count; });
+
+      var sx = d3.scaleTime().domain(timeExt).range([M.l, W - M.r]);
+      var sy = d3.scaleLinear().domain([0, maxCount * 1.1]).range([H - M.b, M.t]);
+      var color = d3.scaleOrdinal(d3.schemeTableau10);
+
+      svg.append('g').attr('class', 'axis')
+        .attr('transform', 'translate(0,' + (H - M.b) + ')')
+        .call(d3.axisBottom(sx).ticks(d3.timeYear.every(20)));
+      svg.append('g').attr('class', 'axis')
+        .attr('transform', 'translate(' + M.l + ',0)')
+        .call(d3.axisLeft(sy).tickFormat(d3.format('~s')));
+
+      var line = d3.line()
+        .x(function (d) { return sx(new Date(d.year, 0, 1)); })
+        .y(function (d) { return sy(d.count); })
+        .curve(d3.curveMonotoneX);
+
+      var legendX = W - 120, legendY = M.t;
+      grouped.forEach(function (g, i) {
+        var name = g[0], rows = g[1];
+        svg.append('path').datum(rows).attr('d', line)
+          .attr('stroke', color(name)).attr('stroke-width', 2)
+          .attr('fill', 'none');
+        svg.append('circle')
+          .attr('cx', sx(new Date(rows[rows.length - 1].year, 0, 1)))
+          .attr('cy', sy(rows[rows.length - 1].count))
+          .attr('r', 3).attr('fill', color(name));
+        var lgY = legendY + i * 18;
+        svg.append('line')
+          .attr('x1', legendX).attr('x2', legendX + 16)
+          .attr('y1', lgY).attr('y2', lgY)
+          .attr('stroke', color(name)).attr('stroke-width', 2);
+        svg.append('text').attr('class', 'axis')
+          .attr('x', legendX + 22).attr('y', lgY + 4)
+          .attr('font-size', '11px').text(name);
+      });
+
+      svg.append('text').attr('class', 'axis')
+        .attr('x', W / 2).attr('y', H - 10).attr('text-anchor', 'middle')
+        .attr('font-size', '12px').attr('fill', '#64748b').text(t('l5_s2_d_x'));
+      svg.append('text').attr('class', 'axis')
+        .attr('transform', 'translate(18,' + H / 2 + ') rotate(-90)')
+        .attr('text-anchor', 'middle').attr('font-size', '12px')
+        .attr('fill', '#64748b').text(t('l5_s2_d_y'));
+    }).catch(function () {
+      var g = svg.append('g').attr('transform', 'translate(' + W / 2 + ',' + H / 2 + ')');
+      g.append('text').attr('text-anchor', 'middle').attr('fill', '#94a3b8')
+        .attr('font-size', '13px').text(t('l5_s2_d_err1'));
+      g.append('text').attr('text-anchor', 'middle').attr('fill', '#94a3b8')
+        .attr('font-size', '11px').attr('y', 20)
+        .text(t('l5_s2_d_err2'));
+    });
+  });
+
+  // ============ 5.3 van Wijk 日历热图 ============
+  window.registerDemo('sec-5-3', function () {
+    var svg = d3.select('#demo-5-3-svg');
+    var year = 2024;
+    var days = d3.timeDays(new Date(year, 0, 1), new Date(year + 1, 0, 1));
+    var rnd = d3.randomUniform(0, 1);
+    var valueMap = {};
+    days.forEach(function (d) { valueMap[d3.timeFormat('%Y-%m-%d')(d)] = rnd(); });
+    var color = d3.scaleSequential(d3.interpolateViridis).domain([0, 1]);
+    var fmtWeek = d3.timeFormat('%U');
+    var fmtDow  = d3.timeFormat('%w');
+    var cellW = 14, cellH = 14, pad = 2;
+    var g = svg.append('g').attr('transform', 'translate(50,30)');
+    g.selectAll('rect.day').data(days).enter().append('rect')
+      .attr('class', 'day')
+      .attr('x', function (d) { return +fmtWeek(d) * (cellW + pad); })
+      .attr('y', function (d) { return +fmtDow(d)  * (cellH + pad); })
+      .attr('width', cellW).attr('height', cellH).attr('rx', 2)
+      .attr('fill', function (d) { return color(valueMap[d3.timeFormat('%Y-%m-%d')(d)]); })
+      .append('title')
+      .text(function (d) {
+        return d3.timeFormat('%Y-%m-%d')(d) + ': ' +
+               (valueMap[d3.timeFormat('%Y-%m-%d')(d)] * 100).toFixed(0);
+      });
+    var dowNames = t('l5_s3_d_dow').split(',');
+    g.selectAll('text.dow').data(dowNames).enter().append('text')
+      .attr('class', 'axis')
+      .attr('x', -8).attr('y', function (_, i) { return i * (cellH + pad) + 11; })
+      .attr('text-anchor', 'end').attr('font-size', 10).text(function (d) { return d; });
+
+    var legend = svg.append('g').attr('transform', 'translate(570,30)');
+    legend.append('text').attr('font-size', '11px').attr('fill', '#64748b').text(t('l5_s3_d_legend'));
+    var lgW = 160, lgH = 12;
+    var lgDefs = svg.append('defs');
+    var grad = lgDefs.append('linearGradient').attr('id', 'viridis-grad')
+      .attr('x1', '0%').attr('x2', '100%');
+    [0, 0.25, 0.5, 0.75, 1].forEach(function (v) {
+      grad.append('stop').attr('offset', (v * 100) + '%').attr('stop-color', d3.interpolateViridis(v));
+    });
+    var lgX = 45, lgY = 40;
+    legend.append('rect').attr('x', lgX).attr('y', lgY)
+      .attr('width', lgW).attr('height', lgH).attr('rx', 3)
+      .attr('fill', 'url(#viridis-grad)');
+    legend.append('text').attr('font-size', '10px').attr('fill', '#94a3b8')
+      .attr('x', lgX).attr('y', lgY + lgH + 14).text('0');
+    legend.append('text').attr('font-size', '10px').attr('fill', '#94a3b8')
+      .attr('x', lgX + lgW).attr('y', lgY + lgH + 14).attr('text-anchor', 'end').text('1');
+  });
+
+  // ============ 5.4 阿基米德螺旋日历 ============
+  window.registerDemo('sec-5-4', function () {
+    var svg = d3.select('#demo-5-4-svg');
+    var W = 760, H = 380;
+    var cx = W / 2, cy = H / 2;
+    var a = 0, b = 0.08;
+    var theta = d3.scaleLinear().domain([0, 365]).range([0, 9 * Math.PI]);
+    var monthColors = d3.schemeTableau10;
+    var monthNames = t('l5_s4_d_months').split(',');
+    var monthColor = function (m) { return monthColors[m]; };
+
+    var g = svg.append('g').attr('transform', 'translate(' + cx + ',' + cy + ')');
+    for (var d = 0; d < 365; d++) {
+      var t = theta(d);
+      var r = a + b * t;
+      var month = new Date(2024, 0, 1 + d).getMonth();
+      g.append('circle').attr('cx', r * Math.cos(t)).attr('cy', r * Math.sin(t))
+        .attr('r', 3).attr('fill', monthColor(month)).attr('opacity', 0.85);
+    }
+
+    var legend = svg.append('g').attr('transform', 'translate(20,' + (H - 220) + ')');
+    monthNames.forEach(function (m, i) {
+      var row = legend.append('g').attr('transform', 'translate(0,' + (i * 16) + ')');
+      row.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2)
+        .attr('fill', monthColor(i));
+      row.append('text').attr('x', 16).attr('y', 9)
+        .attr('font-size', '11px').attr('fill', '#64748b').text(m);
+    });
+  });
+
+  // ============ 5.5 Storyline 故事线 ============
+  window.registerDemo('sec-5-5', function () {
+    var svg = d3.select('#demo-5-5-svg');
+    var W = 760, H = 300, M = { l: 50, r: 20, t: 50, b: 60 };
+    var centerY = H / 2;
+
+    var roles = ['Grant', 'Sattler', 'Hammond', 'Malcolm', 'Muldoon'];
+    var colorMap = {
+      'Grant':    '#3b82f6',
+      'Sattler':  '#ef4444',
+      'Hammond':  '#f59e0b',
+      'Malcolm':  '#10b981',
+      'Muldoon':  '#a855f7'
+    };
+
+    var stages = [t('l5_s5_d_s1'), t('l5_s5_d_s2'), t('l5_s5_d_s3'), t('l5_s5_d_s4')];
+    var sx = d3.scalePoint().domain(d3.range(4)).range([M.l, W - M.r]).padding(0.4);
+
+    // 每个时段每个角色的 group id（相同 group 的角色聚拢）
+    // 时段 0: 全分散
+    // 时段 1: [Grant, Sattler] [Hammond, Malcolm] [Muldoon]
+    // 时段 2: [Grant] [Sattler, Muldoon] [Hammond, Malcolm]
+    // 时段 3: 全部聚在一起
+    var groups = [
+      ['A', 'B', 'C', 'D', 'E'],
+      ['X', 'X', 'Y', 'Y', 'Z'],
+      ['P', 'Q', 'R', 'R', 'Q'],
+      ['S', 'S', 'S', 'S', 'S']
+    ];
+
+    var allY = [];
+    roles.forEach(function (role, ri) {
+      var track = [];
+      for (var ti = 0; ti < 4; ti++) {
+        var gId = groups[ti][ri];
+        var members = [];
+        for (var rj = 0; rj < roles.length; rj++) {
+          if (groups[ti][rj] === gId) members.push(rj);
+        }
+        var posInGroup = members.indexOf(ri);
+        var slot = d3.scalePoint()
+          .domain(d3.range(members.length))
+          .range([-70, 70]).padding(0.5);
+        track.push(centerY + slot(posInGroup));
+      }
+      allY.push({ role: role, ys: track });
+    });
+
+    // 时段背景条
+    stages.forEach(function (s, i) {
+      var x = sx(i);
+      svg.append('line').attr('x1', x).attr('x2', x)
+        .attr('y1', M.t - 10).attr('y2', H - M.b)
+        .attr('stroke', '#e5e7eb').attr('stroke-dasharray', '4,4');
+      svg.append('text').attr('class', 'axis')
+        .attr('x', x).attr('y', M.t - 15).attr('text-anchor', 'middle')
+        .attr('font-size', '12px').attr('font-weight', '600').text(s);
+    });
+
+    // 折线
+    allY.forEach(function (d) {
+      var pts = d.ys.map(function (y, i) { return [sx(i), y]; });
+      var line = d3.line().curve(d3.curveMonotoneX);
+      svg.append('path').datum(pts).attr('d', line)
+        .attr('stroke', colorMap[d.role]).attr('stroke-width', 2.5)
+        .attr('fill', 'none');
+      pts.forEach(function (pt) {
+        svg.append('circle').attr('cx', pt[0]).attr('cy', pt[1])
+          .attr('r', 4).attr('fill', colorMap[d.role]);
+      });
+      svg.append('text').attr('class', 'axis')
+        .attr('x', pts[pts.length - 1][0] + 8)
+        .attr('y', pts[pts.length - 1][1] + 4)
+        .attr('font-size', '11px').attr('fill', colorMap[d.role]).text(d.role);
+    });
+
+    svg.append('text').attr('class', 'axis')
+      .attr('x', W / 2).attr('y', H - 20).attr('text-anchor', 'middle')
+      .attr('font-size', '12px').attr('fill', '#64748b')
+      .text(t('l5_s5_d_bottom'));
+  });
+
+  // ============ 补充 extra1: demo 集合占位 ============
+  window.registerDemo('sec-5-extra1', function () {
+    var svg = d3.select('#demo-5-extra1-svg');
+    var W = 760, H = 120;
+    var g = svg.append('g').attr('transform', 'translate(' + W / 2 + ',' + H / 2 + ')');
+    g.append('text').attr('text-anchor', 'middle').attr('fill', '#94a3b8')
+      .attr('font-size', '14px').text(t('l5_e1_d_text'));
+  });
+
+  // ============ 补充 extra2: common.demo-folder ============
+  window.registerDemo('sec-5-extra2', function () {
+    var svg = d3.select('#demo-5-extra2-svg');
+    var W = 760, H = 120;
+    var g = svg.append('g').attr('transform', 'translate(' + W / 2 + ',' + H / 2 + ')');
+    g.append('text').attr('text-anchor', 'middle').attr('fill', '#94a3b8')
+      .attr('font-size', '14px').text(t('l5_e2_d_text'));
+  });
+
+  // ============ 补充 extra3: 完整讲义 markdown ============
+  window.registerDemo('sec-5-extra3', function () {
+    var svg = d3.select('#demo-5-extra3-svg');
+    var W = 760, H = 80;
+    var g = svg.append('g').attr('transform', 'translate(' + W / 2 + ',' + H / 2 + ')');
+    g.append('text').attr('text-anchor', 'middle').attr('fill', '#94a3b8')
+      .attr('font-size', '13px').text(t('l5_e3_d_text'));
+  });
+
+  // 语言切换时重渲染所有 demo
+  ['sec-5-1', 'sec-5-2', 'sec-5-3', 'sec-5-4', 'sec-5-5', 'sec-5-extra1', 'sec-5-extra2', 'sec-5-extra3'].forEach(function (id) {
+    document.addEventListener('langchange', function () { window.rerunDemo(id); });
+  });
+  </script>
+</body>
+</html>

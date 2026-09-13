@@ -1,0 +1,2163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>第6章 网页页面布局 · 数据可视化课程</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+  <header class="site-nav">
+    <div class="nav-inner">
+      <span class="brand">📊 DV 课程</span>
+      <a class="nav-item" data-key="home" href="../index.html" data-i18n="nav_home">课程门户</a>
+      <a class="nav-item" data-key="lesson-01" href="../lesson-01/index.html" data-i18n="nav_01">第1章·数据</a>
+      <a class="nav-item" data-key="lesson-02" href="../lesson-02/index.html" data-i18n="nav_02">第2章·数据可视化流程</a>
+      <a class="nav-item" data-key="lesson-03" href="../lesson-03/index.html" data-i18n="nav_03">第3章·色彩专题</a>
+      <a class="nav-item" data-key="lesson-04" href="../lesson-04/index.html" data-i18n="nav_04">第4章·低维可视化</a>
+      <a class="nav-item" data-key="lesson-05" href="../lesson-05/index.html" data-i18n="nav_05">第5章·时序可视化</a>
+      <a class="nav-item" data-key="lesson-06" href="../lesson-06/index.html" data-i18n="nav_06">第6章·网页页面布局</a>
+      <div class="lang-toggle" id="lang-toggle">
+        <button data-lang="zh" class="active">中</button>
+        <button data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="lesson-layout">
+    <aside class="lesson-sidebar">
+      <div class="side-title" data-i18n="side_title">本章目录</div>
+      <a class="side-link" data-target="sec-6-1" href="#sec-6-1" data-i18n="l6_s1_title">6.1 网页基础概念</a>
+      <a class="side-link" data-target="sec-6-2" href="#sec-6-2" data-i18n="l6_s2_title">6.2 Flex 布局原理</a>
+      <a class="side-link" data-target="sec-6-3" href="#sec-6-3" data-i18n="l6_s3_title">6.3 Grid 网格布局</a>
+      <a class="side-link" data-target="sec-6-4" href="#sec-6-4" data-i18n="l6_s4_title">6.4 双栏页面布局实现</a>
+      <a class="side-link" data-target="sec-6-5" href="#sec-6-5" data-i18n="l6_s5_title">6.5 Tab 切换组件实现</a>
+      <a class="side-link" data-target="sec-6-6" href="#sec-6-6" data-i18n="l6_s6_title">6.6 D3 布局函数使用</a>
+      <a class="side-link" data-target="sec-6-7" href="#sec-6-7" data-i18n="l6_s7_title">6.7 GitHub Pages 部署</a>
+      <a class="side-link" data-target="sec-6-8" href="#sec-6-8" data-i18n="l6_s8_title">6.8 综合案例：仪表盘</a>
+      <div class="side-group">
+        <div class="side-sub" data-i18n="side_extra">补充</div>
+        <a class="side-link" data-target="sec-6-extra1" href="#sec-6-extra1" data-i18n="side_demo">补充 demo 集合</a>
+        <a class="side-link" data-target="sec-6-extra2" href="#sec-6-extra2" data-i18n="side_folder">common.demo-folder</a>
+        <a class="side-link" data-target="sec-6-extra3" href="#sec-6-extra3" data-i18n="side_md">完整讲义 markdown</a>
+      </div>
+    </aside>
+
+    <main class="lesson-main">
+
+      <!-- ============== 6.1 网页基础概念 ============== -->
+      <section class="lesson-section" id="sec-6-1">
+        <h2 class="sec-title" data-i18n="l6_s1_title">6.1 网页基础概念</h2>
+        <div class="sec-subtitle" data-i18n="l6_s1_sub">HTML / CSS / JS 三层分离，是现代网页的骨架</div>
+        <div class="sec-subtitle en">HTML / CSS / JS three-layer separation — the skeleton of modern web pages</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="l6_s1_p1">一个标准网页由三层组成，各司其职：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s1_li1"><strong>HTML（结构层）：</strong>语义化标签，定义页面内容骨架</li>
+            <li data-i18n-html="l6_s1_li2"><strong>CSS（表现层）：</strong>控制布局、颜色、字体、响应式适配</li>
+            <li data-i18n-html="l6_s1_li3"><strong>JavaScript（行为层）：</strong>交互逻辑、数据绑定、D3 可视化渲染</li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s1_alert1">
+            <strong>隔离原则：</strong>结构、样式、行为必须分离到独立文件（<code>.html / .css / .js</code>），避免内联样式和脚本。
+          </div>
+          <h3 class="sub-title" data-i18n="l6_s1_h_dom">DOM 树</h3>
+          <p data-i18n-html="l6_s1_p_dom">浏览器解析 HTML 后构建 DOM（Document Object Model）树。CSS 选择器、D3 的 <code>select/selectAll</code> 都是在这棵树上操作节点。</p>
+          <h3 class="sub-title" data-i18n="l6_s1_h_box">CSS 盒模型</h3>
+          <p data-i18n-html="l6_s1_p_box">每个元素 = margin + border + padding + content。<code>box-sizing: border-box</code> 让 width 包含 padding 和 border，计算更直观。</p>
+
+          <h3 class="sub-title" data-i18n="l6_s1_h_principles">📐 布局设计五原则（Design Principles）</h3>
+          <p data-i18n-html="l6_s1_p_principles">语法只是手段，<strong>设计原则</strong>才是决定页面"好不好看、好不好用"的根本。以下五条原则适用于所有 UI 布局：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s1_p1_1"><strong>① 对比（Contrast）：</strong>通过字号、颜色、粗细制造视觉焦点。标题必须比正文大且粗，主按钮用实色填充、次按钮用描边。没有对比 = 没有层次。</li>
+            <li data-i18n-html="l6_s1_p1_2"><strong>② 重复（Repetition）：</strong>统一的圆角（如全用 12px）、统一的间距系统（如 4/8/16/24px）、统一的色彩调色板。重复带来专业感和一致性。</li>
+            <li data-i18n-html="l6_s1_p1_3"><strong>③ 对齐（Alignment）：</strong>所有元素沿隐形的网格线对齐，不要让元素随意摆放。左对齐是正文最安全的选择，居中对齐用于标题和短文本。</li>
+            <li data-i18n-html="l6_s1_p1_4"><strong>④ 亲密性（Proximity）：</strong>相关元素靠近，无关元素拉开距离。标题和它的段落间距小，不同段落组间距大——用间距代替分割线。</li>
+            <li data-i18n-html="l6_s1_p1_5"><strong>⑤ 留白（Whitespace）：</strong>不要怕空。充足的留白让内容呼吸，提升可读性和高级感。内容拥挤 = 信息过载。</li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s1_alert2">
+            <strong>口诀：</strong>对比造焦点，重复造统一，对齐造秩序，亲密造分组，留白造呼吸。五条原则同时满足，页面自然专业。
+          </div>
+
+          <h3 class="sub-title" data-i18n="l6_s1_h_hierarchy">🗂️ 视觉层次与信息架构</h3>
+          <p data-i18n-html="l6_s1_p_hierarchy">布局的本质是<strong>信息架构</strong>——决定"什么最重要、什么次要、什么可以折叠"。视觉层次通过三层实现：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s1_h_l1"><strong>一级（主信息）：</strong>页面标题、核心数据、主操作按钮 —— 用最大字号 + 品牌色</li>
+            <li data-i18n-html="l6_s1_h_l2"><strong>二级（辅助信息）：</strong>副标题、图表标签、导航项 —— 中等字号 + 中性色</li>
+            <li data-i18n-html="l6_s1_h_l3"><strong>三级（元信息）：</strong>时间戳、脚注、辅助说明 —— 小字号 + 弱化色</li>
+          </ul>
+
+          <h3 class="sub-title" data-i18n="l6_s1_h_case">🚀 贯穿全章案例：数据可视化仪表盘</h3>
+          <p data-i18n-html="l6_s1_p_case">本章以一个<strong>「学生数据可视化仪表盘 Dashboard」</strong>为贯穿案例，每一小节学习一个布局知识点，同时把它应用到这个仪表盘的对应模块上。学完本章，你将拥有一个完整的、可运行的仪表盘页面。</p>
+          <div class="key-point-box" data-i18n-html="l6_s1_kp">
+            <span class="kp-label">案例模块映射：</span>6.2 Flex → 顶部导航栏；6.3 Grid → 图表卡片网格；6.4 双栏 → 侧边筛选 + 主图表区；6.5 Tab → 图表类型切换；6.6 D3布局 → 图表渲染；6.7 部署 → 上线发布；6.8 → 完整整合。
+          </div>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="l6_s1_code1">关键代码 ① 三层分离示例<span class="sub-en">Key Code ① Three-Layer Separation</span></h3>
+          <pre class="code-block"><code data-raw>&lt;!-- 结构层：HTML --&gt;
+&lt;header class="site-nav"&gt;
+  &lt;span class="brand"&gt;📊 DV 课程&lt;/span&gt;
+  &lt;a class="nav-item" data-key="home" href="../index.html"&gt;课程门户&lt;/a&gt;
+&lt;/header&gt;</code></pre>
+          <pre class="code-block"><code data-raw">/* 表现层：CSS */
+.site-nav {
+  position: sticky;
+  top: 0;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(8px);
+}</code></pre>
+          <pre class="code-block"><code data-raw">// 行为层：JS
+document.querySelectorAll('.nav-item').forEach(a => {
+  a.classList.toggle('active', a.dataset.key === currentKey);
+});</code></pre>
+          <div class="key-point-box" data-i18n-html="l6_s1_kp1">
+            <span class="kp-label">关键点解释：</span>三层分离让代码可维护：HTML 改结构不碰样式，CSS 改皮肤不碰逻辑，JS 改行为不碰布局。本课程所有页面严格遵循此约定。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="l6_s1_demo_title">Demo · 三层分离架构示意</div>
+            <svg id="demo-6-1-svg" width="760" height="240"></svg>
+            <div class="demo-note" data-i18n="l6_s1_demo_note">横向三层：HTML（骨架）→ CSS（皮肤）→ JS（行为），浏览器按此顺序构建页面。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 6.2 Flex 布局原理 ============== -->
+      <section class="lesson-section" id="sec-6-2">
+        <h2 class="sec-title" data-i18n="l6_s2_title">6.2 Flex 布局原理</h2>
+        <div class="sec-subtitle" data-i18n="l6_s2_sub">一维弹性布局，主轴 + 交叉轴</div>
+        <div class="sec-subtitle en">One-dimensional flexible layout with main axis and cross axis</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="l6_s2_p1">Flexbox 是 CSS 布局的革命性模块，专为一维排列设计：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s2_li1"><strong>容器属性：</strong><code>display: flex</code> 开启；<code>flex-direction</code> 控制主轴方向；<code>justify-content</code> 主轴对齐；<code>align-items</code> 交叉轴对齐</li>
+            <li data-i18n-html="l6_s2_li2"><strong>子项属性：</strong><code>flex-grow</code> 伸展比例；<code>flex-shrink</code> 收缩比例；<code>flex-basis</code> 初始尺寸；<code>order</code> 视觉排序</li>
+            <li data-i18n-html="l6_s2_li3"><strong>换行：</strong><code>flex-wrap: wrap</code> 允许子项溢出时换行</li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s2_alert1">
+            <strong>口诀：</strong>父元素 <code>display:flex</code> + <code>flex-direction</code> 定方向 + <code>justify-content / align-items</code> 定对齐；子元素用 <code>flex: 1</code> 等分剩余空间。
+          </div>
+          <h3 class="sub-title" data-i18n="l6_s2_h_scene">常见场景</h3>
+          <p data-i18n-html="l6_s2_p_scene">导航栏横向排列、表单字段对齐、卡片列表、垂直居中（<code>justify-content: center; align-items: center</code>）。</p>
+
+          <h3 class="sub-title" data-i18n="l6_s2_h_case">🎯 案例应用：仪表盘顶部导航栏</h3>
+          <p data-i18n="l6_s2_p_case">用 Flex 实现仪表盘的顶部导航栏，包含 Logo、导航菜单、用户头像三部分：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s2_c1"><strong>Logo 区：</strong>左对齐，用 <code>align-items: center</code> 让图标和文字垂直居中</li>
+            <li data-i18n-html="l6_s2_c2"><strong>导航菜单：</strong>中间区域，用 <code>flex: 1</code> 占据剩余空间，内部再用 Flex 横向排列菜单项</li>
+            <li data-i18n-html="l6_s2_c3"><strong>用户区：</strong>右对齐，头像和用户名用 Flex 横向排列</li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s2_alert2">
+            <strong>设计原则体现：</strong>对齐（所有元素垂直居中）、亲密性（菜单项间距小、与 Logo 间距大）、留白（导航栏高度 60px，内边距充足）。
+          </div>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="l6_s2_code1">关键代码 ① 导航栏 Flex<span class="sub-en">Key Code ① Navbar with Flex</span></h3>
+          <pre class="code-block"><code data-raw">.site-nav .nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 60px;
+  display: flex;          /* 开启弹性 */
+  align-items: center;    /* 交叉轴居中（垂直居中） */
+  gap: 8px;               /* 子项间距 */
+}
+.site-nav .spacer {
+  flex: 1;                /* 占据剩余空间 */
+}</code></pre>
+          <h3 class="sub-title" data-i18n="l6_s2_code2">关键代码 ② 卡片列表等分布局<span class="sub-en">Key Code ② Equal-Width Card List</span></h3>
+          <pre class="code-block"><code data-raw">/* 卡片列表等分布局 */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+.chapter-card {
+  flex: 1 1 320px;  /* grow shrink basis */
+}</code></pre>
+          <div class="key-point-box" data-i18n-html="l6_s2_kp1">
+            <span class="kp-label">关键点解释：</span><code>flex: 1 1 320px</code> 表示 grow=1（等分剩余）、shrink=1（可收缩）、basis=320px（初始宽度）。这是响应式卡片列表的经典写法。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="l6_s2_demo_title">Demo · flex-direction: row / column 实时切换</div>
+            <div class="demo-controls">
+              <button data-dir="row">row ↔</button>
+              <button data-dir="column">column ↕</button>
+            </div>
+            <svg id="demo-6-2-svg" width="760" height="260"></svg>
+            <div class="demo-note" data-i18n="l6_s2_demo_note">点击按钮切换容器主轴方向，子元素（红/绿/蓝方块）会立即重新排列。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 6.3 Grid 网格布局 ============== -->
+      <section class="lesson-section" id="sec-6-3">
+        <h2 class="sec-title" data-i18n="l6_s3_title">6.3 Grid 网格布局</h2>
+        <div class="sec-subtitle" data-i18n="l6_s3_sub">二维网格系统，网页布局的终极武器</div>
+        <div class="sec-subtitle en">Two-dimensional grid system — the ultimate weapon for web layout</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="l6_s3_p1">CSS Grid 是真正的二维布局引擎，比 Flex 更强大：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s3_li1"><strong>容器定义网格：</strong><code>display: grid</code> + <code>grid-template-columns / rows</code></li>
+            <li data-i18n-html="l6_s3_li2"><strong>轨道尺寸：</strong>固定像素、百分比、<code>fr</code> 剩余空间单位、<code>auto</code> 自适应、<code>minmax()</code> 范围函数</li>
+            <li data-i18n-html="l6_s3_li3"><strong>子项放置：</strong><code>grid-column / row: span N</code> 跨单元格；<code>grid-area</code> 命名区域</li>
+            <li data-i18n-html="l6_s3_li4"><strong>自动布局：</strong><code>grid-auto-flow</code> 控制填充方向</li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s3_alert1">
+            <strong>最佳实践：</strong>页面整体骨架（头部 / 侧栏 / 主区 / 底部）用 Grid；内部组件内的一维排列用 Flex。组合使用威力最大。
+          </div>
+
+          <h3 class="sub-title" data-i18n="l6_s3_h_case">🎯 案例应用：仪表盘图表卡片网格</h3>
+          <p data-i18n="l6_s3_p_case">仪表盘主体是多个图表卡片的网格布局。用 Grid 实现 12 列响应式网格：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s3_c1"><strong>大屏（≥1200px）：</strong><code>grid-template-columns: repeat(12, 1fr)</code>，大图表跨 6 列、小图表跨 4 列</li>
+            <li data-i18n-html="l6_s3_c2"><strong>中屏（768-1199px）：</strong><code>repeat(6, 1fr)</code>，大图表跨 6 列、小图表跨 3 列</li>
+            <li data-i18n-html="l6_s3_c3"><strong>小屏（<768px）：</strong><code>1fr</code>，所有卡片单列堆叠</li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s3_alert2">
+            <strong>设计原则体现：</strong>重复（卡片统一圆角、统一内边距）、对齐（网格线严格对齐）、对比（主图表占更大面积吸引注意力）。
+          </div>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="l6_s3_code1">关键代码 ① 首页卡片网格<span class="sub-en">Key Code ① Homepage Card Grid</span></h3>
+          <pre class="code-block"><code data-raw">/* 首页：3 列响应式卡片网格 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+@media (max-width: 1024px) {
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (max-width: 640px) {
+  grid-template-columns: 1fr;
+}</code></pre>
+          <h3 class="sub-title" data-i18n="l6_s3_code2">关键代码 ② 章节页双栏<span class="sub-en">Key Code ② Chapter Page Two-Column</span></h3>
+          <pre class="code-block"><code data-raw">/* 章节页：2 列骨架（侧栏 260px + 主区自适应） */
+.lesson-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  grid-template-columns: 1fr;
+}</code></pre>
+          <div class="key-point-box" data-i18n-html="l6_s3_kp1">
+            <span class="kp-label">关键点解释：</span><code>minmax(0, 1fr)</code> 是关键——它允许网格轨道收缩到 0，防止内部长文本把列撑破。直接写 <code>1fr</code> 在某些浏览器会溢出。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="l6_s3_demo_title">Demo · grid-template-columns: 3 列 / 2 列 / 1 列</div>
+            <div class="demo-controls">
+              <button data-cols="3" data-i18n="l6_s3_col3">3 列</button>
+              <button data-cols="2" data-i18n="l6_s3_col2">2 列</button>
+              <button data-cols="1" data-i18n="l6_s3_col1">1 列</button>
+            </div>
+            <svg id="demo-6-3-svg" width="760" height="320"></svg>
+            <div class="demo-note" data-i18n="l6_s3_demo_note">点击按钮切换网格模板，12 个子色块按指定列数自动重排。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 6.4 双栏页面布局实现 ============== -->
+      <section class="lesson-section" id="sec-6-4">
+        <h2 class="sec-title" data-i18n="l6_s4_title">6.4 双栏页面布局实现</h2>
+        <div class="sec-subtitle" data-i18n="l6_s4_sub">侧边导航 + 主内容区，本课程所有章节页的骨架</div>
+        <div class="sec-subtitle en">Sidebar navigation + main content — the skeleton of every chapter page</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="l6_s4_p1">双栏（或多栏）布局是文档类网站、后台管理系统的标配：</p>
+          <h3 class="sub-title" data-i18n="l6_s4_h_grid">Grid 实现方案（推荐）</h3>
+          <p data-i18n-html="l6_s4_p_grid">父容器 <code>display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 28px;</code> —— 侧栏固定 260px，主区自适应剩余空间。</p>
+          <h3 class="sub-title" data-i18n="l6_s4_h_sticky">侧边栏固定</h3>
+          <p data-i18n-html="l6_s4_p_sticky">侧栏设 <code>position: sticky; top: 80px</code>，滚动时固定在视口顶部，长目录可独立滚动。</p>
+          <h3 class="sub-title" data-i18n="l6_s4_h_resp">响应式适配</h3>
+          <p data-i18n-html="l6_s4_p_resp"><code>@media (max-width: 900px) { grid-template-columns: 1fr; }</code> —— 小屏幕自动折叠为单栏，侧栏移到主区上方。</p>
+          <div class="alert-box" data-i18n-html="l6_s4_alert1">
+            <strong>minmax(0, 1fr) 的意义：</strong>防止主内容区被内部长文本撑破网格轨道。直接写 <code>1fr</code> 在某些浏览器会溢出。
+          </div>
+
+          <h3 class="sub-title" data-i18n="l6_s4_h_case">🎯 案例应用：仪表盘筛选区 + 图表区</h3>
+          <p data-i18n="l6_s4_p_case">仪表盘采用左侧筛选 + 右侧图表的主从布局：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s4_c1"><strong>左侧筛选栏（240px）：</strong>专业、性别、学位等级筛选器，sticky 固定，滚动时始终可见</li>
+            <li data-i18n-html="l6_s4_c2"><strong>右侧图表区（自适应）：</strong>主图表 + 数据卡片，占满剩余空间</li>
+            <li data-i18n-html="l6_s4_c3"><strong>交互联动：</strong>点击筛选器 → 右侧图表实时更新</li>
+          </ul>
+
+          <h3 class="sub-title" data-i18n="l6_s4_h_fz">🧠 信息架构理论：F 型与 Z 型阅读模式</h3>
+          <p data-i18n="l6_s4_p_fz">用户浏览页面有两种典型模式，布局应顺应而非对抗：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s4_f1"><strong>F 型（内容密集页）：</strong>用户先横向扫顶部，再向下扫左侧，重要内容放左上角和左边缘</li>
+            <li data-i18n-html="l6_s4_f2"><strong>Z 型（营销/着陆页）：</strong>用户按 Z 字形浏览，重要 CTA 放右下角</li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s4_alert2">
+            <strong>设计原则体现：</strong>亲密性（筛选器和图表功能相关但分栏放置，用距离区分主次）、视觉层次（主图表面积最大）。
+          </div>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="l6_s4_code1">关键代码 ① 侧栏 sticky + 主区滚动<span class="sub-en">Key Code ① Sticky Sidebar + Scrolling Main</span></h3>
+          <pre class="code-block"><code data-raw">/* 侧栏：固定视口顶部，独立滚动 */
+.lesson-sidebar {
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* 主区：tab-bar + 三个 tab-panel */
+.lesson-main {
+  border-radius: 16px;
+  overflow: hidden;
+}</code></pre>
+          <h3 class="sub-title" data-i18n="l6_s4_code2">关键代码 ② 滚动高亮 IntersectionObserver<span class="sub-en">Key Code ② Scroll Highlight</span></h3>
+          <pre class="code-block"><code data-raw">/* 滚动高亮：IntersectionObserver */
+var io = new IntersectionObserver(function (entries) {
+  entries.forEach(function (en) {
+    if (en.isIntersecting) markActive(en.target.id);
+  });
+}, { rootMargin: '-90px 0px -60% 0px' });</code></pre>
+          <div class="key-point-box" data-i18n-html="l6_s4_kp1">
+            <span class="kp-label">关键点解释：</span><code>sticky</code> 元素在滚动到 <code>top: 80px</code> 时"粘住"，之前的位置保留。比 <code>fixed</code> 更好，因为不会脱离文档流。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="l6_s4_demo_title">Demo · 双栏布局宽窄切换</div>
+            <div class="demo-controls">
+              <button data-mode="narrow" data-i18n="l6_s4_narrow">窄侧栏 (200px)</button>
+              <button data-mode="wide" data-i18n="l6_s4_wide">宽侧栏 (340px)</button>
+              <button data-mode="collapse" data-i18n="l6_s4_collapse">响应式折叠 (单列)</button>
+              <span data-i18n="l6_s4_demo_hint" style="font-size:11px;color:#64748b;align-self:center;margin-left:8px;">💡 拖动分隔条可自定义侧栏宽度</span>
+            </div>
+            <svg id="demo-6-4-svg" width="760" height="380"></svg>
+            <div class="demo-note" data-i18n="l6_s4_demo_note">切换侧栏宽度，右侧主区会自动伸缩。模拟本课程所有章节页的骨架。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 6.5 Tab 切换组件实现 ============== -->
+      <section class="lesson-section" id="sec-6-5">
+        <h2 class="sec-title" data-i18n="l6_s5_title">6.5 Tab 切换组件实现</h2>
+        <div class="sec-subtitle" data-i18n="l6_s5_sub">本课程每个章节页都有讲解 / 关键代码 / 演示三 Tab</div>
+        <div class="sec-subtitle en">Every chapter page uses Read / Code / Demo tabs</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="l6_s5_p1">Tab 是最常用的信息分段组件：</p>
+          <h3 class="sub-title" data-i18n="l6_s5_h_html">HTML 结构</h3>
+          <p data-i18n-html="l6_s5_p_html">一个 <code>.tab-bar</code> 容器含多个 <code>button.tab-btn[data-tab]</code>，与下方多个 <code>.tab-panel#panel-{tab}</code> 通过 data 属性配对。</p>
+          <h3 class="sub-title" data-i18n="l6_s5_h_css">CSS 核心</h3>
+          <p data-i18n-html="l6_s5_p_css"><code>.tab-panel { display: none; }</code>，激活态加 <code>.active { display: block; }</code>。按钮激活态高亮底 + 下划线。</p>
+          <h3 class="sub-title" data-i18n="l6_s5_h_js">JS 逻辑</h3>
+          <p data-i18n="l6_s5_p_js">点击按钮 → 清除所有 active → 当前按钮和对应 panel 加 active。可加过渡动画（opacity + translateY）。</p>
+          <div class="alert-box" data-i18n-html="l6_s5_alert1">
+            <strong>可访问性：</strong>生产环境应加 <code>role="tablist" / role="tab" / role="tabpanel"</code> 和 <code>aria-selected</code>、键盘方向键支持。
+          </div>
+
+          <h3 class="sub-title" data-i18n="l6_s5_h_case">🎯 案例应用：仪表盘图表类型切换</h3>
+          <p data-i18n="l6_s5_p_case">仪表盘用 Tab 切换同一数据的不同视图：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s5_c1"><strong>📊 柱状图 Tab：</strong>各专业人数对比</li>
+            <li data-i18n-html="l6_s5_c2"><strong>🥧 饼图 Tab：</strong>性别比例分布</li>
+            <li data-i18n-html="l6_s5_c3"><strong>📈 折线图 Tab：</strong>入学年份趋势</li>
+          </ul>
+          <p data-i18n="l6_s5_p_switch">切换 Tab 时，SVG 容器不变，只重新渲染内部图形，避免页面跳转。</p>
+
+          <h3 class="sub-title" data-i18n="l6_s5_h_a11y">♿ 可访问性（A11y）理论</h3>
+          <p data-i18n="l6_s5_p_a11y">好的布局不仅要好看，还要让所有人（包括使用屏幕阅读器的用户）都能使用：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s5_a1"><strong>语义化标签：</strong>用 <code>nav / main / section</code> 而非全是 <code>div</code></li>
+            <li data-i18n-html="l6_s5_a2"><strong>ARIA 属性：</strong><code>aria-selected="true"</code> 标记当前 Tab，<code>aria-controls</code> 关联 panel</li>
+            <li data-i18n-html="l6_s5_a3"><strong>键盘导航：</strong>左右方向键切换 Tab，Enter/Space 激活</li>
+            <li data-i18n-html="l6_s5_a4"><strong>焦点管理：</strong>激活的 Tab 应有可见的 <code>:focus</code> 样式</li>
+          </ul>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="l6_s5_code1">关键代码 ① HTML 结构<span class="sub-en">Key Code ① HTML Structure</span></h3>
+          <pre class="code-block"><code data-raw">&lt;!-- HTML：按钮和 panel 一一对应 --&gt;
+&lt;div class="tab-bar"&gt;
+  &lt;button class="tab-btn active" data-tab="read"&gt;📖 讲解&lt;/button&gt;
+  &lt;button class="tab-btn" data-tab="code"&gt;⌨️ 关键代码&lt;/button&gt;
+  &lt;button class="tab-btn" data-tab="demo"&gt;▶️ 演示&lt;/button&gt;
+&lt;/div&gt;
+&lt;div class="tab-panel active" id="panel-read"&gt;...&lt;/div&gt;
+&lt;div class="tab-panel"      id="panel-code"&gt;...&lt;/div&gt;
+&lt;div class="tab-panel"      id="panel-demo"&gt;...&lt;/div&gt;</code></pre>
+          <h3 class="sub-title" data-i18n="l6_s5_code2">关键代码 ② CSS 核心<span class="sub-en">Key Code ② Core CSS</span></h3>
+          <pre class="code-block"><code data-raw">/* CSS */
+.tab-panel       { display: none; }
+.tab-panel.active { display: block; animation: fadeIn .22s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}</code></pre>
+          <h3 class="sub-title" data-i18n="l6_s5_code3">关键代码 ③ JS 切换逻辑<span class="sub-en">Key Code ③ JS Toggle Logic</span></h3>
+          <pre class="code-block"><code data-raw">// JS：点击切换
+document.querySelectorAll('.tab-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var key = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + key).classList.add('active');
+  });
+});</code></pre>
+          <div class="key-point-box" data-i18n-html="l6_s5_kp1">
+            <span class="kp-label">关键点解释：</span>本课程采用<strong>小节级 Tab</strong>：每个 <code>.lesson-section</code> 内部有独立的 <code>.sec-tab-bar</code>，切换只影响当前小节。这样侧边目录跳转、滚动高亮、demo 懒加载都能精确到小节。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="l6_s5_demo_title">Demo · Tab 组件交互演示（点击切换内容）</div>
+            <div class="demo-controls" id="demo-6-5-btns">
+              <button data-tab="read" class="active" data-i18n="tab_read">📖 讲解</button>
+              <button data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+              <button data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+            </div>
+            <svg id="demo-6-5-svg" width="760" height="260"></svg>
+            <div class="demo-note" data-i18n="l6_s5_demo_note">点击上方三个按钮，下方 SVG 会切换显示对应内容。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 6.6 D3 布局函数使用 ============== -->
+      <section class="lesson-section" id="sec-6-6">
+        <h2 class="sec-title" data-i18n="l6_s6_title">6.6 D3 布局函数使用</h2>
+        <div class="sec-subtitle" data-i18n="l6_s6_sub">布局函数 = 数据 → 坐标 / 尺寸的映射器</div>
+        <div class="sec-subtitle en">Layout functions map data to coordinates and sizes</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="l6_s6_p1">D3 的 "layout" 模块把层级数据转换成可视化所需的几何信息：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s6_li1"><strong>层级布局：</strong><code>d3.hierarchy</code> 包装树形数据 → <code>treemap / pack / partition / cluster / tree</code> 产出坐标</li>
+            <li data-i18n-html="l6_s6_li2"><strong>分区布局：</strong><code>d3.pie</code> 生成圆弧数据 → 配合 <code>arc</code> 生成路径</li>
+            <li data-i18n-html="l6_s6_li3"><strong>力导向：</strong><code>d3.forceSimulation</code> 模拟物理力，适合网络图</li>
+          </ul>
+          <h3 class="sub-title" data-i18n="l6_s6_h_api">三层 API 模式</h3>
+          <p data-i18n-html="l6_s6_p_api">hierarchy → layout(d) → 节点/链接数组。以 treemap 为例：<code>d3.treemap().size([W, H]).padding(2)(root)</code>，每个 node 自动带上 x0/y0/x1/y1。</p>
+          <div class="alert-box" data-i18n-html="l6_s6_alert1">
+            <strong>布局对比：</strong>演示 Tab 里同一棵树数据会同时渲染 treemap、pack、partition 三种视图，直观感受各自特点。
+          </div>
+
+          <h3 class="sub-title" data-i18n="l6_s6_h_case">🎯 案例应用：仪表盘图表选择</h3>
+          <p data-i18n="l6_s6_p_case">仪表盘需要根据数据类型和分析目标选择合适的图表：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s6_c1"><strong>比较大小：</strong>用柱状图（bar）—— 各专业人数对比</li>
+            <li data-i18n-html="l6_s6_c2"><strong>展示占比：</strong>用饼图/环形图（pie）—— 性别比例</li>
+            <li data-i18n-html="l6_s6_c3"><strong>层级关系：</strong>用 treemap —— 学院→专业→班级嵌套</li>
+            <li data-i18n-html="l6_s6_c4"><strong>趋势变化：</strong>用折线图（line）—— 历年招生人数</li>
+            <li data-i18n-html="l6_s6_c5"><strong>分布关联：</strong>用散点图（scatter）—— 年龄 vs 成绩</li>
+          </ul>
+
+          <h3 class="sub-title" data-i18n="l6_s6_h_choice">📊 图表选型决策理论</h3>
+          <p data-i18n="l6_s6_p_choice">图表不是越花哨越好，选型应遵循"数据→任务→编码"三步骤：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s6_choice1"><strong>数据类型：</strong>分类（专业）、有序（年级）、定量（人数）、时间（入学年份）</li>
+            <li data-i18n-html="l6_s6_choice2"><strong>分析任务：</strong>比较、占比、趋势、分布、关联、层级</li>
+            <li data-i18n-html="l6_s6_choice3"><strong>视觉编码：</strong>位置（最精确）> 长度 > 角度 > 面积 > 体积（最不精确）</li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s6_alert2">
+            <strong>核心原则：</strong>能用位置编码就不用面积，能用柱状图就不用饼图。人眼对位置和长度的感知最准确，对面积和角度的感知误差大。
+          </div>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="l6_s6_code1">关键代码 ① treemap 矩形嵌套<span class="sub-en">Key Code ① Treemap Rectangular Nesting</span></h3>
+          <pre class="code-block"><code data-raw">// 统一层级数据
+var root = d3.hierarchy(data).sum(function (d) { return d.value; });
+
+// treemap：矩形嵌套
+d3.treemap().size([W, H]).padding(2)(root);
+root.leaves().forEach(function (node) {
+  // node 上有 x0, y0, x1, y1
+  g.append('rect')
+    .attr('x', node.x0).attr('y', node.y0)
+    .attr('width', node.x1 - node.x0)
+    .attr('height', node.y1 - node.y0);
+});</code></pre>
+          <h3 class="sub-title" data-i18n="l6_s6_code2">关键代码 ② pack 与 partition<span class="sub-en">Key Code ② Pack and Partition</span></h3>
+          <pre class="code-block"><code data-raw">// pack：圆形嵌套
+d3.pack().size([W, H]).padding(3)(root);
+root.descendants().forEach(function (node) {
+  g.append('circle').attr('cx', node.x).attr('cy', node.y).attr('r', node.r);
+});
+
+// partition：旭日图 / 矩形分区
+d3.partition().size([H, W])(root);
+root.descendants().forEach(function (node) {
+  // partition 旭日图用角度 + 半径
+});</code></pre>
+          <div class="key-point-box" data-i18n-html="l6_s6_kp1">
+            <span class="kp-label">关键点解释：</span><code>.sum(d => d.value)</code> 让每个叶子节点携带权重，布局函数据此计算面积/半径。<strong>层级数据必须先 <code>d3.hierarchy</code> 包装</strong>，不能直接传给布局函数。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="l6_s6_demo_title">Demo · 三种层级布局并排对比</div>
+            <svg id="demo-6-6-svg" width="760" height="300"></svg>
+            <div class="demo-note" data-i18n="l6_s6_demo_note">左：treemap（矩形嵌套）；中：pack（圆形嵌套）；右：partition（矩形分区）。同一数据源，不同几何表达。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 6.7 GitHub Pages 部署 ============== -->
+      <section class="lesson-section" id="sec-6-7">
+        <h2 class="sec-title" data-i18n="l6_s7_title">6.7 静态网站部署 GitHub Pages</h2>
+        <div class="sec-subtitle" data-i18n="l6_s7_sub">零成本托管，4 步上线</div>
+        <div class="sec-subtitle en">Zero-cost hosting — go live in 4 steps</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="l6_s7_p1">GitHub Pages 是静态课程网站的理想宿主：</p>
+          <h3 class="sub-title" data-i18n="l6_s7_h_flow">部署流程</h3>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s7_f1">1. 在 GitHub 新建仓库（如 <code>username/username.github.io</code> 或普通仓库）</li>
+            <li data-i18n="l6_s7_f2">2. 把本地项目 push 到仓库 main 分支</li>
+            <li data-i18n="l6_s7_f3">3. 仓库 Settings → Pages → Source 选择 main 分支 + /(root)</li>
+            <li data-i18n-html="l6_s7_f4">4. 等待一两分钟，访问 <code>https://username.github.io/repo/</code></li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s7_alert1">
+            <strong>注意事项：</strong>仓库名若不是 <code>.github.io</code> 结尾，访问 URL 会带 <code>/repo</code> 子路径。所有相对路径从 HTML 文件位置出发，无需额外配置。不支持后端和 PHP，但对纯静态课程站点完全够用。
+          </div>
+          <h3 class="sub-title" data-i18n="l6_s7_h_local">本地调试</h3>
+          <p data-i18n-html="l6_s7_p_local">用 <code>python -m http.server 8000</code> 或 VS Code Live Server 插件启动本地服务器，避免 <code>file://</code> 协议下的跨域限制。</p>
+
+          <h3 class="sub-title" data-i18n="l6_s7_h_case">🎯 案例应用：仪表盘上线发布</h3>
+          <p data-i18n="l6_s7_p_case">把完成的学生数据仪表盘部署到 GitHub Pages：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s7_c1">1. 本地测试：<code>python -m http.server 8000</code>，确认所有图表正常渲染</li>
+            <li data-i18n-html="l6_s7_c2">2. 检查相对路径：确保所有 <code>../data/*.csv</code>、<code>../css/</code>、<code>../js/</code> 引用正确</li>
+            <li data-i18n="l6_s7_c3">3. Push 到 GitHub 仓库 main 分支</li>
+            <li data-i18n="l6_s7_c4">4. Settings → Pages → Source: main / root</li>
+            <li data-i18n-html="l6_s7_c5">5. 访问 <code>https://username.github.io/student-dashboard/</code></li>
+          </ul>
+
+          <h3 class="sub-title" data-i18n="l6_s7_h_perf">🌐 部署后的性能优化理论</h3>
+          <p data-i18n="l6_s7_p_perf">上线后还需关注性能和用户体验：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s7_perf1"><strong>懒加载：</strong>图表只在进入视口时渲染，避免首屏卡顿</li>
+            <li data-i18n-html="l6_s7_perf2"><strong>数据压缩：</strong>CSV 转更小的格式，大数据量用分页或采样</li>
+            <li data-i18n-html="l6_s7_perf3"><strong>CDN 加速：</strong>D3.js、Tailwind 用 CDN 引入，利用浏览器缓存</li>
+            <li data-i18n-html="l6_s7_perf4"><strong>缓存策略：</strong>静态资源设置长缓存，HTML 不缓存</li>
+          </ul>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="l6_s7_code1">关键代码 ① Git 推送命令<span class="sub-en">Key Code ① Git Push Commands</span></h3>
+          <pre class="code-block"><code data-raw"># 本地项目 push 到 GitHub
+cd vis-course
+git init
+git add -A
+git commit -m "init: 数据可视化课程网站"
+git branch -M main
+git remote add origin https://github.com/username/vis-course.git
+git push -u origin main</code></pre>
+          <h3 class="sub-title" data-i18n="l6_s7_code2">关键代码 ② GitHub Actions 自动部署<span class="sub-en">Key Code ② Auto Deploy with GitHub Actions</span></h3>
+          <pre class="code-block"><code data-raw"># 可选：用 GitHub Actions 自动部署
+# .github/workflows/deploy.yml
+- name: Deploy
+  run: |
+    git push origin main:gh-pages
+# 或直接在 Settings → Pages 选 main 分支 root</code></pre>
+          <div class="key-point-box" data-i18n-html="l6_s7_kp1">
+            <span class="kp-label">关键点解释：</span>本课程所有资源用<strong>相对路径</strong>（章节页用 <code>../css/</code>、<code>../data/</code>），因此无论是本地 <code>file://</code>、本地服务器还是 GitHub Pages 子路径，都能正确加载，不会 404。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="l6_s7_demo_title">Demo · GitHub Pages 部署 4 步流程</div>
+            <div class="demo-controls">
+              <button data-action="autoplay" class="demo-btn" data-i18n="l6_s7_btn_play">▶ 自动播放流程</button>
+              <button data-action="reset" class="demo-btn" data-i18n="l6_s7_btn_reset">↺ 重置</button>
+            </div>
+            <svg id="demo-6-7-svg" width="760" height="210"></svg>
+            <div class="demo-note" data-i18n="l6_s7_demo_note">创建仓库 → Push 代码 → 开启 Pages → 访问上线，典型的 C4 部署路径。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 6.8 综合案例：学生数据可视化仪表盘 ============== -->
+      <section class="lesson-section" id="sec-6-8">
+        <h2 class="sec-title" data-i18n="l6_s8_title">6.8 综合案例：学生数据可视化仪表盘</h2>
+        <div class="sec-subtitle" data-i18n="l6_s8_sub">把 6.1~6.7 的知识点全部整合，做出一个完整可运行的 Dashboard</div>
+        <div class="sec-subtitle en">Integrate 6.1~6.7 into a fully functional data dashboard</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="l6_s8_p1">本节把前面学的所有布局知识点整合到一个完整的「学生数据可视化仪表盘」中。</p>
+
+          <h3 class="sub-title" data-i18n="l6_s8_h_req">📋 需求分析</h3>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s8_req1"><strong>目标用户：</strong>辅导员、教务老师，需要快速了解新生概况</li>
+            <li data-i18n-html="l6_s8_req2"><strong>核心指标：</strong>总人数、男女比例、专业分布、年龄分布</li>
+            <li data-i18n-html="l6_s8_req3"><strong>交互需求：</strong>按专业/性别筛选，图表联动更新</li>
+          </ul>
+
+          <h3 class="sub-title" data-i18n="l6_s8_h_arch">🏗️ 整体布局架构</h3>
+          <p data-i18n="l6_s8_p_arch">仪表盘分三层，自上而下：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s8_a1"><strong>① 顶部导航栏（Flex）：</strong>Logo + 页面标题 + 全局筛选器（6.2 Flex 知识点）</li>
+            <li data-i18n-html="l6_s8_a2"><strong>② 数据概览卡片行（Grid）：</strong>4 个 KPI 卡片并排，展示总人数、男女人数、专业数、平均年龄（6.3 Grid 知识点）</li>
+            <li data-i18n-html="l6_s8_a3"><strong>③ 主内容区（双栏 Grid）：</strong>左侧筛选面板 + 右侧图表网格（6.4 双栏知识点）</li>
+          </ul>
+
+          <h3 class="sub-title" data-i18n="l6_s8_h_chart">📊 图表区布局</h3>
+          <p data-i18n="l6_s8_p_chart">主内容区右侧用 12 列 Grid 排布 3 个图表：</p>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s8_ch1"><strong>柱状图（跨 6 列）：</strong>各专业人数对比 — 主图表，面积最大</li>
+            <li data-i18n-html="l6_s8_ch2"><strong>饼图（跨 4 列）：</strong>性别比例 — 辅助图表</li>
+            <li data-i18n-html="l6_s8_ch3"><strong>折线图（跨 6 列）：</strong>历年招生趋势 — 跨满底部</li>
+          </ul>
+          <div class="alert-box" data-i18n-html="l6_s8_alert1">
+            <strong>设计原则落地：</strong>对比（主图表跨 6 列，辅图表跨 4 列，用面积区分主次）、重复（所有卡片统一圆角 12px、统一内边距 20px）、对齐（网格线严格对齐）、亲密性（同组图表间距小，不同组间距大）、留白（卡片间 gap: 20px，内容不拥挤）。
+          </div>
+
+          <h3 class="sub-title" data-i18n="l6_s8_h_inter">🔄 交互设计</h3>
+          <ul class="checklist">
+            <li data-i18n-html="l6_s8_i1"><strong>Tab 切换图表类型（6.5）：</strong>同一区域用 Tab 在柱状图/饼图/折线图间切换</li>
+            <li data-i18n-html="l6_s8_i2"><strong>筛选联动（6.4）：</strong>左侧勾选专业 → 右侧图表过滤数据并重绘</li>
+            <li data-i18n-html="l6_s8_i3"><strong>D3 渲染（6.6）：</strong>每个图表用对应 D3 布局函数生成</li>
+          </ul>
+
+          <h3 class="sub-title" data-i18n="l6_s8_h_deploy">🚀 上线流程（6.7）</h3>
+          <p data-i18n="l6_s8_p_deploy">完成开发后，按 6.7 的流程部署到 GitHub Pages，注意相对路径和懒加载优化。</p>
+
+          <div class="key-point-box" data-i18n-html="l6_s8_kp">
+            <span class="kp-label">案例总结：</span>本案例串联了 Flex（导航）、Grid（卡片+图表网格）、双栏（筛选+主区）、Tab（图表切换）、D3 布局（图表渲染）、部署（上线）六大模块。学完本节，你已具备独立开发数据可视化网页的完整能力。
+          </div>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="l6_s8_code1">关键代码 ① 整体布局骨架<span class="sub-en">Key Code ① Overall Layout Skeleton</span></h3>
+          <pre class="code-block"><code data-raw">/* 仪表盘整体布局 */
+.dashboard {
+  display: grid;
+  grid-template-rows: auto auto 1fr;   /* 导航 + KPI行 + 主区 */
+  gap: 20px;
+}
+
+/* ① 顶部导航：Flex */
+.dash-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  height: 60px;
+}
+
+/* ② KPI 卡片行：Grid */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* ③ 主内容区：双栏 Grid */
+.dash-main {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 20px;
+}</code></pre>
+
+          <h3 class="sub-title" data-i18n="l6_s8_code2">关键代码 ② 图表网格 + Tab 切换<span class="sub-en">Key Code ② Chart Grid + Tab Switch</span></h3>
+          <pre class="code-block"><code data-raw">/* 图表区 12 列网格 */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+}
+.chart-bar    { grid-column: span 6; }  /* 柱状图跨 6 列 */
+.chart-pie    { grid-column: span 4; }  /* 饼图跨 4 列 */
+.chart-line   { grid-column: span 6; }  /* 折线图跨 6 列 */
+
+@media (max-width: 900px) {
+  .chart-bar, .chart-pie, .chart-line { grid-column: span 12; }
+}</code></pre>
+
+          <h3 class="sub-title" data-i18n="l6_s8_code3">关键代码 ③ 筛选联动 + D3 渲染<span class="sub-en">Key Code ③ Filter + D3 Render</span></h3>
+          <pre class="code-block"><code data-raw">// 筛选器点击 → 过滤数据 → 重绘图表
+d3.selectAll('.filter-item').on('click', function () {
+  var selected = d3.select(this).attr('data-major');
+  var filtered = students.filter(function (d) {
+    return d.major === selected;
+  });
+  renderBarChart(filtered);   // 重绘柱状图
+  renderPieChart(filtered);   // 重绘饼图
+});
+
+// D3 柱状图渲染
+function renderBarChart(data) {
+  var svg = d3.select('#bar-chart');
+  svg.selectAll('rect').data(data).join('rect')
+    .attr('x', (d, i) => i * 40)
+    .attr('y', d => height - d.count * 5)
+    .attr('width', 32)
+    .attr('height', d => d.count * 5)
+    .attr('fill', '#3b82f6');
+}</code></pre>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="l6_s8_demo_title">Demo · 仪表盘整体布局架构图</div>
+            <svg id="demo-6-8-svg" width="760" height="620"></svg>
+            <div class="demo-note" data-i18n="l6_s8_demo_note">自上而下：导航栏（Flex）→ KPI 卡片行（Grid）→ 双栏主区（筛选 + 图表网格）。展示 6.1~6.7 所有布局知识点的整合。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 补充：demo 集合 ============== -->
+      <section class="lesson-section" id="sec-6-extra1">
+        <h2 class="sec-title" data-i18n="extra1_title">补充：demo 集合</h2>
+        <div class="sec-subtitle" data-i18n="extra1_sub">本章所有 demo 一览</div>
+        <div class="sec-subtitle en">Overview of all demos in this chapter</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="extra1_p1">共 8 个可视化 demo，覆盖 6.1 ~ 6.8 每个小节核心知识点：</p>
+          <ul class="checklist">
+            <li data-i18n="extra1_li1">6.1 HTML/CSS/JS 三层结构图</li>
+            <li data-i18n="extra1_li2">6.2 Flex 方向切换演示</li>
+            <li data-i18n="extra1_li3">6.3 Grid 模板切换演示</li>
+            <li data-i18n="extra1_li4">6.4 双栏布局宽窄切换</li>
+            <li data-i18n="extra1_li5">6.5 Tab 组件交互演示</li>
+            <li data-i18n="extra1_li6">6.6 D3 三种布局对比（treemap / pack / partition）</li>
+            <li data-i18n="extra1_li7">6.7 GitHub Pages 部署流程图</li>
+            <li data-i18n="extra1_li8">6.8 仪表盘整体布局架构图</li>
+          </ul>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="extra1_code1">关键代码 ① demo 统一注册<span class="sub-en">Key Code ① Unified Demo Registration</span></h3>
+          <pre class="code-block"><code data-raw">// main.js 中维护了 demoRegistry
+window.registerDemo = function (sectionId, fn) {
+  demoRegistry[sectionId] = fn;
+};
+
+// 各页面底部集中注册
+window.registerDemo('sec-6-1', function () { /* ... */ });
+window.registerDemo('sec-6-2', function () { /* ... */ });
+// ... 共 7 个</code></pre>
+          <div class="key-point-box" data-i18n-html="extra1_kp1">
+            <span class="kp-label">关键点解释：</span>demo 懒加载：只有当用户切到该小节的「演示」Tab 时，才触发 <code>demo:activate</code> 事件运行对应 demo。避免页面加载时一次性运行所有 SVG 导致卡顿。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="extra1_demo_title">Demo · 7 个小节 demo 完成度</div>
+            <svg id="demo-6-extra1-svg" width="760" height="200"></svg>
+            <div class="demo-note" data-i18n="extra1_demo_note">横向条形图，每节一个色块，全部绿色表示已完成。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 补充：common.demo-folder ============== -->
+      <section class="lesson-section" id="sec-6-extra2">
+        <h2 class="sec-title" data-i18n="extra2_title">补充：common.demo-folder</h2>
+        <div class="sec-subtitle" data-i18n="extra2_sub">demo 目录组织约定</div>
+        <div class="sec-subtitle en">Demo folder organization convention</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="extra2_p1">所有章节共享同一套目录约定：</p>
+          <ul class="checklist">
+            <li data-i18n-html="extra2_li1"><code>css/style.css</code> — 全局样式（所有章节共用）</li>
+            <li data-i18n-html="extra2_li2"><code>js/main.js</code> — 全局逻辑（导航高亮、Tab 切换、侧边目录、demo 懒加载）</li>
+            <li data-i18n-html="extra2_li3"><code>lesson-N/index.html</code> — 每章独立页面，引入公共 CSS/JS</li>
+            <li data-i18n-html="extra2_li4"><code>data/*.csv</code> — 共享数据文件，章节内用 <code>../data/</code> 相对路径访问</li>
+          </ul>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="extra2_code1">关键代码 ① 目录结构约定<span class="sub-en">Key Code ① Directory Structure</span></h3>
+          <pre class="code-block"><code data-raw">vis-course/
+├── index.html              # 首页（用 ./css ./js）
+├── css/style.css
+├── js/main.js
+├── data/*.csv
+└── lesson-06/index.html    # 章节页（用 ../css ../js ../data）</code></pre>
+          <div class="key-point-box" data-i18n-html="extra2_kp1">
+            <span class="kp-label">关键点解释：</span>首页在根目录，用 <code>./css/</code>；章节页在子目录，用 <code>../css/</code>。相对路径从 HTML 文件自身位置出发，因此无论部署到哪里都不会 404。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="extra2_demo_title">Demo · 目录结构可视化</div>
+            <svg id="demo-6-extra2-svg" width="760" height="260"></svg>
+            <div class="demo-note" data-i18n="extra2_demo_note">层级树：根 → CSS / JS / data / 6 个章节文件夹。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 补充：完整讲义 markdown ============== -->
+      <section class="lesson-section" id="sec-6-extra3">
+        <h2 class="sec-title" data-i18n="extra3_title">补充：完整讲义 markdown</h2>
+        <div class="sec-subtitle" data-i18n="extra3_sub">网页是讲义的可视化摘要</div>
+        <div class="sec-subtitle en">The web page is a visual summary of the lecture notes</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read" data-i18n="tab_read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code" data-i18n="tab_code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo" data-i18n="tab_demo">▶️ 演示</button>
+        </div>
+
+        <!-- 讲解 -->
+        <div class="sec-tab-panel active" data-panel="read">
+          <p data-i18n="extra3_p1">本课程每个章节的课堂讲义均以 markdown 源文件形式维护，网页版是讲义的可视化呈现：</p>
+          <ul class="checklist">
+            <li data-i18n="extra3_li1">讲义包含完整文字、图示说明、课后习题</li>
+            <li data-i18n="extra3_li2">网页聚焦交互式 demo 和代码运行效果</li>
+            <li data-i18n="extra3_li3">二者相互补充：讲义打基础，网页提兴趣</li>
+          </ul>
+        </div>
+
+        <!-- 关键代码 -->
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title" data-i18n="extra3_code1">关键代码 ① markdown 讲义结构<span class="sub-en">Key Code ① Markdown Lecture Structure</span></h3>
+          <pre class="code-block"><code data-raw"># 第 6 章 网页页面布局
+
+## 6.1 网页基础概念
+### HTML / CSS / JS 三层分离
+... （完整讲义内容）</code></pre>
+          <div class="key-point-box" data-i18n-html="extra3_kp1">
+            <span class="kp-label">关键点解释：</span>网页 section 与 markdown 的二级标题一一对应。讲义可导出 PDF 打印，网页用于课堂互动演示，两者同源。
+          </div>
+        </div>
+
+        <!-- 演示 -->
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title" data-i18n="extra3_demo_title">Demo · 网页 ↔ markdown 双栏对应</div>
+            <svg id="demo-6-extra3-svg" width="760" height="220"></svg>
+            <div class="demo-note" data-i18n="extra3_demo_note">左右两列节点通过弧线连接：每个网页 section 对应讲义的一个二级标题。</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="../js/i18n.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+
+  // i18n 辅助：取当前语言的翻译值
+  function t(key) {
+    var dict = (window.getI18n && window.getI18n()) || {};
+    return dict[key] !== undefined ? dict[key] : key;
+  }
+
+  /* ---------- 6.1 HTML/CSS/JS 三层结构图（横向三层卡片） ---------- */
+  window.registerDemo('sec-6-1', function () {
+    var svg = d3.select('#demo-6-1-svg');
+    var W = 760, H = 240;
+    function getData() {
+      return [
+        { name: 'HTML', layer: t('l6_s1_d_layer_html'), color: '#60a5fa', desc: t('l6_s1_d_desc_html') },
+        { name: 'CSS',  layer: t('l6_s1_d_layer_css'),  color: '#34d399', desc: t('l6_s1_d_desc_css') },
+        { name: 'JS',   layer: t('l6_s1_d_layer_js'),   color: '#f472b6', desc: t('l6_s1_d_desc_js') }
+      ];
+    }
+    var data = getData();
+    var g = svg.append('g').attr('transform', 'translate(0,0)');
+    var boxW = 200, boxH = 115, gap = 30;
+    var totalW = data.length * boxW + (data.length - 1) * gap;
+    var startX = (W - totalW) / 2;
+
+    // 用 D3 数据绑定绘制卡片
+    var cards = g.selectAll('g.card').data(data).enter().append('g')
+      .attr('class', 'card')
+      .attr('transform', function (d, i) { return 'translate(' + (startX + i * (boxW + gap)) + ',60)'; })
+      .attr('opacity', 0)
+      .style('cursor', 'pointer');
+
+    // 入场动画：卡片依次从下滑入 + 淡入
+    cards.transition().duration(500).delay(function (d, i) { return i * 200; })
+      .attr('transform', function (d, i) { return 'translate(' + (startX + i * (boxW + gap)) + ',20)'; })
+      .attr('opacity', 1);
+
+    cards.append('rect')
+      .attr('width', boxW).attr('height', boxH)
+      .attr('rx', 12).attr('ry', 12)
+      .attr('fill', function (d) { return d.color; }).attr('fill-opacity', 0.18)
+      .attr('stroke', function (d) { return d.color; }).attr('stroke-width', 2);
+    cards.append('text')
+      .attr('x', boxW / 2).attr('y', 50).attr('text-anchor', 'middle')
+      .attr('font-size', 16).attr('font-weight', 700).attr('fill', '#0f172a')
+      .append('tspan').text(function (d) { return d.name; })
+      .append('tspan').attr('x', boxW / 2).attr('dy', 22).text(function (d) { return d.layer; });
+    cards.append('text')
+      .attr('x', boxW / 2).attr('y', 92).attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('fill', '#475569')
+      .selectAll('tspan').data(function (d) { return d.desc.split('\n'); }).enter().append('tspan')
+        .attr('x', boxW / 2).attr('dy', function (_, j) { return j === 0 ? 0 : 16; })
+        .text(function (s) { return s; });
+
+    // 底部箭头与说明
+    var arrowY = H - 30;
+    var arrow = g.append('path')
+      .attr('d', 'M' + startX + ',' + arrowY + ' H' + (startX + totalW))
+      .attr('stroke', '#64748b').attr('stroke-width', 1.5).attr('stroke-dasharray', '4,3')
+      .attr('stroke-dashoffset', 200).attr('opacity', 0);
+    arrow.transition().delay(700).duration(600)
+      .attr('stroke-dashoffset', 0).attr('opacity', 1);
+    var hint = g.append('text').attr('x', W / 2).attr('y', arrowY - 10)
+      .attr('text-anchor', 'middle').attr('font-size', 12).attr('fill', '#64748b').attr('opacity', 0)
+      .text(t('l6_s1_d_arrow'));
+    hint.transition().delay(900).duration(400).attr('opacity', 1);
+
+    // 卡片之间的连接箭头（HTML → CSS → JS）
+    var arrows = g.selectAll('path.conn').data(d3.range(data.length - 1)).enter().append('path')
+      .attr('class', 'conn')
+      .attr('d', function (d, i) {
+        var x1 = startX + i * (boxW + gap) + boxW + 4;
+        var x2 = x1 + gap - 8;
+        var y = 20 + boxH / 2;
+        return 'M' + x1 + ',' + y + ' L' + x2 + ',' + y;
+      })
+      .attr('stroke', '#94a3b8').attr('stroke-width', 2).attr('fill', 'none')
+      .attr('marker-end', 'url(#arrow61)')
+      .attr('opacity', 0)
+      .attr('stroke-dasharray', '6,4').attr('stroke-dashoffset', 20);
+    arrows.transition().delay(function (d, i) { return 700 + i * 150; }).duration(500)
+      .attr('opacity', 1).attr('stroke-dashoffset', 0);
+    // 箭头 marker
+    svg.append('defs').append('marker')
+      .attr('id', 'arrow61').attr('viewBox', '0 -5 10 10').attr('refX', 8).attr('refY', 0)
+      .attr('markerWidth', 6).attr('markerHeight', 6).attr('orient', 'auto')
+      .append('path').attr('d', 'M0,-5L10,0L0,5').attr('fill', '#94a3b8');
+
+    // 点击交互：高亮选中卡片，其余变淡 + 选中卡片放大
+    cards.on('click', function (event, d) {
+      cards.select('rect')
+        .attr('fill-opacity', 0.12).attr('stroke-width', 1.5);
+      cards.transition().duration(200)
+        .attr('transform', function (dd, i) { return 'translate(' + (startX + i * (boxW + gap)) + ',20)'; });
+      d3.select(this).select('rect')
+        .attr('fill-opacity', 0.4).attr('stroke-width', 3.5);
+      d3.select(this).transition().duration(200)
+        .attr('transform', function (dd, i) { return 'translate(' + (startX + i * (boxW + gap) - 6) + ',14) scale(1.06)'; });
+      hint.text(t('l6_s1_d_selected') + d.name + ' · ' + d.layer + ' — ' + d.desc.replace('\n', ' '));
+    });
+
+    // 悬停：高亮该层及之前所有层的卡片和箭头，其余变淡
+    cards.on('mouseenter', function (event, d) {
+      var idx = data.indexOf(d);
+      cards.each(function (dd, i) {
+        var sel = d3.select(this);
+        var active = i <= idx;
+        sel.select('rect').attr('fill-opacity', active ? 0.32 : 0.1)
+          .attr('stroke-width', active ? 2.5 : 1.5);
+        sel.select('text').attr('font-weight', active ? 800 : 500);
+      });
+      arrows.attr('stroke', function (_, i) { return i < idx ? d3.color(data[idx].color).brighter(0.5) : '#cbd5e1'; })
+        .attr('stroke-width', function (_, i) { return i < idx ? 3 : 2; })
+        .attr('opacity', function (_, i) { return i < idx ? 1 : 0.3; });
+      svg.select('#arrow61 path').attr('fill', function () { return d.color; });
+    }).on('mouseleave', function () {
+      cards.select('rect').attr('fill-opacity', 0.18).attr('stroke-width', 2);
+      cards.select('text').attr('font-weight', 700);
+      arrows.attr('stroke', '#94a3b8').attr('stroke-width', 2).attr('opacity', 1);
+      svg.select('#arrow61 path').attr('fill', '#94a3b8');
+    });
+
+    document.addEventListener('langchange', function () {
+      window.rerunDemo('sec-6-1');
+    });
+  });
+
+  /* ---------- 6.2 Flex 方向切换演示 ---------- */
+  window.registerDemo('sec-6-2', function () {
+    var svg = d3.select('#demo-6-2-svg');
+    var stage = svg.node().closest('.demo-stage');
+    var W = 760, H = 260;
+    var subW = 80, subH = 80, gap = 16;
+    var colors = ['#ef4444', '#22c55e', '#3b82f6', '#f59e0b', '#a855f7'];
+    var containerW = W - 80, containerH = H - 80;
+    var cx = (W - containerW) / 2, cy = 40;
+
+    svg.append('rect')
+      .attr('x', cx).attr('y', cy).attr('width', containerW).attr('height', containerH)
+      .attr('rx', 10).attr('fill', '#e2e8f0').attr('stroke', '#94a3b8').attr('stroke-dasharray', '5,3');
+
+    var itemsG = svg.append('g');
+    var label = svg.append('text')
+      .attr('x', W / 2).attr('y', H - 16).attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('fill', '#475569');
+
+    // 用 D3 数据绑定一次性创建元素，后续切换时用 transition 平滑过渡
+    var rects = itemsG.selectAll('rect').data(colors).enter().append('rect')
+      .attr('width', subW).attr('height', subH)
+      .attr('rx', 8).attr('fill', function (d) { return d; }).attr('fill-opacity', 0.85)
+      .attr('stroke', '#fff').attr('stroke-width', 2);
+    var texts = itemsG.selectAll('text').data(colors).enter().append('text')
+      .attr('text-anchor', 'middle').attr('font-size', 14).attr('fill', '#fff')
+      .attr('font-weight', 700).text(function (d, i) { return i + 1; });
+
+    function render(dir) {
+      var isRow = dir === 'row';
+      var total;
+      if (isRow) {
+        total = colors.length * subW + (colors.length - 1) * gap;
+      } else {
+        total = colors.length * subH + (colors.length - 1) * gap;
+      }
+      rects.transition().duration(500).ease(d3.easeCubicInOut)
+        .attr('x', function (d, i) {
+          if (isRow) return cx + (containerW - total) / 2 + i * (subW + gap);
+          return cx + (containerW - subW) / 2;
+        })
+        .attr('y', function (d, i) {
+          if (isRow) return cy + (containerH - subH) / 2;
+          return cy + (containerH - total) / 2 + i * (subH + gap);
+        });
+      texts.transition().duration(500).ease(d3.easeCubicInOut)
+        .attr('x', function (d, i) {
+          if (isRow) return cx + (containerW - total) / 2 + i * (subW + gap) + subW / 2;
+          return cx + (containerW - subW) / 2 + subW / 2;
+        })
+        .attr('y', function (d, i) {
+          if (isRow) return cy + (containerH - subH) / 2 + subH / 2 + 4;
+          return cy + (containerH - total) / 2 + i * (subH + gap) + subH / 2 + 4;
+        });
+      label.text('flex-direction: ' + dir + ';  justify-content: center;  align-items: center;');
+    }
+
+    render('row');
+
+    d3.selectAll(stage.querySelectorAll('.demo-controls button[data-dir]')).on('click', function () {
+      d3.selectAll(stage.querySelectorAll('.demo-controls button[data-dir]')).each(function () {
+        d3.select(this).style('background', '').style('color', '');
+      });
+      d3.select(this).style('background', '#2563eb').style('color', '#fff');
+      render(d3.select(this).attr('data-dir'));
+    });
+    d3.select(stage.querySelector('.demo-controls button[data-dir="row"]')).style('background', '#2563eb').style('color', '#fff');
+  });
+
+  /* ---------- 6.3 Grid 模板切换演示 ---------- */
+  window.registerDemo('sec-6-3', function () {
+    var svg = d3.select('#demo-6-3-svg');
+    var stage = svg.node().closest('.demo-stage');
+    var W = 760, H = 320;
+    var colors = d3.schemeTableau10.concat(['#f87171', '#4ade80']);
+    var containerW = W - 80, containerH = H - 90;
+    var cx = (W - containerW) / 2, cy = 40;
+
+    svg.append('rect')
+      .attr('x', cx).attr('y', cy).attr('width', containerW).attr('height', containerH)
+      .attr('rx', 10).attr('fill', '#e2e8f0').attr('stroke', '#94a3b8').attr('stroke-dasharray', '5,3');
+
+    var itemsG = svg.append('g');
+    var label = svg.append('text')
+      .attr('x', W / 2).attr('y', H - 20).attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('fill', '#475569');
+
+    // 用 D3 数据绑定一次性创建 12 个格子，切换时用 transition 平滑过渡
+    var gridData = d3.range(12);
+    var rects = itemsG.selectAll('rect').data(gridData).enter().append('rect')
+      .attr('rx', 6).attr('fill', function (d, i) { return colors[i]; }).attr('fill-opacity', 0.8)
+      .attr('stroke', '#fff').attr('stroke-width', 2);
+    var texts = itemsG.selectAll('text').data(gridData).enter().append('text')
+      .attr('text-anchor', 'middle').attr('font-size', 12).attr('fill', '#fff')
+      .attr('font-weight', 700).text(function (d, i) { return i + 1; });
+
+    function render(cols) {
+      var rows = Math.ceil(12 / cols);
+      var gap = 10;
+      var cellW = (containerW - (cols + 1) * gap) / cols;
+      var cellH = (containerH - (rows + 1) * gap) / rows;
+      rects.transition().duration(500).ease(d3.easeCubicInOut)
+        .attr('x', function (d, i) { return cx + gap + (i % cols) * (cellW + gap); })
+        .attr('y', function (d, i) { return cy + gap + Math.floor(i / cols) * (cellH + gap); })
+        .attr('width', cellW).attr('height', cellH);
+      texts.transition().duration(500).ease(d3.easeCubicInOut)
+        .attr('x', function (d, i) { return cx + gap + (i % cols) * (cellW + gap) + cellW / 2; })
+        .attr('y', function (d, i) { return cy + gap + Math.floor(i / cols) * (cellH + gap) + cellH / 2 + 4; });
+      label.text('grid-template-columns: repeat(' + cols + ', 1fr);  // ' + t('l6_s3_d_grid_total') + ' ' + rows + ' ' + t('l6_s3_d_row') + ' × ' + cols + ' ' + t('l6_s3_d_col'));
+    }
+
+    render(3);
+
+    d3.selectAll(stage.querySelectorAll('.demo-controls button[data-cols]')).on('click', function () {
+      d3.selectAll(stage.querySelectorAll('.demo-controls button[data-cols]')).each(function () {
+        d3.select(this).style('background', '').style('color', '');
+      });
+      d3.select(this).style('background', '#2563eb').style('color', '#fff');
+      render(+d3.select(this).attr('data-cols'));
+    });
+    d3.select(stage.querySelector('.demo-controls button[data-cols="3"]')).style('background', '#2563eb').style('color', '#fff');
+
+    document.addEventListener('langchange', function () {
+      window.rerunDemo('sec-6-3');
+    });
+  });
+
+  /* ---------- 6.4 双栏布局宽窄切换 ---------- */
+  window.registerDemo('sec-6-4', function () {
+    var svg = d3.select('#demo-6-4-svg');
+    var stage = svg.node().closest('.demo-stage');
+    var W = 760, H = 380;
+    var topPad = 10, bottomPad = 50;
+    var availH = H - topPad - bottomPad;
+    var gap = 12;
+    var curSideW = 260;
+    var collapsed = false;
+
+    var label = svg.append('text')
+      .attr('x', W / 2).attr('y', H - 20).attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('fill', '#475569');
+
+    // 侧边栏（持久化元素组）
+    var sideG = svg.append('g');
+    var sideRect = sideG.append('rect')
+      .attr('rx', 8).attr('fill', '#fef3c7').attr('stroke', '#f59e0b');
+    var sideTitle = sideG.append('text')
+      .attr('text-anchor', 'middle').attr('font-size', 13).attr('font-weight', 700).attr('fill', '#92400e').text('侧边栏');
+    var sideVal = sideG.append('text')
+      .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#b45309');
+    // 侧边栏里画几个模拟菜单项
+    var menuItems = sideG.selectAll('g.menu-item').data([1, 2, 3, 4]).enter().append('g').attr('class', 'menu-item');
+    menuItems.append('rect').attr('rx', 4).attr('fill', '#fde68a').attr('fill-opacity', 0.9).attr('height', 18);
+    menuItems.append('text').attr('font-size', 10).attr('fill', '#92400e').text(function (d, i) { return ['📊 概览', '📈 图表', '🗂 数据', '⚙️ 设置'][i]; });
+
+    // 主内容区（持久化元素组）
+    var mainG = svg.append('g');
+    var mainRect = mainG.append('rect')
+      .attr('rx', 8).attr('fill', '#dbeafe').attr('stroke', '#3b82f6');
+    var mainTitle = mainG.append('text')
+      .attr('text-anchor', 'middle').attr('font-size', 13).attr('font-weight', 700).attr('fill', '#1e40af').text('主内容区');
+    var mainVal = mainG.append('text')
+      .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#1e40af');
+    // 主区里画几个模拟卡片
+    var cards = mainG.selectAll('g.mcard').data([0, 1, 2]).enter().append('g').attr('class', 'mcard');
+    cards.append('rect').attr('rx', 6).attr('fill', '#eff6ff').attr('stroke', '#93c5fd');
+    cards.append('circle').attr('r', 14).attr('fill', function (d, i) { return ['#60a5fa', '#34d399', '#f472b6'][i]; });
+    cards.append('text').attr('font-size', 10).attr('text-anchor', 'middle').attr('fill', '#1e40af').text(function (d, i) { return '卡片 ' + (i + 1); });
+
+    // 可拖拽分隔条
+    var divider = svg.append('g').style('cursor', 'ew-resize');
+    var dividerLine = divider.append('rect').attr('width', 6).attr('rx', 3).attr('fill', '#64748b').attr('fill-opacity', 0.5);
+    divider.append('line').attr('stroke', '#64748b').attr('stroke-width', 2);
+    divider.append('line').attr('stroke', '#64748b').attr('stroke-width', 2);
+
+    function render(sideW, col) {
+      curSideW = sideW; collapsed = col;
+      var t = svg.transition().duration(500).ease(d3.easeCubicInOut);
+
+      if (col) {
+        // 单列折叠：侧栏在上，主区在下
+        var sideH = 92;
+        sideRect.transition(t).attr('x', 0).attr('y', topPad).attr('width', W).attr('height', sideH);
+        sideTitle.transition(t).attr('x', W / 2).attr('y', topPad + 22);
+        sideVal.transition(t).attr('x', W / 2).attr('y', topPad + 40).text(W + 'px (整宽)');
+        var menuStartX = (W - (4 * 100 + 3 * 12)) / 2;
+        menuItems.transition(t).attr('transform', function (d, i) { return 'translate(' + (menuStartX + i * 112) + ',' + (topPad + 56) + ')'; });
+        menuItems.select('rect').attr('width', 100);
+
+        var mainY = topPad + sideH + gap;
+        var mainH = availH - sideH - gap;
+        mainRect.transition(t).attr('x', 0).attr('y', mainY).attr('width', W).attr('height', mainH);
+        mainTitle.transition(t).attr('x', W / 2).attr('y', mainY + 24);
+        mainVal.transition(t).attr('x', W / 2).attr('y', mainY + 44).text(W + 'px');
+        cards.transition(t).attr('transform', function (d, i) { return 'translate(' + (30 + i * 240) + ',' + (mainY + 70) + ')'; });
+        cards.select('rect').attr('width', 200).attr('height', 90);
+        cards.select('circle').attr('cx', 100).attr('cy', 35);
+        cards.select('text').attr('x', 100).attr('y', 70);
+
+        divider.style('display', 'none');
+        label.text('grid-template-columns: 1fr;  /* 响应式折叠为单列 */');
+      } else {
+        var mainW = W - sideW - gap;
+        sideRect.transition(t).attr('x', 0).attr('y', topPad).attr('width', sideW).attr('height', availH);
+        sideTitle.transition(t).attr('x', sideW / 2).attr('y', topPad + 30);
+        sideVal.transition(t).attr('x', sideW / 2).attr('y', topPad + 52).text(sideW + 'px');
+        menuItems.transition(t).attr('transform', function (d, i) { return 'translate(12,' + (topPad + 80 + i * 36) + ')'; });
+        menuItems.select('rect').attr('width', sideW - 24);
+
+        mainRect.transition(t).attr('x', sideW + gap).attr('y', topPad).attr('width', mainW).attr('height', availH);
+        mainTitle.transition(t).attr('x', sideW + gap + mainW / 2).attr('y', topPad + 30);
+        mainVal.transition(t).attr('x', sideW + gap + mainW / 2).attr('y', topPad + 52).text(Math.round(mainW) + 'px');
+        var cardW = (mainW - 64) / 3;  // 16 左 + 16×2 间距 + 16 右
+        cards.transition(t).attr('transform', function (d, i) { return 'translate(' + (sideW + gap + 16 + i * (cardW + 16)) + ',' + (topPad + 70) + ')'; });
+        cards.select('rect').attr('width', cardW).attr('height', 110);
+        cards.select('circle').attr('cx', cardW / 2).attr('cy', 40);
+        cards.select('text').attr('x', cardW / 2).attr('y', 80);
+
+        divider.style('display', null);
+        dividerLine.transition(t).attr('x', sideW - 3).attr('y', topPad).attr('height', availH);
+        label.text('grid-template-columns: ' + sideW + 'px minmax(0, 1fr);');
+      }
+    }
+
+    render(curSideW, false);
+
+    // 拖拽分隔条
+    var drag = d3.drag().on('drag', function (event) {
+      if (collapsed) return;
+      var dx = event.dx;
+      curSideW = Math.max(120, Math.min(500, curSideW + dx));
+      render(curSideW, false);
+    });
+    divider.call(drag);
+
+    // 按钮切换
+    d3.selectAll(stage.querySelectorAll('.demo-controls button[data-mode]')).on('click', function () {
+      d3.selectAll(stage.querySelectorAll('.demo-controls button[data-mode]')).style('background', '').style('color', '');
+      d3.select(this).style('background', '#2563eb').style('color', '#fff');
+      var mode = d3.select(this).attr('data-mode');
+      if (mode === 'collapse') render(curSideW, true);
+      else render(mode === 'narrow' ? 200 : 340, false);
+    });
+    d3.select(stage.querySelector('.demo-controls button[data-mode="narrow"]')).style('background', '#2563eb').style('color', '#fff');
+  });
+
+  /* ---------- 6.5 Tab 切换组件演示 ---------- */
+  window.registerDemo('sec-6-5', function () {
+    var svg = d3.select('#demo-6-5-svg');
+    var W = 760, H = 260;
+
+    // 背景框（静态）
+    svg.append('rect')
+      .attr('x', 20).attr('y', 10).attr('width', W - 40).attr('height', H - 40)
+      .attr('rx', 8).attr('fill', '#eef2f7').attr('stroke', '#cbd5e1');
+
+    // Tab 底部滑动指示条
+    var indicator = svg.append('rect')
+      .attr('x', 40).attr('y', 28).attr('width', 90).attr('height', 3).attr('rx', 1.5)
+      .attr('fill', '#2563eb');
+
+    // 三个内容组（预先构建，通过透明度切换）
+    var readG = svg.append('g').attr('opacity', 1);
+    readG.append('text').attr('x', 40).attr('y', 55).attr('font-size', 16).attr('font-weight', 700).attr('fill', '#0f172a').text('📖 讲解 Tab');
+    readG.append('text').attr('x', 40).attr('y', 80).attr('font-size', 13).attr('fill', '#475569').text('每个小节的知识点讲解、原理说明、提示框。');
+    var rBox1 = readG.append('rect').attr('x', 40).attr('y', 95).attr('width', 200).attr('height', 28).attr('rx', 4).attr('fill', '#fffbeb').attr('stroke', '#f59e0b');
+    readG.append('text').attr('x', 52).attr('y', 113).attr('font-size', 12).attr('fill', '#92400e').text('💡 alert-box 黄色提示框');
+    var rBox2 = readG.append('rect').attr('x', 40).attr('y', 133).attr('width', 200).attr('height', 28).attr('rx', 4).attr('fill', '#ecfdf5').attr('stroke', '#10b981');
+    readG.append('text').attr('x', 52).attr('y', 151).attr('font-size', 12).attr('fill', '#065f46').text('✓ checklist 对勾列表');
+
+    var codeG = svg.append('g').attr('opacity', 0);
+    codeG.append('text').attr('x', 40).attr('y', 55).attr('font-size', 16).attr('font-weight', 700).attr('fill', '#0f172a').text('⌨️ 关键代码 Tab');
+    codeG.append('rect').attr('x', 40).attr('y', 68).attr('width', W - 80).attr('height', 140).attr('rx', 6).attr('fill', '#0f172a');
+    codeG.append('text').attr('x', 52).attr('y', 94).attr('font-size', 11).attr('fill', '#64748b').attr('font-family', 'monospace').text('.lesson-layout {');
+    codeG.append('text').attr('x', 68).attr('y', 114).attr('font-size', 11).attr('fill', '#93c5fd').attr('font-family', 'monospace').text('display: grid;');
+    codeG.append('text').attr('x', 68).attr('y', 134).attr('font-size', 11).attr('fill', '#93c5fd').attr('font-family', 'monospace').text('grid-template-columns: 260px 1fr;');
+    codeG.append('text').attr('x', 52).attr('y', 154).attr('font-size', 11).attr('fill', '#64748b').attr('font-family', 'monospace').text('}');
+
+    var demoG = svg.append('g').attr('opacity', 0);
+    demoG.append('text').attr('x', 40).attr('y', 55).attr('font-size', 16).attr('font-weight', 700).attr('fill', '#0f172a').text('▶️ 演示 Tab');
+    demoG.append('rect').attr('x', 40).attr('y', 70).attr('width', W - 80).attr('height', 130).attr('rx', 6).attr('fill', '#f1f5f9').attr('stroke', '#94a3b8').attr('stroke-dasharray', '4,3');
+    demoG.append('circle').attr('cx', 180).attr('cy', 120).attr('r', 30).attr('fill', '#60a5fa');
+    demoG.append('circle').attr('cx', 320).attr('cy', 120).attr('r', 20).attr('fill', '#34d399');
+    demoG.append('circle').attr('cx', 460).attr('cy', 120).attr('r', 40).attr('fill', '#f472b6');
+    demoG.append('text').attr('x', 400).attr('y', 180).attr('font-size', 11).attr('fill', '#64748b').text('每个小节有独立的 D3 demo');
+
+    var groups = { read: readG, code: codeG, demo: demoG };
+    var indicatorPos = { read: 40, code: 140, demo: 240 };
+
+    function switchTab(tab) {
+      var t = svg.transition().duration(350).ease(d3.easeCubicOut);
+      Object.keys(groups).forEach(function (k) {
+        var g = groups[k];
+        if (k === tab) {
+          // 新内容：从右侧滑入并淡入
+          g.attr('transform', 'translate(40,0)').transition(t)
+            .attr('opacity', 1).attr('transform', 'translate(0,0)');
+        } else {
+          // 旧内容：淡出
+          g.interrupt().transition(t).attr('opacity', 0);
+        }
+      });
+      indicator.transition(t).attr('x', indicatorPos[tab]);
+    }
+
+    d3.selectAll('#demo-6-5-btns button').on('click', function () {
+      d3.selectAll('#demo-6-5-btns button').classed('active', false).style('background', '').style('color', '');
+      d3.select(this).classed('active', true).style('background', '#2563eb').style('color', '#fff');
+      switchTab(d3.select(this).attr('data-tab'));
+    });
+    d3.select('#demo-6-5-btns button[data-tab="read"]').style('background', '#2563eb').style('color', '#fff');
+  });
+
+  /* ---------- 6.6 D3 布局对比（treemap / pack / partition） ---------- */
+  window.registerDemo('sec-6-6', function () {
+    var svg = d3.select('#demo-6-6-svg');
+    var W = 760, H = 300;
+    var nodes = [
+      { name: 'A', children: [
+        { name: 'A1', value: 12 }, { name: 'A2', value: 8 }, { name: 'A3', value: 15 }
+      ]},
+      { name: 'B', children: [
+        { name: 'B1', value: 20 }, { name: 'B2', value: 6 }
+      ]},
+      { name: 'C', children: [
+        { name: 'C1', value: 10 }, { name: 'C2', value: 18 }, { name: 'C3', value: 4 }
+      ]}
+    ];
+    var data = { name: 'root', children: nodes };
+    var pad = 10, panelW = (W - pad * 4) / 3, panelH = H - 70;
+    var color = d3.scaleOrdinal(['#60a5fa', '#34d399', '#f472b6', '#fbbf24', '#a78bfa', '#22d3ee']);
+
+    // 收集所有面板中的叶子元素，用于跨面板联动
+    var allLeaves = [];
+    var lockedName = null;
+
+    function applyHighlight(name) {
+      allLeaves.forEach(function (o) {
+        var match = o.name === name;
+        o.el.attr('opacity', match ? 1 : 0.25)
+            .attr('stroke', match ? '#1e293b' : '#fff');
+      });
+    }
+    function clearHighlight() {
+      allLeaves.forEach(function (o) {
+        o.el.attr('opacity', 1).attr('stroke', '#fff');
+      });
+    }
+    function addHover(el, name) {
+      el.on('mouseenter', function () {
+        if (!lockedName) applyHighlight(name);
+      }).on('mouseleave', function () {
+        if (!lockedName) clearHighlight();
+      }).on('click', function () {
+        if (lockedName === name) { lockedName = null; clearHighlight(); }
+        else { lockedName = name; applyHighlight(name); }
+      });
+    }
+
+    // panel 1: treemap
+    (function () {
+      var x = pad, y = 20;
+      svg.append('text').attr('x', x + panelW / 2).attr('y', 14).attr('text-anchor', 'middle')
+        .attr('font-size', 12).attr('font-weight', 600).attr('fill', '#334155').text('treemap');
+      var root = d3.hierarchy(data).sum(function (d) { return d.value || 0; });
+      d3.treemap().size([panelW, panelH]).padding(2)(root);
+      var g = svg.append('g').attr('transform', 'translate(' + x + ',' + y + ')');
+      var leaves = root.leaves();
+      g.selectAll('rect').data(leaves).enter().append('rect')
+        .attr('x', function (n) { return n.x0; }).attr('y', function (n) { return n.y0; })
+        .attr('width', function (n) { return n.x1 - n.x0; }).attr('height', function (n) { return n.y1 - n.y0; })
+        .attr('fill', function (n) { return color(n.parent.data.name); }).attr('fill-opacity', 0.85)
+        .attr('stroke', '#fff').attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .each(function (n) {
+          var sel = d3.select(this);
+          allLeaves.push({ name: n.data.name, el: sel });
+          addHover(sel, n.data.name);
+        });
+      g.selectAll('text').data(leaves).enter().append('text')
+        .attr('x', function (n) { return (n.x0 + n.x1) / 2; }).attr('y', function (n) { return (n.y0 + n.y1) / 2 + 4; })
+        .attr('text-anchor', 'middle').attr('font-size', 10).attr('fill', '#fff').attr('font-weight', 600)
+        .attr('pointer-events', 'none')
+        .text(function (n) { return n.data.name; });
+    })();
+
+    // panel 2: pack
+    (function () {
+      var x = pad * 2 + panelW, y = 20;
+      svg.append('text').attr('x', x + panelW / 2).attr('y', 14).attr('text-anchor', 'middle')
+        .attr('font-size', 12).attr('font-weight', 600).attr('fill', '#334155').text('pack');
+      var root = d3.hierarchy(data).sum(function (d) { return d.value || 0; });
+      d3.pack().size([panelW, panelH]).padding(3)(root);
+      var g = svg.append('g').attr('transform', 'translate(' + x + ',' + y + ')');
+      var circles = root.descendants().filter(function (n) { return n.depth > 0; });
+      g.selectAll('circle').data(circles).enter().append('circle')
+        .attr('cx', function (n) { return n.x; }).attr('cy', function (n) { return n.y; }).attr('r', function (n) { return n.r; })
+        .attr('fill', function (n) { return n.children ? 'none' : color(n.parent.data.name); })
+        .attr('fill-opacity', function (n) { return n.children ? 0 : 0.85; })
+        .attr('stroke', function (n) { return n.children ? '#64748b' : '#fff'; }).attr('stroke-width', 1.5)
+        .style('cursor', function (n) { return n.children ? 'default' : 'pointer'; })
+        .each(function (n) {
+          if (!n.children) {
+            var sel = d3.select(this);
+            allLeaves.push({ name: n.data.name, el: sel });
+            addHover(sel, n.data.name);
+          }
+        });
+      g.selectAll('text').data(circles.filter(function (n) { return !n.children; })).enter().append('text')
+        .attr('x', function (n) { return n.x; }).attr('y', function (n) { return n.y + 3; }).attr('text-anchor', 'middle')
+        .attr('font-size', 9).attr('fill', '#fff').attr('font-weight', 600).attr('pointer-events', 'none')
+        .text(function (n) { return n.data.name; });
+    })();
+
+    // panel 3: partition
+    (function () {
+      var x = pad * 3 + panelW * 2, y = 20;
+      svg.append('text').attr('x', x + panelW / 2).attr('y', 14).attr('text-anchor', 'middle')
+        .attr('font-size', 12).attr('font-weight', 600).attr('fill', '#334155').text('partition');
+      var root = d3.hierarchy(data).sum(function (d) { return d.value || 0; });
+      d3.partition().size([panelW, panelH])(root);
+      var g = svg.append('g').attr('transform', 'translate(' + x + ',' + y + ')');
+      var cells = root.descendants().filter(function (n) { return n.depth > 0; });
+      g.selectAll('rect').data(cells).enter().append('rect')
+        .attr('x', function (n) { return n.x0; }).attr('y', function (n) { return n.y0; })
+        .attr('width', function (n) { return Math.max(1, n.x1 - n.x0); }).attr('height', function (n) { return Math.max(1, n.y1 - n.y0); })
+        .attr('fill', function (n) { return color(n.parent.data.name); })
+        .attr('fill-opacity', function (n) { return 0.9 - n.depth * 0.15; })
+        .attr('stroke', '#fff').attr('stroke-width', 1)
+        .style('cursor', 'pointer')
+        .each(function (n) {
+          if (!n.children) {
+            var sel = d3.select(this);
+            allLeaves.push({ name: n.data.name, el: sel });
+            addHover(sel, n.data.name);
+          }
+        });
+      g.selectAll('text').data(cells.filter(function (n) { return n.x1 - n.x0 > 20 && n.y1 - n.y0 > 10; })).enter().append('text')
+        .attr('x', function (n) { return (n.x0 + n.x1) / 2; }).attr('y', function (n) { return (n.y0 + n.y1) / 2 + 3; })
+        .attr('text-anchor', 'middle').attr('font-size', 9).attr('fill', '#fff').attr('font-weight', 600)
+        .attr('pointer-events', 'none')
+        .text(function (n) { return n.data.name; });
+    })();
+  });
+
+  /* ---------- 6.7 GitHub Pages 部署流程图（横向 4 节点 + 箭头） ---------- */
+  window.registerDemo('sec-6-7', function () {
+    var svg = d3.select('#demo-6-7-svg');
+    var W = 760, H = 210;
+    var steps = [
+      { title: '1. 创建仓库', desc: 'GitHub 新建 repo', icon: '📁' },
+      { title: '2. Push 代码', desc: 'git push origin main', icon: '⬆️' },
+      { title: '3. 开启 Pages', desc: 'Settings → Pages', icon: '🔓' },
+      { title: '4. 访问上线', desc: 'username.github.io', icon: '🌐' }
+    ];
+    var boxW = 140, boxH = 95, gap = (W - 4 * boxW) / 5;
+    var y = (H - boxH) / 2;
+    var color = ['#60a5fa', '#34d399', '#fbbf24', '#f472b6'];
+
+    var defs = svg.append('defs');
+    defs.append('marker').attr('id', 'arrow-gray')
+      .attr('viewBox', '0 0 10 10').attr('refX', 8).attr('refY', 5)
+      .attr('markerWidth', 6).attr('markerHeight', 6).attr('orient', 'auto')
+      .append('path').attr('d', 'M0,0 L10,5 L0,10 Z').attr('fill', '#64748b');
+    defs.append('marker').attr('id', 'arrow-active')
+      .attr('viewBox', '0 0 10 10').attr('refX', 8).attr('refY', 5)
+      .attr('markerWidth', 6).attr('markerHeight', 6).attr('orient', 'auto')
+      .append('path').attr('d', 'M0,0 L10,5 L0,10 Z').attr('fill', '#2563eb');
+
+    // 先画箭头（放在卡片后面）
+    var arrows = [];
+    for (var i = 0; i < steps.length - 1; i++) {
+      var ax = gap + i * (boxW + gap) + boxW + 4;
+      var ay = y + boxH / 2;
+      var path = svg.append('path')
+        .attr('d', 'M' + ax + ',' + ay + ' L' + (ax + gap - 8) + ',' + ay)
+        .attr('stroke', '#64748b').attr('stroke-width', 2)
+        .attr('marker-end', 'url(#arrow-gray)');
+      arrows.push(path);
+    }
+
+    var cards = svg.selectAll('g.step').data(steps).enter().append('g')
+      .attr('class', 'step')
+      .attr('transform', function (d, i) { return 'translate(' + (gap + i * (boxW + gap)) + ',' + y + ')'; })
+      .style('cursor', 'pointer');
+
+    cards.append('rect').attr('width', boxW).attr('height', boxH).attr('rx', 10)
+      .attr('fill', function (d, i) { return color[i]; }).attr('fill-opacity', 0.18)
+      .attr('stroke', function (d, i) { return color[i]; }).attr('stroke-width', 2);
+    cards.append('text').attr('x', boxW / 2).attr('y', 30).attr('text-anchor', 'middle')
+      .attr('font-size', 20).text(function (d) { return d.icon; });
+    cards.append('text').attr('x', boxW / 2).attr('y', 56).attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('font-weight', 700).attr('fill', '#0f172a')
+      .text(function (d) { return d.title; });
+    cards.append('text').attr('x', boxW / 2).attr('y', 76).attr('text-anchor', 'middle')
+      .attr('font-size', 10).attr('fill', '#64748b')
+      .text(function (d) { return d.desc; });
+
+    function highlightStep(idx) {
+      cards.select('rect')
+        .attr('fill-opacity', 0.12).attr('stroke-width', 1.5);
+      d3.select(cards.nodes()[idx]).select('rect')
+        .attr('fill-opacity', 0.4).attr('stroke-width', 3.5);
+      cards.transition().duration(200).attr('transform', function (d, i) {
+        var cx = gap + i * (boxW + gap) + boxW / 2;
+        var cy = y + boxH / 2;
+        var scale = i === idx ? 1.08 : 1;
+        return 'translate(' + (cx - boxW / 2 * scale) + ',' + (cy - boxH / 2 * scale) + ') scale(' + scale + ')';
+      });
+      arrows.forEach(function (p, i) {
+        var active = i < idx;
+        p.attr('stroke', active ? '#2563eb' : '#64748b')
+         .attr('stroke-width', active ? 3 : 2)
+         .attr('marker-end', active ? 'url(#arrow-active)' : 'url(#arrow-gray)');
+      });
+    }
+    function resetAll() {
+      cards.select('rect').attr('fill-opacity', 0.18).attr('stroke-width', 2);
+      cards.transition().duration(200).attr('transform', function (d, i) {
+        return 'translate(' + (gap + i * (boxW + gap)) + ',' + y + ')';
+      });
+      arrows.forEach(function (p) {
+        p.attr('stroke', '#64748b').attr('stroke-width', 2).attr('marker-end', 'url(#arrow-gray)');
+      });
+    }
+
+    cards.on('click', function (event, d) {
+      stopAutoplay();
+      highlightStep(steps.indexOf(d));
+    });
+
+    // 自动播放：依次高亮 4 个步骤
+    var stage = svg.node().closest('.demo-stage');
+    var autoplayTimer = null;
+    function stopAutoplay() {
+      if (autoplayTimer) { clearTimeout(autoplayTimer); autoplayTimer = null; }
+    }
+    function startAutoplay() {
+      stopAutoplay();
+      var i = 0;
+      resetAll();
+      function next() {
+        if (i >= steps.length) { return; }
+        highlightStep(i);
+        i++;
+        autoplayTimer = setTimeout(next, 900);
+      }
+      next();
+    }
+    d3.select(stage.querySelector('button[data-action="autoplay"]')).on('click', startAutoplay);
+    d3.select(stage.querySelector('button[data-action="reset"]')).on('click', function () {
+      stopAutoplay();
+      resetAll();
+    });
+  });
+
+  /* ---------- 6.8 仪表盘整体布局架构图 ---------- */
+  window.registerDemo('sec-6-8', function () {
+    var svg = d3.select('#demo-6-8-svg');
+    var W = 760, H = 620;
+    var M = { l: 20, r: 20, t: 10, b: 10 };
+    var innerW = W - M.l - M.r;
+    var g = svg.append('g').attr('transform', 'translate(' + M.l + ',' + M.t + ')');
+
+    // ① 顶部导航栏 (Flex)
+    var navH = 78;
+    g.append('rect')
+      .attr('x', 0).attr('y', 0).attr('width', innerW).attr('height', navH)
+      .attr('rx', 8).attr('fill', '#eff6ff').attr('stroke', '#3b82f6').attr('stroke-width', 1.5);
+    g.append('text').attr('x', 16).attr('y', 18).attr('font-size', 12).attr('font-weight', 700).attr('fill', '#1e40af')
+      .text('📊 顶部导航栏 (Flex: logo + 标题 + 筛选器)');
+    // 导航栏内部 Flex 示意（放在标题下方）
+    var navItems = [
+      { label: 'Logo', w: 50, color: '#3b82f6' },
+      { label: '学生仪表盘', w: 110, color: '#1e40af' },
+      { label: 'spacer (flex:1)', w: 200, color: '#dbeafe' },
+      { label: '筛选器', w: 70, color: '#60a5fa' },
+      { label: '👤', w: 40, color: '#93c5fd' }
+    ];
+    var navBoxY = 30, navBoxH = navH - 38;
+    var navX = 16;
+    navItems.forEach(function (item) {
+      g.append('rect').attr('x', navX).attr('y', navBoxY).attr('width', item.w).attr('height', navBoxH)
+        .attr('rx', 4).attr('fill', item.color).attr('fill-opacity', 0.5).attr('stroke', item.color);
+      g.append('text').attr('x', navX + item.w / 2).attr('y', navBoxY + navBoxH / 2 + 3)
+        .attr('text-anchor', 'middle').attr('font-size', 9).attr('fill', '#1e3a8a').text(item.label);
+      navX += item.w + 6;
+    });
+
+    // ② KPI 卡片行 (Grid 4列)
+    var kpiY = navH + 16;
+    var kpiH = 84;
+    g.append('rect')
+      .attr('x', 0).attr('y', kpiY).attr('width', innerW).attr('height', kpiH)
+      .attr('rx', 8).attr('fill', '#f0fdf4').attr('stroke', '#10b981').attr('stroke-width', 1.5);
+    g.append('text').attr('x', 16).attr('y', kpiY + 18).attr('font-size', 11).attr('font-weight', 700).attr('fill', '#065f46')
+      .text('📈 KPI 卡片行 (Grid: repeat(4, 1fr))');
+    var kpiData = [
+      { label: '总人数', val: '4,820', color: '#34d399' },
+      { label: '男生',   val: '2,530', color: '#10b981' },
+      { label: '女生',   val: '2,290', color: '#059669' },
+      { label: '专业数', val: '12',    color: '#047857' }
+    ];
+    var kpiGap = 8;
+    var kpiCardW = (innerW - 32 - kpiGap * 3) / 4;
+    var kpiCards = g.selectAll('g.kpi-card').data(kpiData).enter().append('g')
+      .attr('class', 'kpi-card')
+      .attr('transform', function (d, i) { return 'translate(' + (16 + i * (kpiCardW + kpiGap)) + ',' + (kpiY + 28) + ')'; })
+      .style('cursor', 'pointer');
+    kpiCards.append('rect')
+      .attr('width', kpiCardW).attr('height', kpiH - 40).attr('rx', 6)
+      .attr('fill', function (d) { return d.color; }).attr('fill-opacity', 0.75)
+      .attr('stroke', '#fff').attr('stroke-width', 2);
+    kpiCards.append('text').attr('x', kpiCardW / 2).attr('y', 20).attr('text-anchor', 'middle')
+      .attr('font-size', 11).attr('font-weight', 700).attr('fill', '#fff')
+      .text(function (d) { return d.label; });
+    kpiCards.append('text').attr('x', kpiCardW / 2).attr('y', 38).attr('text-anchor', 'middle')
+      .attr('font-size', 14).attr('font-weight', 800).attr('fill', '#fff')
+      .text(function (d) { return d.val; });
+    // KPI 悬停动画：卡片上浮 + 高亮
+    kpiCards.each(function (d, i) {
+      var baseX = 16 + i * (kpiCardW + kpiGap);
+      d3.select(this)
+        .on('mouseenter', function () {
+          d3.select(this).transition().duration(150)
+            .attr('transform', 'translate(' + baseX + ',' + (kpiY + 22) + ')');
+          d3.select(this).select('rect').attr('fill-opacity', 1).attr('stroke-width', 3);
+        })
+        .on('mouseleave', function () {
+          d3.select(this).transition().duration(150)
+            .attr('transform', 'translate(' + baseX + ',' + (kpiY + 28) + ')');
+          d3.select(this).select('rect').attr('fill-opacity', 0.75).attr('stroke-width', 2);
+        });
+    });
+
+    // ③ 主内容区 (双栏 Grid)
+    var mainY = kpiY + kpiH + 16;
+    var mainH = H - M.t - M.b - mainY - 30;
+    g.append('rect')
+      .attr('x', 0).attr('y', mainY).attr('width', innerW).attr('height', mainH)
+      .attr('rx', 8).attr('fill', '#fef3c7').attr('stroke', '#f59e0b').attr('stroke-width', 1.5);
+    g.append('text').attr('x', 16).attr('y', mainY + 18).attr('font-size', 11).attr('font-weight', 700).attr('fill', '#92400e')
+      .text('🎛️ 主内容区 (双栏 Grid: 240px + 1fr)');
+
+    // 左侧筛选栏
+    var sideW = 180;
+    g.append('rect')
+      .attr('x', 12).attr('y', mainY + 28).attr('width', sideW).attr('height', mainH - 40)
+      .attr('rx', 6).attr('fill', '#fde68a').attr('fill-opacity', 0.6).attr('stroke', '#d97706');
+    g.append('text').attr('x', 12 + sideW / 2).attr('y', mainY + 48)
+      .attr('text-anchor', 'middle').attr('font-size', 10).attr('font-weight', 700).attr('fill', '#92400e').text('筛选面板（点击过滤）');
+    // 可交互筛选器：6 个专业复选框，控制柱状图显示
+    var majorFilters = [
+      { name: '计科', on: true }, { name: '软工', on: true }, { name: '数据', on: true },
+      { name: '人工', on: true }, { name: '网安', on: true }, { name: '物联网', on: true }
+    ];
+    var filterG = g.append('g');
+    var filterBoxes = filterG.selectAll('g.filter').data(majorFilters).enter().append('g')
+      .attr('class', 'filter')
+      .attr('transform', function (d, i) { return 'translate(22,' + (mainY + 58 + i * 26) + ')'; })
+      .style('cursor', 'pointer');
+    filterBoxes.append('rect')
+      .attr('width', sideW - 20).attr('height', 20).attr('rx', 4)
+      .attr('fill', '#fff').attr('stroke', '#fbbf24');
+    filterBoxes.append('rect')
+      .attr('class', 'check')
+      .attr('x', 4).attr('y', 4).attr('width', 12).attr('height', 12).attr('rx', 2)
+      .attr('fill', function (d) { return d.on ? '#10b981' : '#d1d5db'; });
+    filterBoxes.append('text').attr('x', 22).attr('y', 14).attr('font-size', 9)
+      .attr('fill', '#78350f').text(function (d) { return d.name; });
+    // 全选/重置按钮
+    var resetBtn = g.append('g').attr('transform', 'translate(22,' + (mainY + 58 + 6 * 26 + 6) + ')')
+      .style('cursor', 'pointer');
+    resetBtn.append('rect').attr('width', sideW - 20).attr('height', 20).attr('rx', 4)
+      .attr('fill', '#fbbf24').attr('stroke', '#d97706');
+    resetBtn.append('text').attr('x', (sideW - 20) / 2).attr('y', 14)
+      .attr('text-anchor', 'middle').attr('font-size', 9).attr('font-weight', 700).attr('fill', '#78350f').text('全选 / 重置');
+
+    // ===== 柱状图 (span 6) — 使用 d3.scaleBand + d3.scaleLinear，支持筛选联动 =====
+    var chartX = 12 + sideW + 12;
+    var chartW = innerW - chartX - 12;
+    var chartY = mainY + 28;
+    var chartH = mainH - 40;
+    g.append('rect')
+      .attr('x', chartX).attr('y', chartY).attr('width', chartW).attr('height', chartH)
+      .attr('rx', 6).attr('fill', '#fffbeb').attr('stroke', '#fbbf24').attr('stroke-dasharray', '4,2');
+    g.append('text').attr('x', chartX + chartW / 2).attr('y', chartY + 16)
+      .attr('text-anchor', 'middle').attr('font-size', 10).attr('font-weight', 700).attr('fill', '#92400e').text('图表网格 (12 列)');
+
+    // ===== 柱状图 (span 6) — 使用 d3.scaleBand + d3.scaleLinear =====
+    var barCardX = chartX + 6, barCardY = chartY + 24;
+    var barW = (chartW - 24 - 6) * 6 / 10;
+    var barH = (chartH - 36) / 2;
+    g.append('rect')
+      .attr('x', barCardX).attr('y', barCardY).attr('width', barW).attr('height', barH - 4)
+      .attr('rx', 6).attr('fill', '#dbeafe').attr('stroke', '#3b82f6');
+    g.append('text').attr('x', barCardX + barW / 2).attr('y', barCardY + 16)
+      .attr('text-anchor', 'middle').attr('font-size', 10).attr('font-weight', 700).attr('fill', '#1e40af').text('📊 柱状图 (span 6)');
+    var barDataFull = [
+      { name: '计科', val: 80 }, { name: '软工', val: 65 }, { name: '数据', val: 45 },
+      { name: '人工', val: 90 }, { name: '网安', val: 55 }, { name: '物联网', val: 70 }
+    ];
+    var bm = { t: 24, r: 10, b: 22, l: 30 };
+    var bInnerW = barW - bm.l - bm.r;
+    var bInnerH = barH - 4 - bm.t - bm.b;
+    var byScale = d3.scaleLinear().domain([0, 100]).range([bInnerH, 0]);
+    var barG = g.append('g').attr('transform', 'translate(' + (barCardX + bm.l) + ',' + (barCardY + bm.t) + ')');
+    // y 轴
+    barG.append('g').attr('transform', 'translate(0,0)').call(d3.axisLeft(byScale).ticks(4).tickSize(-bInnerW))
+      .selectAll('text').attr('font-size', 8).attr('fill', '#64748b');
+    barG.selectAll('.domain, .tick line').attr('stroke', '#94a3b8');
+    // 柱状图 tooltip
+    var barTip = barG.append('text').attr('text-anchor', 'middle')
+      .attr('font-size', 10).attr('font-weight', 700).attr('fill', '#1e40af').style('display', 'none');
+    // x 轴（可更新）
+    var xAxisG = barG.append('g').attr('transform', 'translate(0,' + bInnerH + ')');
+    // 柱状图渲染函数：根据勾选的专业过滤并重绘（带 enter/update/exit 动画）
+    function updateBars() {
+      var active = majorFilters.filter(function (f) { return f.on; }).map(function (f) { return f.name; });
+      var data = barDataFull.filter(function (d) { return active.indexOf(d.name) !== -1; });
+      var bxScale = d3.scaleBand().domain(data.map(function (d) { return d.name; })).range([0, bInnerW]).padding(0.25);
+      var t = barG.transition().duration(450).ease(d3.easeCubicInOut);
+      var bars = barG.selectAll('rect.bar').data(data, function (d) { return d.name; });
+      // exit：柱子收缩消失
+      bars.exit().transition(t).attr('y', bInnerH).attr('height', 0).remove();
+      // enter：新柱子从底部升起
+      var barsEnter = bars.enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x', function (d) { return bxScale(d.name); })
+        .attr('width', bxScale.bandwidth())
+        .attr('y', bInnerH).attr('height', 0)
+        .attr('rx', 2).attr('fill', '#3b82f6').attr('fill-opacity', 0.8)
+        .style('cursor', 'pointer');
+      barsEnter.merge(bars).transition(t)
+        .attr('x', function (d) { return bxScale(d.name); })
+        .attr('width', bxScale.bandwidth())
+        .attr('y', function (d) { return byScale(d.val); })
+        .attr('height', function (d) { return bInnerH - byScale(d.val); });
+      // 重新绑定 hover（合并后的选择集）
+      barsEnter.merge(bars)
+        .on('mouseover', function (event, d) {
+          d3.select(this).attr('fill-opacity', 1).attr('stroke', '#1e40af').attr('stroke-width', 2);
+          barTip.attr('x', bxScale(d.name) + bxScale.bandwidth() / 2)
+                .attr('y', byScale(d.val) - 6)
+                .text(d.name + ': ' + d.val).style('display', null);
+        })
+        .on('mouseout', function () {
+          d3.select(this).attr('fill-opacity', 0.8).attr('stroke', 'none');
+          barTip.style('display', 'none');
+        });
+      // 更新 x 轴
+      xAxisG.transition(t).call(d3.axisBottom(bxScale))
+        .selectAll('text').attr('font-size', 8).attr('fill', '#64748b');
+    }
+    updateBars();
+    // 筛选框点击：切换专业开关并联动柱状图
+    filterBoxes.on('click', function (event, d) {
+      d.on = !d.on;
+      d3.select(this).select('rect.check')
+        .attr('fill', d.on ? '#10b981' : '#d1d5db');
+      updateBars();
+    });
+    // 重置按钮：全选
+    resetBtn.on('click', function () {
+      majorFilters.forEach(function (f) { f.on = true; });
+      filterBoxes.select('rect.check').attr('fill', '#10b981');
+      updateBars();
+    });
+
+    // ===== 饼图 (span 4) — 使用 d3.pie() + d3.arc() =====
+    var pieCardX = chartX + 6 + barW + 6, pieCardY = chartY + 24;
+    var pieCardW = chartW - barW - 24, pieCardH = barH - 4;
+    g.append('rect')
+      .attr('x', pieCardX).attr('y', pieCardY).attr('width', pieCardW).attr('height', pieCardH)
+      .attr('rx', 6).attr('fill', '#fce7f3').attr('stroke', '#ec4899');
+    g.append('text').attr('x', pieCardX + pieCardW / 2).attr('y', pieCardY + 16)
+      .attr('text-anchor', 'middle').attr('font-size', 10).attr('font-weight', 700).attr('fill', '#9d174d').text('🥧 饼图 (span 4)');
+    var pieData = [
+      { label: '男', val: 2530 },
+      { label: '女', val: 2290 }
+    ];
+    var pieCX = pieCardX + pieCardW / 2;
+    var pieCY = pieCardY + 16 + (pieCardH - 16) / 2 + 4;
+    var pieR = Math.min(pieCardW / 2 - 16, (pieCardH - 24) / 2);
+    var pie = d3.pie().value(function (d) { return d.val; }).sort(null);
+    var arc = d3.arc().innerRadius(pieR * 0.5).outerRadius(pieR);
+    var pieColor = d3.scaleOrdinal().domain(pieData.map(function (d) { return d.label; })).range(['#3b82f6', '#ec4899']);
+    var pieG = g.append('g').attr('transform', 'translate(' + pieCX + ',' + pieCY + ')');
+    var arcHover = d3.arc().innerRadius(pieR * 0.5).outerRadius(pieR + 6);
+    var totalPie = d3.sum(pieData, function (d) { return d.val; });
+    var piePaths = pieG.selectAll('path').data(pie(pieData)).enter().append('path')
+      .attr('d', arc)
+      .attr('fill', function (d) { return pieColor(d.data.label); })
+      .attr('stroke', '#fff').attr('stroke-width', 1.5)
+      .style('cursor', 'pointer');
+    var pieTip = pieG.append('text')
+      .attr('font-size', 11).attr('font-weight', 700).attr('fill', '#9d174d').style('display', 'none');
+    piePaths.on('mouseover', function (event, d) {
+      d3.select(this).transition().duration(150).attr('d', arcHover).attr('stroke-width', 2.5);
+      var pct = (d.data.val / totalPie * 100).toFixed(1);
+      // 根据扇区中心角度，将百分比放在扇区外侧（男→右侧，女→左侧）
+      var midAngle = (d.startAngle + d.endAngle) / 2;
+      var tipR = pieR + 22;
+      var tipX = Math.sin(midAngle) * tipR;
+      var tipY = -Math.cos(midAngle) * tipR;
+      pieTip.attr('x', tipX).attr('y', tipY)
+            .attr('text-anchor', tipX >= 0 ? 'start' : 'end')
+            .attr('dy', '0.35em')
+            .text(d.data.label + ' ' + pct + '%').style('display', null);
+    }).on('mouseout', function () {
+      d3.select(this).transition().duration(150).attr('d', arc).attr('stroke-width', 1.5);
+      pieTip.style('display', 'none');
+    });
+    // 标签
+    pieG.selectAll('text.pie-label').data(pie(pieData)).enter().append('text')
+      .attr('class', 'pie-label')
+      .attr('transform', function (d) { return 'translate(' + arc.centroid(d) + ')'; })
+      .attr('text-anchor', 'middle').attr('font-size', 9).attr('font-weight', 700).attr('fill', '#fff')
+      .attr('pointer-events', 'none')
+      .text(function (d) { return d.data.label; });
+
+    // ===== 折线图 (span 6, 底部) — 使用 d3.scaleLinear + d3.line =====
+    var lineCardX = chartX + 6, lineCardY = chartY + 24 + barH + 4;
+    var lineCardW = barW, lineCardH = chartH - barH - 32;
+    g.append('rect')
+      .attr('x', lineCardX).attr('y', lineCardY).attr('width', lineCardW).attr('height', lineCardH)
+      .attr('rx', 6).attr('fill', '#dcfce7').attr('stroke', '#10b981');
+    g.append('text').attr('x', lineCardX + lineCardW / 2).attr('y', lineCardY + 16)
+      .attr('text-anchor', 'middle').attr('font-size', 10).attr('font-weight', 700).attr('fill', '#065f46').text('📈 折线图 (span 6)');
+    var lineData = [
+      { year: '2019', val: 420 }, { year: '2020', val: 510 }, { year: '2021', val: 480 },
+      { year: '2022', val: 620 }, { year: '2023', val: 580 }, { year: '2024', val: 720 }
+    ];
+    var lm = { t: 24, r: 10, b: 22, l: 34 };
+    var lInnerW = lineCardW - lm.l - lm.r;
+    var lInnerH = lineCardH - lm.t - lm.b;
+    var lxScale = d3.scalePoint().domain(lineData.map(function (d) { return d.year; })).range([0, lInnerW]).padding(0.3);
+    var lyScale = d3.scaleLinear().domain([0, d3.max(lineData, function (d) { return d.val; })]).nice().range([lInnerH, 0]);
+    var lineG = g.append('g').attr('transform', 'translate(' + (lineCardX + lm.l) + ',' + (lineCardY + lm.t) + ')');
+    // y 轴
+    lineG.append('g').call(d3.axisLeft(lyScale).ticks(4).tickSize(-lInnerW))
+      .selectAll('text').attr('font-size', 8).attr('fill', '#64748b');
+    lineG.selectAll('.domain, .tick line').attr('stroke', '#94a3b8');
+    // x 轴
+    lineG.append('g').attr('transform', 'translate(0,' + lInnerH + ')').call(d3.axisBottom(lxScale))
+      .selectAll('text').attr('font-size', 8).attr('fill', '#64748b');
+    // 折线
+    var lineGen = d3.line()
+      .x(function (d) { return lxScale(d.year); })
+      .y(function (d) { return lyScale(d.val); })
+      .curve(d3.curveMonotoneX);
+    lineG.append('path').datum(lineData)
+      .attr('fill', 'none').attr('stroke', '#10b981').attr('stroke-width', 2)
+      .attr('d', lineGen);
+    // 数据点
+    var linePts = lineG.selectAll('circle.pt').data(lineData).enter().append('circle')
+      .attr('class', 'pt')
+      .attr('cx', function (d) { return lxScale(d.year); })
+      .attr('cy', function (d) { return lyScale(d.val); })
+      .attr('r', 3).attr('fill', '#10b981').attr('stroke', '#fff').attr('stroke-width', 1)
+      .style('cursor', 'pointer');
+    var lineTip = lineG.append('text').attr('text-anchor', 'middle')
+      .attr('font-size', 9).attr('font-weight', 700).attr('fill', '#065f46').style('display', 'none');
+    linePts.on('mouseover', function (event, d) {
+      d3.select(this).attr('r', 6).attr('stroke-width', 2);
+      lineTip.attr('x', lxScale(d.year)).attr('y', lyScale(d.val) - 10)
+             .text(d.year + ': ' + d.val).style('display', null);
+    }).on('mouseout', function () {
+      d3.select(this).attr('r', 3).attr('stroke-width', 1);
+      lineTip.style('display', 'none');
+    });
+
+    // 右侧图例
+    var legendX = pieCardX, legendY = lineCardY;
+    g.append('rect')
+      .attr('x', legendX).attr('y', legendY).attr('width', pieCardW).attr('height', lineCardH)
+      .attr('rx', 6).attr('fill', '#f5f3ff').attr('stroke', '#8b5cf6');
+    g.append('text').attr('x', legendX + pieCardW / 2).attr('y', legendY + 18)
+      .attr('text-anchor', 'middle').attr('font-size', 10).attr('font-weight', 700).attr('fill', '#5b21b6').text('📋 图例 / 说明');
+    g.append('text').attr('x', legendX + 10).attr('y', legendY + 38).attr('font-size', 9).attr('fill', '#6d28d9').text('• 柱状图：各专业人数');
+    g.append('text').attr('x', legendX + 10).attr('y', legendY + 54).attr('font-size', 9).attr('fill', '#6d28d9').text('• 饼图：性别比例');
+    g.append('text').attr('x', legendX + 10).attr('y', legendY + 70).attr('font-size', 9).attr('fill', '#6d28d9').text('• 折线图：历年招生趋势');
+
+    // 底部标注
+    g.append('text').attr('x', innerW / 2).attr('y', H - M.b - 16).attr('text-anchor', 'middle')
+      .attr('font-size', 10).attr('fill', '#64748b').text('整合 Flex + Grid + 双栏 + Tab + D3 布局 = 完整仪表盘');
+  });
+
+  /* ---------- 补充1：demo 完成度条形图 ---------- */
+  window.registerDemo('sec-6-extra1', function () {
+    var svg = d3.select('#demo-6-extra1-svg');
+    var W = 760, H = 200;
+    var data = [
+      { sec: '6.1', label: '三层结构',     done: true },
+      { sec: '6.2', label: 'Flex 切换',    done: true },
+      { sec: '6.3', label: 'Grid 切换',    done: true },
+      { sec: '6.4', label: '双栏宽窄',     done: true },
+      { sec: '6.5', label: 'Tab 组件',     done: true },
+      { sec: '6.6', label: 'D3 三视图',    done: true },
+      { sec: '6.7', label: 'Pages 流程',   done: true },
+      { sec: '6.8', label: '仪表盘架构',   done: true }
+    ];
+    var M = { l: 60, r: 20, t: 20, b: 40 };
+    var g = svg.append('g').attr('transform', 'translate(' + M.l + ',' + M.t + ')');
+    var innerW = W - M.l - M.r, innerH = H - M.t - M.b;
+    var bandW = innerW / data.length;
+    var barH = innerH * 0.8;
+
+    var groups = g.selectAll('g.bar-item').data(data).enter().append('g')
+      .attr('class', 'bar-item')
+      .attr('transform', function (d, i) { return 'translate(' + (i * bandW + bandW / 2) + ',0)'; })
+      .style('cursor', 'pointer');
+
+    groups.append('rect')
+      .attr('x', -20).attr('y', innerH - barH).attr('width', 40).attr('height', barH)
+      .attr('rx', 4)
+      .attr('fill', function (d) { return d.done ? '#10b981' : '#94a3b8'; })
+      .attr('fill-opacity', 0.8);
+    groups.append('text').attr('x', 0).attr('y', innerH - barH - 8).attr('text-anchor', 'middle')
+      .attr('font-size', 14).text('✅');
+    groups.append('text').attr('x', 0).attr('y', innerH + 16).attr('text-anchor', 'middle')
+      .attr('font-size', 11).attr('fill', '#475569').text(function (d) { return d.sec; });
+    groups.append('text').attr('x', 0).attr('y', innerH + 30).attr('text-anchor', 'middle')
+      .attr('font-size', 10).attr('fill', '#64748b').text(function (d) { return d.label; });
+
+    var tip = g.append('text').attr('text-anchor', 'middle')
+      .attr('font-size', 11).attr('font-weight', 700).attr('fill', '#065f46').style('display', 'none');
+    groups.on('mouseover', function (event, d) {
+      d3.select(this).select('rect')
+        .attr('fill-opacity', 1).attr('stroke', '#065f46').attr('stroke-width', 2);
+      tip.attr('x', 0).attr('y', innerH - barH - 28)
+         .text(d.sec + ' ' + d.label + '：' + (d.done ? '已完成 ✅' : '未完成 ⏳'))
+         .style('display', null);
+    }).on('mouseout', function () {
+      d3.select(this).select('rect').attr('fill-opacity', 0.8).attr('stroke', 'none');
+      tip.style('display', 'none');
+    });
+  });
+
+  /* ---------- 补充2：目录结构层级树 ---------- */
+  window.registerDemo('sec-6-extra2', function () {
+    var svg = d3.select('#demo-6-extra2-svg');
+    var W = 760, H = 260;
+    var data = {
+      name: 'vis-course/',
+      children: [
+        { name: 'css/',   children: [{ name: 'style.css' }] },
+        { name: 'js/',    children: [{ name: 'main.js' }] },
+        { name: 'data/',  children: [{ name: '*.csv' }] },
+        { name: 'lesson-01/', children: [{ name: 'index.html' }] },
+        { name: 'lesson-02/', children: [{ name: 'index.html' }] },
+        { name: 'lesson-03/', children: [{ name: 'index.html' }] },
+        { name: 'lesson-04/', children: [{ name: 'index.html' }] },
+        { name: 'lesson-05/', children: [{ name: 'index.html' }] },
+        { name: 'lesson-06/', children: [{ name: 'index.html' }] }
+      ]
+    };
+    var root = d3.hierarchy(data);
+    var tree = d3.tree().size([H - 40, W - 180])(root);
+    var g = svg.append('g').attr('transform', 'translate(40,20)');
+    g.selectAll('path.link').data(tree.links()).enter().append('path')
+      .attr('class', 'link')
+      .attr('d', d3.linkHorizontal().x(function (d) { return d.y; }).y(function (d) { return d.x; }))
+      .attr('fill', 'none').attr('stroke', '#94a3b8').attr('stroke-width', 1.2);
+    var nodeG = g.selectAll('g.node').data(tree.descendants()).enter().append('g')
+      .attr('class', 'node')
+      .attr('transform', function (d) { return 'translate(' + d.y + ',' + d.x + ')'; })
+      .style('cursor', 'pointer');
+    nodeG.append('circle').attr('r', 4)
+      .attr('fill', function (d) { return d.children ? '#f59e0b' : '#60a5fa'; });
+    nodeG.append('text')
+      .attr('x', function (d) { return d.children ? -8 : 8; })
+      .attr('y', 4)
+      .attr('text-anchor', function (d) { return d.children ? 'end' : 'start'; })
+      .attr('font-size', 11).attr('fill', '#334155').attr('font-family', 'monospace')
+      .text(function (d) { return d.data.name; });
+
+    // 点击节点：高亮该节点及其子树，其余变淡
+    var links = g.selectAll('path.link');
+    var activeNode = null;
+    nodeG.on('click', function (event, d) {
+      if (activeNode === d) { activeNode = null; } else { activeNode = d; }
+      nodeG.style('opacity', function (n) {
+        if (!activeNode) return 1;
+        var inSubtree = n === activeNode || isDescendant(activeNode, n);
+        return inSubtree ? 1 : 0.18;
+      });
+      nodeG.select('circle').attr('r', function (n) {
+        return (activeNode && (n === activeNode || isDescendant(activeNode, n))) ? 6 : 4;
+      });
+      links.style('opacity', function (l) {
+        if (!activeNode) return 1;
+        var childIn = l.target === activeNode || isDescendant(activeNode, l.target);
+        return childIn ? 1 : 0.12;
+      }).attr('stroke', function (l) {
+        if (!activeNode) return '#94a3b8';
+        var childIn = l.target === activeNode || isDescendant(activeNode, l.target);
+        return childIn ? '#f59e0b' : '#94a3b8';
+      }).attr('stroke-width', function (l) {
+        if (!activeNode) return 1.2;
+        var childIn = l.target === activeNode || isDescendant(activeNode, l.target);
+        return childIn ? 2.2 : 1.2;
+      });
+    });
+    function isDescendant(ancestor, node) {
+      var cur = node.parent;
+      while (cur) { if (cur === ancestor) return true; cur = cur.parent; }
+      return false;
+    }
+  });
+
+  /* ---------- 补充3：网页 ↔ markdown 双栏对应 ---------- */
+  window.registerDemo('sec-6-extra3', function () {
+    var svg = d3.select('#demo-6-extra3-svg');
+    var W = 760, H = 220;
+    var items = [
+      { id: '6.1', title: '网页基础概念', md: '## 6.1 网页基础概念' },
+      { id: '6.2', title: 'Flex 布局原理', md: '## 6.2 Flex 布局' },
+      { id: '6.3', title: 'Grid 网格布局', md: '## 6.3 CSS Grid' },
+      { id: '6.4', title: '双栏布局实现', md: '## 6.4 双栏布局' },
+      { id: '6.5', title: 'Tab 组件实现', md: '## 6.5 Tab 组件' },
+      { id: '6.6', title: 'D3 布局函数',  md: '## 6.6 D3 布局' },
+      { id: '6.7', title: 'GH Pages 部署', md: '## 6.7 部署' }
+    ];
+    var leftX = 180, rightX = W - 180, startY = 30, rowH = 26;
+    svg.append('text').attr('x', leftX).attr('y', 18).attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('font-weight', 700).attr('fill', '#2563eb').text('网页 section');
+    svg.append('text').attr('x', rightX).attr('y', 18).attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('font-weight', 700).attr('fill', '#10b981').text('Markdown 讲义');
+
+    var cx = (leftX + rightX) / 2;
+    // 先画弧线
+    var arcs = svg.selectAll('path.arc').data(items).enter().append('path')
+      .attr('class', 'arc')
+      .attr('d', function (d, i) {
+        var y = startY + i * rowH;
+        return 'M' + (leftX + 100) + ',' + y + ' C' + cx + ',' + (y - 30) + ' ' + cx + ',' + (y - 30) + ' ' + (rightX - 100) + ',' + y;
+      })
+      .attr('fill', 'none').attr('stroke', '#94a3b8').attr('stroke-width', 1);
+
+    // 左列
+    var leftRows = svg.selectAll('g.left-row').data(items).enter().append('g')
+      .attr('class', 'left-row').style('cursor', 'pointer');
+    leftRows.append('rect').attr('x', leftX - 100)
+      .attr('y', function (d, i) { return startY + i * rowH - 12; })
+      .attr('width', 200).attr('height', 22).attr('rx', 4).attr('fill', '#dbeafe');
+    leftRows.append('text').attr('x', leftX)
+      .attr('y', function (d, i) { return startY + i * rowH + 3; })
+      .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#1e40af')
+      .text(function (d) { return d.id + ' ' + d.title; });
+
+    // 右列
+    var rightRows = svg.selectAll('g.right-row').data(items).enter().append('g')
+      .attr('class', 'right-row').style('cursor', 'pointer');
+    rightRows.append('rect').attr('x', rightX - 100)
+      .attr('y', function (d, i) { return startY + i * rowH - 12; })
+      .attr('width', 200).attr('height', 22).attr('rx', 4).attr('fill', '#d1fae5');
+    rightRows.append('text').attr('x', rightX)
+      .attr('y', function (d, i) { return startY + i * rowH + 3; })
+      .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#065f46')
+      .text(function (d) { return d.md; });
+
+    function highlight(idx) {
+      leftRows.select('rect').attr('fill', function (d, i) { return i === idx ? '#2563eb' : '#dbeafe'; });
+      leftRows.select('text').attr('fill', function (d, i) { return i === idx ? '#fff' : '#1e40af'; });
+      rightRows.select('rect').attr('fill', function (d, i) { return i === idx ? '#10b981' : '#d1fae5'; });
+      rightRows.select('text').attr('fill', function (d, i) { return i === idx ? '#fff' : '#065f46'; });
+      arcs.attr('stroke', function (d, i) { return i === idx ? '#f59e0b' : '#94a3b8'; })
+          .attr('stroke-width', function (d, i) { return i === idx ? 2.5 : 1; });
+    }
+    function reset() {
+      leftRows.select('rect').attr('fill', '#dbeafe');
+      leftRows.select('text').attr('fill', '#1e40af');
+      rightRows.select('rect').attr('fill', '#d1fae5');
+      rightRows.select('text').attr('fill', '#065f46');
+      arcs.attr('stroke', '#94a3b8').attr('stroke-width', 1);
+    }
+    leftRows.on('mouseenter', function (event, d) { highlight(items.indexOf(d)); })
+            .on('mouseleave', reset);
+    rightRows.on('mouseenter', function (event, d) { highlight(items.indexOf(d)); })
+             .on('mouseleave', reset);
+  });
+
+  </script>
+</body>
+</html>

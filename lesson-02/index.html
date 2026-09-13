@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>第2章 数据可视化流程 · 数据可视化课程</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="site-nav">
+    <div class="nav-inner">
+      <span class="brand">📊 DV 课程</span>
+      <a class="nav-item" data-key="home" href="../index.html">课程门户</a>
+      <a class="nav-item" data-key="lesson-01" href="../lesson-01/index.html">第1章·数据</a>
+      <a class="nav-item" data-key="lesson-02" href="../lesson-02/index.html">第2章·数据可视化流程</a>
+      <a class="nav-item" data-key="lesson-03" href="../lesson-03/index.html">第3章·色彩专题</a>
+      <a class="nav-item" data-key="lesson-04" href="../lesson-04/index.html">第4章·低维可视化</a>
+      <a class="nav-item" data-key="lesson-05" href="../lesson-05/index.html">第5章·时序可视化</a>
+      <a class="nav-item" data-key="lesson-06" href="../lesson-06/index.html">第6章·网页页面布局</a>
+    </div>
+  </header>
+
+  <div class="lesson-layout">
+    <aside class="lesson-sidebar">
+      <div class="side-title">本章目录</div>
+      <a class="side-link active" data-target="sec-2-1" href="#sec-2-1"><span class="zh-part">2.1 Card 数据流模型</span><span class="en-part">2.1 Card Data-Flow Model</span></a>
+      <a class="side-link" data-target="sec-2-2" href="#sec-2-2"><span class="zh-part">2.2 新生数据 → 分类树</span><span class="en-part">2.2 New Data → Classification Tree</span></a>
+      <a class="side-link" data-target="sec-2-3" href="#sec-2-3"><span class="zh-part">2.3 树形列表</span><span class="en-part">2.3 Tree List</span></a>
+      <a class="side-link" data-target="sec-2-4" href="#sec-2-4"><span class="zh-part">2.4 Reingold-Tilford 布局</span><span class="en-part">2.4 Reingold-Tilford Layout</span></a>
+      <a class="side-link" data-target="sec-2-5" href="#sec-2-5"><span class="zh-part">2.5 DOM 事件机制与事件委托</span><span class="en-part">2.5 DOM Events &amp; Delegation</span></a>
+      <div class="side-group">
+        <div class="side-sub"><span class="zh-part">补充</span><span class="en-part">Extra</span></div>
+        <a class="side-link" data-target="sec-2-extra1" href="#sec-2-extra1"><span class="zh-part">补充 demo 集合</span><span class="en-part">Extra Demo Collection</span></a>
+        <a class="side-link" data-target="sec-2-extra2" href="#sec-2-extra2"><span class="zh-part">common.demo-folder</span><span class="en-part">common.demo-folder</span></a>
+        <a class="side-link" data-target="sec-2-extra3" href="#sec-2-extra3"><span class="zh-part">完整讲义 markdown</span><span class="en-part">Full Lecture Notes (markdown)</span></a>
+      </div>
+    </aside>
+
+    <main class="lesson-main">
+      <section class="lesson-section" id="sec-2-1">
+        <h2 class="sec-title">2.1 Card 数据流模型</h2>
+          <div class="sec-subtitle">把可视化流程抽象为一串可组合的 Card，每张 Card 接收上一张的输出、产出给下一张</div>
+          <div class="sec-subtitle en">Abstract the visualization pipeline into a chain of composable Cards; each Card takes the previous Card's output and produces output for the next.</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">第2章我们引入一个统一的思维模型：把数据可视化的整个过程抽象为一组「Card」。每张 Card 接收上一张的输出，产出给下一张。</span><span class="en-part">In Chapter 2 we introduce a unified mental model: abstract the entire data visualization process into a set of "Cards". Each Card takes the previous Card's output and produces output for the next.</span></p>
+          <div class="alert-box">
+            <strong><span class="zh-part">Card 模型链路：</span><span class="en-part">Card Model Pipeline:</span></strong>
+            <span class="zh-part">原始数据 → 清洗 Card → 变换 Card → 布局 Card → 渲染 Card → 交互 Card。每张 Card 都可被替换、组合、复用。</span>
+            <span class="en-part">Raw Data → Clean Card → Transform Card → Layout Card → Render Card → Interact Card. Each Card can be replaced, combined, and reused.</span>
+          </div>
+          <ul class="checklist">
+            <li><span class="zh-part">Card 之间通过明确的数据契约传递（输入/输出类型一致即可插拔）</span><span class="en-part">Cards communicate through explicit data contracts (plug-and-play as long as input/output types match)</span></li>
+            <li><span class="zh-part">布局 Card 把数据结构转换为带坐标的几何描述</span><span class="en-part">The Layout Card converts data structures into coordinate-bearing geometric descriptions</span></li>
+            <li><span class="zh-part">渲染 Card 把几何描述转换为 SVG/Canvas 元素</span><span class="en-part">The Render Card converts geometric descriptions into SVG/Canvas elements</span></li>
+            <li><span class="zh-part">D3 的 Selection 就是渲染 Card，d3.tree / d3.pack 就是布局 Card</span><span class="en-part">D3's Selection is the Render Card; d3.tree / d3.pack are Layout Cards</span></li>
+          </ul>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title">Card 模型伪代码<span class="sub-en">Card Model Pseudocode</span></h3>
+<pre class="code-block"><code data-raw>// 数据可视化 = 一串 Card 的流水线
+const pipeline = [
+  loadCard,     // 原始 CSV → 数组
+  cleanCard,    // 数组 → 清洗后数组
+  transformCard,// 数组 → 树/Map/...
+  layoutCard,   // 树 → 带 {x, y} 的节点
+  renderCard,   // 节点 → SVG/DOM
+  interactCard  // DOM → 事件监听
+];
+// D3 里的对应关系：
+// d3.csv       → loadCard
+// d3.filter    → cleanCard
+// d3.rollup    → transformCard
+// d3.tree      → layoutCard
+// d3.select().enter → renderCard
+// .on('click') → interactCard
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-2-1-svg" width="760" height="220"></svg>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-2-2">
+        <h2 class="sec-title">2.2 新生数据 → 分类树</h2>
+          <div class="sec-subtitle">用 d3.rollup 把扁平的新生记录按专业 → 性别 → 学位递归分组</div>
+          <div class="sec-subtitle en">Use d3.rollup to recursively group flat student records by major → gender → degree</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">我们把第1章合成的「新生数据」按字段递归分组：专业 → 性别 → 学位等级，得到一棵分类树。这正是 <code>d3.rollup</code> 的典型用法。</span><span class="en-part">We recursively group the "new-student data" synthesized in Chapter 1 by fields: major → gender → degree level, yielding a classification tree. This is the canonical use case for <code>d3.rollup</code>.</span></p>
+          <p><span class="zh-part">这棵分类树的叶子节点是学生本人，内部节点是分类键。它是后续树形布局（2.3 / 2.4）的输入。</span><span class="en-part">The leaf nodes of this classification tree are the students themselves; the internal nodes are the classification keys. It serves as input for the subsequent tree layouts (2.3 / 2.4).</span></p>
+          <div class="alert-box">
+            <strong><span class="zh-part">Map → hierarchy：</span><span class="en-part">Map → hierarchy:</span></strong>
+            <span class="zh-part"><code>d3.rollup</code> 返回的是嵌套 <code>Map</code>，需要配合 <code>d3.hierarchy(root, children)</code> 把它转换成 D3 能处理的树结构。</span>
+            <span class="en-part"><code>d3.rollup</code> returns a nested <code>Map</code>, which must be paired with <code>d3.hierarchy(root, children)</code> to convert it into a tree structure that D3 can process.</span>
+          </div>
+          <ul class="checklist">
+            <li><span class="zh-part"><code>d3.group</code> 只分组不聚合，<code>d3.rollup</code> 分组 + 聚合函数</span><span class="en-part"><code>d3.group</code> only groups without aggregation; <code>d3.rollup</code> groups + applies an aggregation function</span></li>
+            <li><span class="zh-part">多层分组传多个 key 函数：<code>d.rollup(data, fn, k1, k2, k3)</code></span><span class="en-part">Pass multiple key functions for multi-level grouping: <code>d.rollup(data, fn, k1, k2, k3)</code></span></li>
+            <li><span class="zh-part">输出 Map 的层级数 = key 函数数量</span><span class="en-part">The number of Map levels in the output equals the number of key functions</span></li>
+          </ul>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title">d3.rollup 两层分组 + hierarchy<span class="sub-en">d3.rollup Two-Level Grouping + hierarchy</span></h3>
+<pre class="code-block"><code data-raw>const students = [
+  { major: 'CS',  gender: 'M', name: 'Alice',  grade: 'A' },
+  { major: 'CS',  gender: 'F', name: 'Bob',    grade: 'B' },
+  { major: 'Art', gender: 'F', name: 'Cara',   grade: 'A' },
+  { major: 'Art', gender: 'M', name: 'Dan',    grade: 'C' },
+  { major: 'Phy', gender: 'F', name: 'Eve',    grade: 'A' }
+];
+
+// 按 [major, gender] 两层 rollup，叶子是学生数组
+const rolled = d3.rollup(
+  students,
+  v => v,                       // 聚合函数：保留整组
+  d => d.major,                 // 第1层 key
+  d => d.gender                 // 第2层 key
+);
+// Map { 'CS' → Map { 'M' → [Alice], 'F' → [Bob] }, ... }
+
+// 用 d3.hierarchy 把嵌套 Map 转成标准树
+const root = d3.hierarchy(
+  { name: '全部', children: rolled },
+  node => node.children instanceof Map
+    ? [...node.children].map(([k, v]) => ({ name: k, children: v }))
+    : []
+);
+root.descendants().forEach(d => console.log(d.data.name, d.depth, d.parent));
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-2-2-svg" width="760" height="280"></svg>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-2-3">
+        <h2 class="sec-title">2.3 树形列表</h2>
+          <div class="sec-subtitle">分类树既可以渲染成嵌套 ul，也可以喂给 d3.hierarchy 转成布局输入</div>
+          <div class="sec-subtitle en">Classification trees can be rendered as nested ul or fed to d3.hierarchy for layout input</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">分类树既可以用嵌套 <code>&lt;ul&gt;</code> 渲染成「树形列表」HTML 结构，也可以用 D3 的 <code>d3.hierarchy</code> 转换为带深度、父指针的对象，再交给布局算法。</span><span class="en-part">A classification tree can be rendered as a "tree list" HTML structure using nested <code>&lt;ul&gt;</code>, or converted by D3's <code>d3.hierarchy</code> into objects with depth and parent pointers, then handed to layout algorithms.</span></p>
+          <ul class="checklist">
+            <li><span class="zh-part">HTML 树形列表：直接嵌套 <code>ul/li</code>，CSS 控缩进与连接线</span><span class="en-part">HTML tree list: directly nest <code>ul/li</code>, CSS controls indentation and connecting lines</span></li>
+            <li><span class="zh-part">D3 hierarchy：调用 <code>d3.hierarchy(root, children)</code>，自动算 <code>depth</code>、<code>height</code>、<code>parent</code></span><span class="en-part">D3 hierarchy: call <code>d3.hierarchy(root, children)</code>, automatically computes <code>depth</code>, <code>height</code>, <code>parent</code></span></li>
+            <li><span class="zh-part">可对 hierarchy 调 <code>.sum()</code>、<code>.sort()</code>、<code>.count()</code></span><span class="en-part">Can call <code>.sum()</code>, <code>.sort()</code>, <code>.count()</code> on the hierarchy</span></li>
+          </ul>
+          <div class="alert-box">
+            <strong><span class="zh-part">实用工具：</span><span class="en-part">Useful Utilities:</span></strong>
+            <span class="zh-part"><code>hierarchy.descendants()</code> 返回所有节点数组，<code>hierarchy.links()</code> 返回所有父子连线数组 —— 这两个就是后面 Data-Join 的数据源。</span>
+            <span class="en-part"><code>hierarchy.descendants()</code> returns an array of all nodes; <code>hierarchy.links()</code> returns an array of all parent-child links — these two are the data sources for the later Data-Join.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title">递归渲染树形 HTML 列表<span class="sub-en">Recursively Render Tree HTML List</span></h3>
+<pre class="code-block"><code data-raw">function renderTree(root, container) {
+  const ul = d3.select(container).append('ul')
+    .attr('class', 'tree-list').style('padding-left', '16px');
+  const items = ul.selectAll('li').data(root.children);
+  const enter = items.enter().append('li')
+    .style('padding', '3px 0').style('cursor', 'pointer');
+  enter.append('span').text(d => d.data.name)
+    .on('click', function () {
+      d3.select(this).style('color', '#ef4444');
+    });
+  // 递归处理子节点
+  enter.each(function (d) {
+    if (d.children) renderTree(d, this);
+  });
+}
+renderTree(root, '#tree-root');
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div id="demo-2-3-root"></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-2-4">
+        <h2 class="sec-title">2.4 Reingold-Tilford 布局</h2>
+          <div class="sec-subtitle">D3 的 d3.tree() / d3.cluster() 实现，同层等距、子树不重叠、整体居中</div>
+          <div class="sec-subtitle en">Implemented by D3's d3.tree() / d3.cluster(): equal spacing at the same level, non-overlapping subtrees, centered overall</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">Reingold 与 Tilford 在 1981 年提出的层次树布局算法：让同层节点等距排列，子树之间不重叠，整体紧致居中。D3 的 <code>d3.tree()</code> 即为其实现。</span><span class="en-part">Reingold and Tilford proposed this hierarchical tree layout algorithm in 1981: nodes at the same level are evenly spaced, subtrees do not overlap, and the overall layout is compact and centered. D3's <code>d3.tree()</code> is its implementation.</span></p>
+          <p><span class="zh-part"><code>d3.cluster()</code> 是它的变种：所有叶子节点对齐到同一深度，适合展示聚类结果。</span><span class="en-part"><code>d3.cluster()</code> is a variant: all leaf nodes are aligned to the same depth, suitable for displaying clustering results.</span></p>
+          <div class="alert-box">
+            <strong><span class="zh-part">关键参数二选一：</span><span class="en-part">Key Parameter (one of two):</span></strong>
+            <span class="zh-part"><code>tree.size([w, h])</code> 控制输出空间（根在 0，叶子自动铺满 w）；<code>tree.nodeSize([w, h])</code> 以节点尺寸为单位，根不一定在 (0,0)。</span>
+            <span class="en-part"><code>tree.size([w, h])</code> controls the output space (root at 0, leaves auto-fill w); <code>tree.nodeSize([w, h])</code> uses node size as the unit, and the root is not necessarily at (0,0).</span>
+          </div>
+          <ul class="checklist">
+            <li><span class="zh-part">先 <code>treeLayout(root)</code>，再读每个 node 的 <code>.x</code> / <code>.y</code></span><span class="en-part">First call <code>treeLayout(root)</code>, then read each node's <code>.x</code> / <code>.y</code></span></li>
+            <li><span class="zh-part">水平树用 <code>d3.linkHorizontal()</code>，垂直树用 <code>d3.linkVertical()</code></span><span class="en-part">Use <code>d3.linkHorizontal()</code> for horizontal trees, <code>d3.linkVertical()</code> for vertical trees</span></li>
+            <li><span class="zh-part">node 坐标是数值，记得 <code>translate(x, y)</code> 应用</span><span class="en-part">Node coordinates are numeric; remember to apply <code>translate(x, y)</code></span></li>
+          </ul>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title">完整 Reingold-Tilford 水平树模板<span class="sub-en">Complete Reingold-Tilford Horizontal Tree Template</span></h3>
+<pre class="code-block"><code data-raw>const W = 760, H = 360;
+const svg = d3.select('#demo-2-4-svg').append('svg')
+  .attr('viewBox', `0 0 ${W} ${H}`).attr('width', '100%');
+
+// 1. 准备数据
+const treeData = {
+  name: '根',
+  children: [
+    { name: 'A', children: [ { name: 'A-1' }, { name: 'A-2' } ] },
+    { name: 'B' },
+    { name: 'C', children: [ { name: 'C-1' }, { name: 'C-2' }, { name: 'C-3' } ] }
+  ]
+};
+
+// 2. 构建 hierarchy
+const root = d3.hierarchy(treeData);
+
+// 3. 跑布局（二选一：tree vs cluster）
+const layout = d3.tree().size([H - 40, W - 140]);
+layout(root);  // 节点被赋予 .x / .y
+
+// 4. 画连线
+const g = svg.append('g').attr('transform', 'translate(60,20)');
+g.selectAll('path.link').data(root.links()).enter().append('path')
+  .attr('class', 'link')
+  .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x))
+  .attr('fill', 'none').attr('stroke', '#cbd5e1');
+
+// 5. 画节点
+const node = g.selectAll('g.node').data(root.descendants())
+  .enter().append('g').attr('class', 'node')
+  .attr('transform', d => `translate(${d.y},${d.x})`);
+node.append('circle').attr('r', 5).attr('fill', '#2563eb');
+node.append('text').attr('x', 10).attr('y', 4)
+  .attr('font-size', 12).text(d => d.data.name);
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-controls">
+              <button id="demo-2-4-toggle"><span class="zh-part">切 tree / cluster</span><span class="en-part">Switch tree / cluster</span></button>
+            </div>
+            <svg id="demo-2-4-svg" width="760" height="340"></svg>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-2-5">
+        <h2 class="sec-title">2.5 DOM 事件机制与事件委托</h2>
+          <div class="sec-subtitle">冒泡 / 捕获 / 委托：父容器绑一个监听器管理所有子节点</div>
+          <div class="sec-subtitle en">Bubbling / Capturing / Delegation: one listener on the parent manages all children</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">当树形列表有成百上千节点时，给每个 <code>li</code> 都绑 <code>onclick</code> 会浪费内存。事件委托的思路是：把监听器绑在父容器上，靠 <code>e.target</code> 判断实际被点的是谁。</span><span class="en-part">When a tree list has hundreds or thousands of nodes, binding <code>onclick</code> to every <code>li</code> wastes memory. The idea of event delegation is: bind the listener to the parent container, and use <code>e.target</code> to determine who was actually clicked.</span></p>
+          <ul class="checklist">
+            <li><span class="zh-part">事件冒泡：子 → 父 → 根（默认监听器捕获冒泡阶段）</span><span class="en-part">Event bubbling: child → parent → root (default listeners catch the bubbling phase)</span></li>
+            <li><span class="zh-part">事件捕获：根 → 父 → 子（<code>addEventListener(fn, true)</code>）</span><span class="en-part">Event capturing: root → parent → child (<code>addEventListener(fn, true)</code>)</span></li>
+            <li><span class="zh-part">委托：监听父级，靠 <code>e.target.closest('li')</code> 找到目标节点</span><span class="en-part">Delegation: listen on the parent, use <code>e.target.closest('li')</code> to find the target node</span></li>
+          </ul>
+          <div class="alert-box">
+            <strong><span class="zh-part">提示：</span><span class="en-part">Tip:</span></strong>
+            <span class="zh-part">切换到右侧【▶️ 演示】Tab，点击树节点或下方列表项，可观察事件委托的实际效果。</span>
+            <span class="en-part">Switch to the [▶️ Demo] tab on the right, click tree nodes or list items below, and observe the actual effect of event delegation.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <h3 class="sub-title">事件委托完整示例<span class="sub-en">Complete Event Delegation Example</span></h3>
+<pre class="code-block"><code data-raw>// 假设 HTML：
+// <ul id="tree-list">
+//   <li data-id="1">A</li>
+//   <li data-id="2">B</li>
+//   ...
+// </ul>
+
+// ❌ 错误：每个 li 绑一个监听器
+// document.querySelectorAll('#tree-list li').forEach(li => {
+//   li.addEventListener('click', () => { ... });
+// });
+
+// ✅ 正确：只给 ul 绑一个（事件委托）
+const ul = document.querySelector('#tree-list');
+ul.addEventListener('click', function (e) {
+  // 关键：从实际被点击的 e.target 向上找到符合条件的最近祖先
+  const li = e.target.closest('li');
+  if (!li) return;          // 点到了 ul 本身，不是 li
+  console.log('clicked:', li.dataset.id);
+  // 高亮
+  ul.querySelectorAll('li').forEach(x => x.classList.remove('active'));
+  li.classList.add('active');
+});
+
+// capture 参数：true = 捕获阶段触发，false = 冒泡阶段（默认）
+// ul.addEventListener('click', handler, true);  // 捕获
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <ul id="demo-2-5-list" style="list-style:none;padding-left:0;margin:0;"></ul>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-2-extra1">
+        <h2 class="sec-title">补充 demo 集合</h2>
+          <div class="sec-subtitle">本章额外可扩展的演示方向</div>
+          <div class="sec-subtitle en">Additional extensible demo directions for this chapter</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">本章额外 demo：可折叠分类树、动态换布局（tree / cluster / tidy）、事件冒泡可视化时间轴。</span><span class="en-part">Extra demos for this chapter: collapsible classification tree, dynamic layout switching (tree / cluster / tidy), event bubbling visualization timeline.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw>// 可折叠树的 toggle 骨架
+node.append('circle').on('click', function (event, d) {
+  if (d.children) {
+    d._children = d.children;
+    d.children = null;
+  } else {
+    d.children = d._children;
+  }
+  update();  // 重新渲染整棵树
+});
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-2-extra1-svg" width="760" height="80"></svg>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-2-extra2">
+        <h2 class="sec-title">common.demo-folder</h2>
+          <div class="sec-subtitle">跨章节共享数据与样式的约定</div>
+          <div class="sec-subtitle en">Conventions for sharing data and styles across chapters</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">所有章节共用一个 <code>common/demo</code> 思路：每章的 demo 自治，但可通过相对路径 <code>../data/</code> 读取共享 CSV。</span><span class="en-part">All chapters share a <code>common/demo</code> idea: each chapter's demos are autonomous, but can read shared CSVs via the relative path <code>../data/</code>.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 所有章节通过相对路径读取共享数据
+d3.csv('../data/students_synthetic.csv').then(rows => {
+  console.log(rows.length);
+});
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-2-extra2-svg" width="760" height="80"></svg>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-2-extra3">
+        <h2 class="sec-title">完整讲义 markdown</h2>
+          <div class="sec-subtitle">从 markdown 到可视化网页的渲染路线</div>
+          <div class="sec-subtitle en">Rendering pipeline from markdown to visual web page</div>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">课堂完整讲义以 markdown 形式提供，本页面是其可视化摘要版本；后续可加 <code>marked.js</code> 把 <code>.md</code> 渲染进讲解 Tab。</span><span class="en-part">The full in-class lecture notes are provided in markdown; this page is their visual summary version. In the future, <code>marked.js</code> can be added to render <code>.md</code> into the Read tab.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 后续可引入 marked.js 渲染 markdown
+fetch('lesson-02.md')
+  .then(r => r.text())
+  .then(md => {
+    document.querySelector('#sec-2-1 .sec-tab-panel[data-panel="read"]')
+      .innerHTML = marked(md);
+  });
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <svg id="demo-2-extra3-svg" width="760" height="80"></svg>
+          </div>
+        </div>
+      </section>
+</main>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script>
+  /* =========================================================
+   * 第2章全部 demo 注册 —— main.js 会在 demo panel 可见 +
+   * 对应 section 进入视口时懒加载执行
+   * ========================================================= */
+
+  // 2.1 Card 数据流模型：横向流程节点
+  window.registerDemo('sec-2-1', function () {
+    var t = window.getI18n();
+    var svg = d3.select('#demo-2-1-svg');
+    var W = 760, H = 220;
+    var nodes = [
+      { name: t('l2_d2_1_raw'),   color: '#64748b' },
+      { name: t('l2_d2_1_clean'), color: '#60a5fa' },
+      { name: t('l2_d2_1_transform'), color: '#a78bfa' },
+      { name: t('l2_d2_1_layout'), color: '#f472b6' },
+      { name: t('l2_d2_1_render'), color: '#34d399' },
+      { name: t('l2_d2_1_interact'), color: '#fb923c' }
+    ];
+    var stepX = (W - 120) / nodes.length;
+    var cx = 60, cy = H / 2;
+    var g = svg.selectAll('g.node').data(nodes).enter().append('g')
+      .attr('class', 'node').attr('transform', function (d, i) {
+        return 'translate(' + (cx + stepX * i) + ',' + cy + ')';
+      });
+    g.append('rect').attr('x', -56).attr('y', -28).attr('width', 112).attr('height', 56)
+      .attr('rx', 10).attr('fill', function (d) { return d.color; }).attr('opacity', 0.9);
+    g.append('text').attr('text-anchor', 'middle').attr('dy', 5).attr('fill', '#fff')
+      .attr('font-size', 13).attr('font-weight', 600).text(function (d) { return d.name; });
+    // 箭头
+    var links = [];
+    for (var i = 0; i < nodes.length - 1; i++) {
+      links.push({ x1: cx + stepX * i + 56, x2: cx + stepX * (i + 1) - 56 });
+    }
+    svg.selectAll('line.arrow').data(links).enter().append('line')
+      .attr('class', 'arrow').attr('x1', function (d) { return d.x1; })
+      .attr('y1', cy).attr('x2', function (d) { return d.x2; }).attr('y2', cy)
+      .attr('stroke', '#94a3b8').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+    // 三角形箭头 marker
+    svg.append('defs').append('marker').attr('id', 'arrowhead')
+      .attr('viewBox', '0 0 10 10').attr('refX', 8).attr('refY', 5)
+      .attr('markerWidth', 6).attr('markerHeight', 6).attr('orient', 'auto')
+      .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', '#94a3b8');
+    // 数据流方向标签
+    svg.append('text').attr('x', W / 2).attr('y', H - 12).attr('text-anchor', 'middle')
+      .attr('fill', '#64748b').attr('font-size', 12).text(t('l2_d2_1_flow'));
+  });
+
+  // 2.2 d3.rollup 构建的分类树（用 d3.tree 展示层级关系）
+  window.registerDemo('sec-2-2', function () {
+    var t = window.getI18n();
+    var svg = d3.select('#demo-2-2-svg');
+    var W = 760, H = 280;
+    var students = [
+      { major: 'CS',  gender: 'M', name: 'Alice', grade: 'A' },
+      { major: 'CS',  gender: 'F', name: 'Bob',   grade: 'B' },
+      { major: 'Art', gender: 'F', name: 'Cara',  grade: 'A' },
+      { major: 'Art', gender: 'M', name: 'Dan',   grade: 'C' },
+      { major: 'Phy', gender: 'F', name: 'Eve',   grade: 'A' }
+    ];
+    var rolled = d3.rollup(
+      students,
+      function (v) { return v; },
+      function (d) { return d.major; },
+      function (d) { return d.gender; }
+    );
+    function mapToObj(entries) {
+      return entries.map(function (pair) {
+        var k = pair[0], v = pair[1];
+        if (v instanceof Map) {
+          return { name: k, children: mapToObj([...v]) };
+        } else {
+          return { name: k, children: v.map(function (s) { return { name: s.name }; }) };
+        }
+      });
+    }
+    var treeData = { name: t('l2_d2_all'), children: mapToObj([...rolled]) };
+    var root = d3.hierarchy(treeData);
+    var layout = d3.tree().size([H - 40, W - 160]);
+    layout(root);
+    var g = svg.append('g').attr('transform', 'translate(80,20)');
+    g.selectAll('path.link').data(root.links()).enter().append('path')
+      .attr('class', 'link').attr('fill', 'none').attr('stroke', '#cbd5e1')
+      .attr('d', d3.linkHorizontal().x(function (d) { return d.y; }).y(function (d) { return d.x; }));
+    var node = g.selectAll('g.node').data(root.descendants()).enter().append('g')
+      .attr('class', 'node').attr('transform', function (d) { return 'translate(' + d.y + ',' + d.x + ')'; });
+    node.append('circle').attr('r', function (d) { return d.children ? 6 : 4; })
+      .attr('fill', function (d) { return d.children ? '#a78bfa' : '#60a5fa'; });
+    node.append('text').attr('x', function (d) { return d.children ? -10 : 10; })
+      .attr('y', 4).attr('text-anchor', function (d) { return d.children ? 'end' : 'start'; })
+      .attr('font-size', 12).text(function (d) { return d.data.name; });
+    svg.append('text').attr('x', W / 2).attr('y', H - 6).attr('text-anchor', 'middle')
+      .attr('fill', '#64748b').attr('font-size', 12).text(t('l2_d2_2_path'));
+  });
+
+  // 2.3 树形列表 HTML：可点击展开/折叠
+  window.registerDemo('sec-2-3', function () {
+    var t = window.getI18n();
+    var container = d3.select('#demo-2-3-root');
+    container.selectAll('*').remove();
+    var treeData = {
+      name: t('l2_d2_all'), open: true,
+      children: [
+        { name: 'CS', open: true, children: [
+          { name: 'M', children: [ { name: 'Alice' }, { name: 'Eve' } ] },
+          { name: 'F', children: [ { name: 'Bob' } ] }
+        ]},
+        { name: 'Art', open: true, children: [
+          { name: 'F', children: [ { name: 'Cara' } ] },
+          { name: 'M', children: [ { name: 'Dan' } ] }
+        ]},
+        { name: 'Phy', children: [
+          { name: 'F', children: [ { name: 'Frank' } ] },
+          { name: 'M', children: [ { name: 'Grace' } ] }
+        ]}
+      ]
+    };
+    function render(node, parent) {
+      var li = parent.append('li').style('padding', '4px 0').style('list-style', 'none');
+      var row = li.append('div').style('display', 'flex').style('align-items', 'center').style('cursor', 'pointer');
+      var hasChildren = node.children && node.children.length;
+      row.append('span').attr('class', 'toggle').style('width', '14px').style('display', 'inline-block')
+        .style('color', '#94a3b8').style('font-size', '12px').text(hasChildren ? (node.open ? '▼' : '▶') : '·');
+      row.append('span').style('padding', '0 6px').style('font-size', '14px')
+        .style('color', hasChildren ? '#1f2937' : '#60a5fa').text(node.name);
+      if (hasChildren) {
+        var ul = li.append('ul').style('padding-left', '20px').style('margin', 0)
+          .style('border-left', '1px dashed #e2e8f0').style('display', node.open ? 'block' : 'none');
+        node.children.forEach(function (c) { render(c, ul); });
+        row.on('click', function () {
+          node.open = !node.open;
+          ul.style('display', node.open ? 'block' : 'none');
+          row.select('.toggle').text(node.open ? '▼' : '▶');
+        });
+      }
+      row.on('mouseenter', function () { row.style('background', '#dbeafe'); })
+         .on('mouseleave', function () { row.style('background', ''); });
+    }
+    var rootUl = container.append('ul').style('padding-left', '8px').style('margin', 0);
+    render(treeData, rootUl);
+  });
+
+  // 2.4 Reingold-Tilford：d3.tree / d3.cluster 切换
+  window.registerDemo('sec-2-4', function () {
+    var t = window.getI18n();
+    var svg = d3.select('#demo-2-4-svg');
+    var W = 760, H = 340;
+    var treeData = {
+      name: t('l2_d2_4_root'),
+      children: [
+        { name: 'A', children: [
+          { name: 'A-1' }, { name: 'A-2', children: [ { name: 'A-2-a' }, { name: 'A-2-b' } ] }
+        ]},
+        { name: 'B' },
+        { name: 'C', children: [
+          { name: 'C-1' }, { name: 'C-2' }, { name: 'C-3' }
+        ]},
+        { name: 'D', children: [ { name: 'D-1' } ] }
+      ]
+    };
+    var useCluster = false;
+    function render() {
+      svg.selectAll('*').remove();
+      var root = d3.hierarchy(treeData);
+      var layout = (useCluster ? d3.cluster() : d3.tree()).size([H - 40, W - 180]);
+      layout(root);
+      var g = svg.append('g').attr('transform', 'translate(90,20)');
+      g.selectAll('path.link').data(root.links()).enter().append('path')
+        .attr('class', 'link').attr('fill', 'none').attr('stroke', '#cbd5e1')
+        .attr('d', d3.linkHorizontal().x(function (d) { return d.y; }).y(function (d) { return d.x; }));
+      var node = g.selectAll('g.node').data(root.descendants()).enter().append('g')
+        .attr('class', 'node')
+        .attr('transform', function (d) { return 'translate(' + d.y + ',' + d.x + ')'; });
+      node.append('circle').attr('r', 5).attr('fill', '#2563eb');
+      node.append('text').attr('x', 10).attr('y', 4).attr('font-size', 12).text(function (d) { return d.data.name; });
+      // 点击高亮祖先
+      node.on('click', function (event, d) {
+        d3.selectAll('g.node circle').attr('fill', '#2563eb');
+        d.ancestors().forEach(function (a) {
+          d3.selectAll('g.node').filter(function (n) { return n === a; }).select('circle')
+            .attr('fill', '#ef4444');
+        });
+      });
+    }
+    render();
+    document.getElementById('demo-2-4-toggle').onclick = function () {
+      useCluster = !useCluster;
+      document.getElementById('demo-2-4-toggle').textContent =
+        t('l2_d2_4_current') + (useCluster ? 'cluster' : 'tree') + t('l2_d2_4_click');
+      render();
+    };
+    document.getElementById('demo-2-4-toggle').textContent =
+      t('l2_d2_4_current') + 'tree' + t('l2_d2_4_click');
+  });
+
+  // 2.5 事件委托：一个 ul 一个监听器
+  window.registerDemo('sec-2-5', function () {
+    var t = window.getI18n();
+    var list = document.getElementById('demo-2-5-list');
+    list.innerHTML = '';
+    var items = [
+      { id: 1, label: t('l2_d2_5_item1') },
+      { id: 2, label: t('l2_d2_5_item2') },
+      { id: 3, label: t('l2_d2_5_item3') },
+      { id: 4, label: t('l2_d2_5_item4') },
+      { id: 5, label: t('l2_d2_5_item5') },
+      { id: 6, label: t('l2_d2_5_item6') },
+      { id: 7, label: t('l2_d2_5_item7') },
+      { id: 8, label: t('l2_d2_5_item8') }
+    ];
+    var colors = ['#60a5fa', '#a78bfa', '#34d399', '#fb923c', '#f472b6', '#22d3ee', '#facc15', '#f87171'];
+    items.forEach(function (it, i) {
+      var li = document.createElement('li');
+      li.dataset.id = it.id;
+      li.style.cssText = 'padding:8px 14px; margin:4px 0; border-left:3px solid ' + colors[i % colors.length] +
+        '; background:#f8fafc; border-radius:6px; cursor:pointer; font-size:14px; transition:all .15s;';
+      li.textContent = it.label;
+      list.appendChild(li);
+    });
+    // 事件委托：只绑 ul 这一个监听器
+    list.addEventListener('click', function (e) {
+      var li = e.target.closest('li');
+      if (!li) return;
+      list.querySelectorAll('li').forEach(function (x) {
+        x.style.background = '#f8fafc';
+        x.style.boxShadow = 'none';
+      });
+      li.style.background = '#dbeafe';
+      li.style.boxShadow = '0 0 0 2px #2563eb33';
+      console.log(t('l2_d2_5_log'), li.dataset.id);
+    });
+  });
+
+  // 补充项 demo（占位）
+  window.registerDemo('sec-2-extra1', function () {
+    var t = window.getI18n();
+    var svg = d3.select('#demo-2-extra1-svg');
+    svg.append('text').attr('x', 380).attr('y', 45).attr('text-anchor', 'middle')
+      .attr('fill', '#94a3b8').attr('font-size', 14).text(t('l2_d2_extra1'));
+  });
+  window.registerDemo('sec-2-extra2', function () {
+    var t = window.getI18n();
+    var svg = d3.select('#demo-2-extra2-svg');
+    svg.append('text').attr('x', 380).attr('y', 45).attr('text-anchor', 'middle')
+      .attr('fill', '#94a3b8').attr('font-size', 14).text(t('l2_d2_extra2'));
+  });
+  window.registerDemo('sec-2-extra3', function () {
+    var t = window.getI18n();
+    var svg = d3.select('#demo-2-extra3-svg');
+    svg.append('text').attr('x', 380).attr('y', 45).attr('text-anchor', 'middle')
+      .attr('fill', '#94a3b8').attr('font-size', 14).text(t('l2_d2_extra3'));
+  });
+
+  // 语言切换时重渲染所有 demo
+  document.addEventListener('langchange', function () {
+    window.rerunDemo('sec-2-1');
+    window.rerunDemo('sec-2-2');
+    window.rerunDemo('sec-2-3');
+    window.rerunDemo('sec-2-4');
+    window.rerunDemo('sec-2-5');
+    window.rerunDemo('sec-2-extra1');
+    window.rerunDemo('sec-2-extra2');
+    window.rerunDemo('sec-2-extra3');
+  });
+  </script>
+</body>
+</html>

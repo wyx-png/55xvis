@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>第3章 色彩专题 · 数据可视化课程</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="site-nav">
+    <div class="nav-inner">
+      <span class="brand">📊 DV 课程</span>
+      <a class="nav-item" data-key="home" href="../index.html">课程门户</a>
+      <a class="nav-item" data-key="lesson-01" href="../lesson-01/index.html">第1章·数据</a>
+      <a class="nav-item" data-key="lesson-02" href="../lesson-02/index.html">第2章·数据可视化流程</a>
+      <a class="nav-item" data-key="lesson-03" href="../lesson-03/index.html">第3章·色彩专题</a>
+      <a class="nav-item" data-key="lesson-04" href="../lesson-04/index.html">第4章·低维可视化</a>
+      <a class="nav-item" data-key="lesson-05" href="../lesson-05/index.html">第5章·时序可视化</a>
+      <a class="nav-item" data-key="lesson-06" href="../lesson-06/index.html">第6章·网页页面布局</a>
+    </div>
+  </header>
+
+  <div class="lesson-layout">
+    <aside class="lesson-sidebar">
+      <div class="side-title"><span class="zh-part">本章目录（8 小节 + 补充）</span><span class="en-part">Table of Contents (8 sections + extras)</span></div>
+      <a class="side-link active" data-target="sec-3-1" href="#sec-3-1"><span class="zh-part">3.1 颜色模型</span><span class="en-part">3.1 Color Models</span></a>
+      <a class="side-link" data-target="sec-3-2" href="#sec-3-2"><span class="zh-part">3.2 colormap</span><span class="en-part">3.2 Colormap</span></a>
+      <a class="side-link" data-target="sec-3-3" href="#sec-3-3"><span class="zh-part">3.3 Lab 色域</span><span class="en-part">3.3 Lab Gamut</span></a>
+      <a class="side-link" data-target="sec-3-4" href="#sec-3-4"><span class="zh-part">3.4 5 大色系</span><span class="en-part">3.4 Five Color Systems</span></a>
+      <a class="side-link" data-target="sec-3-5" href="#sec-3-5"><span class="zh-part">3.5 经典科研配色</span><span class="en-part">3.5 Classic Scientific Palettes</span></a>
+      <a class="side-link" data-target="sec-3-6" href="#sec-3-6"><span class="zh-part">3.6 对错案例</span><span class="en-part">3.6 Good &amp; Bad Cases</span></a>
+      <a class="side-link" data-target="sec-3-7" href="#sec-3-7"><span class="zh-part">3.7 鲜艳+低饱和学生成器</span><span class="en-part">3.7 Vivid &amp; Low-Sat Generator</span></a>
+      <a class="side-link" data-target="sec-3-8" href="#sec-3-8"><span class="zh-part">3.8 CVD 论文图测</span><span class="en-part">3.8 CVD Paper Test</span></a>
+      <div class="side-group">
+        <div class="side-sub"><span class="zh-part">补充</span><span class="en-part">Extras</span></div>
+        <a class="side-link" data-target="sec-3-extra1" href="#sec-3-extra1"><span class="zh-part">补充 demo 集合</span><span class="en-part">Demo Collection</span></a>
+        <a class="side-link" data-target="sec-3-extra2" href="#sec-3-extra2"><span class="zh-part">common.demo-folder</span><span class="en-part">common.demo-folder</span></a>
+        <a class="side-link" data-target="sec-3-extra3" href="#sec-3-extra3"><span class="zh-part">完整讲义 markdown</span><span class="en-part">Full Lecture Notes (markdown)</span></a>
+      </div>
+    </aside>
+
+    <main class="lesson-main">
+      <section class="lesson-section" id="sec-3-1">
+        <h2 class="sec-title">3.1 颜色模型</h2>
+          <p class="sec-subtitle"><span class="zh-part">颜色不是单一物理量，而是人对光谱的三刺激值感知</span><span class="en-part">Color is not a single physical quantity, but the human perception of tristimulus values of the spectrum</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">常见颜色模型各有分工：</span><span class="en-part">Common color models each have their role:</span></p>
+          <ul class="checklist">
+            <li><span class="zh-part"><strong>RGB：</strong>设备相关、加色混合，不适合插值（中间会漂向灰）</span><span class="en-part"><strong>RGB:</strong> device-dependent, additive mixing; not suitable for interpolation (the middle drifts toward gray)</span></li>
+            <li><span class="zh-part"><strong>HSL/HSV：</strong>色相、饱和度、亮度，但感知仍不均匀</span><span class="en-part"><strong>HSL/HSV:</strong> hue, saturation, lightness; but perception is still non-uniform</span></li>
+            <li><span class="zh-part"><strong>CIELAB：</strong>感知均匀，L 为亮度，a 红绿，b 黄蓝</span><span class="en-part"><strong>CIELAB:</strong> perceptually uniform; L is lightness, a is red-green, b is yellow-blue</span></li>
+            <li><span class="zh-part"><strong>HCL：</strong>基于 CIELAB 的极坐标形式（色相 H、彩度 C、亮度 L），最适合数据可视化插值</span><span class="en-part"><strong>HCL:</strong> polar form based on CIELAB (hue H, chroma C, lightness L); best suited for data visualization interpolation</span></li>
+          </ul>
+          <div class="alert-box">
+            <span class="zh-part"><strong>原则：</strong>给数据生成 colormap 时，优先用 <strong>HCL</strong> 沿色相或彩度方向插值，避免 RGB 直接插值。</span>
+            <span class="en-part"><strong>Principle:</strong> When generating a colormap for data, prefer interpolating along hue or chroma in <strong>HCL</strong>, and avoid direct RGB interpolation.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 从十六进制解析，转换到不同空间
+const hex = '#2563eb';
+const rgb  = d3.rgb(hex);
+const hsl  = d3.hsl(hex);
+const lab  = d3.lab(hex);
+const hcl  = d3.hcl(hex);
+
+// RGB 插值（不推荐用于数据 colormap）
+const lerpRGB = d3.interpolateRgb('#fff', '#2563eb');
+
+// HCL 插值（推荐：感知均匀）
+const lerpHCL = d3.interpolateHcl('#fff', '#2563eb');
+
+// 对比：t=0.5 时
+lerpRGB(0.5);   // 可能偏灰
+lerpHCL(0.5);   // 保持鲜艳
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · 三种颜色空间沿相同起止色插值</span><span class="en-part">Demo · Interpolation across three color spaces with the same start/end colors</span></div>
+            <svg id="demo-3-1-svg" width="760" height="200"></svg>
+            <div class="demo-note"><span class="zh-part">起点 <code>#dbeafe</code> 终点 <code>#f97316</code>。RGB 插值会在中间变灰；HCL 全程保持鲜艳；HSL 介于两者之间。</span><span class="en-part">Start <code>#dbeafe</code>, end <code>#f97316</code>. RGB interpolation turns gray in the middle; HCL stays vivid throughout; HSL is in between.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-2">
+        <h2 class="sec-title">3.2 colormap</h2>
+          <p class="sec-subtitle"><span class="zh-part">把数值域 [a, b] 映射到颜色空间的连续函数</span><span class="en-part">A continuous function mapping the value domain [a, b] to color space</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">colormap 按用途分三大类：</span><span class="en-part">Colormaps fall into three categories by use:</span></p>
+          <ul class="checklist">
+            <li><span class="zh-part"><strong>Sequential 顺序：</strong>单方向递增，用于定量无负值（温度、分数、人口密度）</span><span class="en-part"><strong>Sequential:</strong> monotonic increase, used for quantitative non-negative data (temperature, scores, population density)</span></li>
+            <li><span class="zh-part"><strong>Diverging 发散：</strong>有中心点，两端对比（盈亏、Z-score、增长/下降）</span><span class="en-part"><strong>Diverging:</strong> has a center point, contrasting ends (profit/loss, Z-score, growth/decline)</span></li>
+            <li><span class="zh-part"><strong>Categorical / Qualitative 定类：</strong>离散、感知距离均等（分类数据）</span><span class="en-part"><strong>Categorical / Qualitative:</strong> discrete, with equal perceptual distance (categorical data)</span></li>
+          </ul>
+          <p><span class="zh-part">另外还有 Cyclic（周期型，如相位、季节）和 Qualitative 变体。选 colormap 的第一步永远是：先看清「数据是什么尺度」。</span><span class="en-part">There are also Cyclic (periodic, e.g. phase, seasons) and Qualitative variants. The first step in choosing a colormap is always: first figure out "what scale is the data".</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 1) Sequential 顺序 colormap
+const seqScale = d3.scaleSequential(d3.interpolateViridis)
+  .domain([0, 100]);
+
+// 自定义 HCL 顺序（蓝→橙）
+const seqHCL = d3.scaleSequential(
+  t => d3.interpolateHcl('#dbeafe', '#f97316')(t)
+).domain([0, 1]);
+
+// 2) Diverging 发散 colormap（红-白-蓝）
+const divScale = d3.scaleDiverging(d3.interpolateRdBu)
+  .domain([-1, 0, 1]);
+
+// 3) Categorical 分类型
+const catScale = d3.scaleOrdinal(d3.schemeTableau10);
+
+// 4) 在 canvas / svg 中取样
+seqScale(50);          // → 颜色字符串
+d3.interpolateViridis(0.6);  // → '#440154' 之类
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · 连续 colormap 对比</span><span class="en-part">Demo · Continuous colormap comparison</span></div>
+            <svg id="demo-3-2-svg" width="760" height="180"></svg>
+            <div class="demo-note"><span class="zh-part">Jet 色带会在中段出现「亮带」假边界；Viridis 感知最线性；自定义 HCL 蓝→橙可看出全程保持高彩度。</span><span class="en-part">The Jet ramp creates a "bright band" false boundary in the middle; Viridis is the most perceptually linear; a custom HCL blue→orange keeps high chroma throughout.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-3">
+        <h2 class="sec-title">3.3 Lab 色域</h2>
+          <p class="sec-subtitle"><span class="zh-part">CIELAB 色域是纺锤而非立方体</span><span class="en-part">The CIELAB gamut is a spindle, not a cube</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">在 L 低（暗）和高（亮）的两端，可表达的彩度 a/b 范围都会收窄。这就是为什么在 HCL 中沿固定彩度插值时，端点要落在色域内——否则会出现「裁剪」或「绕路」。</span><span class="en-part">At both the low (dark) and high (light) ends of L, the expressible chroma range a/b narrows. That is why, when interpolating at fixed chroma in HCL, the endpoints must lie inside the gamut — otherwise "clipping" or "detouring" occurs.</span></p>
+          <div class="alert-box">
+            <span class="zh-part"><strong>可视化技巧：</strong>把色域画成 L–C 平面的轮廓，可直观看到「在这个亮度下能用到多鲜艳」。D3 的 <code>d3.interpolateHcl</code> 会自动做色域裁剪，但自己写插值时要留心。</span>
+            <span class="en-part"><strong>Viz Tip:</strong> Drawing the gamut as a contour in the L–C plane makes it intuitive to see "how vivid you can get at this lightness". D3's <code>d3.interpolateHcl</code> does gamut clipping automatically, but be careful when writing your own interpolation.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 在给定亮度 L 下，扫描色相 H 找到最大合法彩度 C
+function maxChromaAtL(L, steps = 360) {
+  let maxC = 0;
+  for (let h = 0; h < steps; h++) {
+    const c = d3.lab(
+      d3.hcl((h / steps) * 360, 0, L)
+    ).l ? 0 : 0; // 占位
+  }
+  // 简化：用 d3.hcl 测试是否在 sRGB 内
+  let lo = 0, hi = 230;
+  for (let h = 0; h < steps; h++) {
+    let c = 0;
+    while (c < hi) {
+      const col = d3.hcl((h / steps) * 360, c + 1, L);
+      const rgb = col.rgb();
+      if (rgb.r >= 0 && rgb.r <= 255 &&
+          rgb.g >= 0 && rgb.g <= 255 &&
+          rgb.b >= 0 && rgb.b <= 255) {
+        c++;
+      } else break;
+    }
+    maxC = Math.max(maxC, c);
+  }
+  return maxC;
+}
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · 在固定亮度 L 下，色相 H 对应的最大合法彩度 C</span><span class="en-part">Demo · Maximum valid chroma C for each hue H at a fixed lightness L</span></div>
+            <svg id="demo-3-3-svg" width="760" height="240"></svg>
+            <div class="demo-note"><span class="zh-part">纺锤形：L=50 时 C 可到 ~130；L=20 或 L=80 时 C 只能到 ~50。</span><span class="en-part">Spindle shape: at L=50, C can reach ~130; at L=20 or L=80, C only reaches ~50.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-4">
+        <h2 class="sec-title">3.4 5 大色系</h2>
+          <p class="sec-subtitle"><span class="zh-part">按用途归纳的可视化色系族</span><span class="en-part">Color system families grouped by use</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <ul class="checklist">
+            <li><span class="zh-part"><strong>单色渐变：</strong>同一色相的明暗/彩度变化，表达数值大小</span><span class="en-part"><strong>Monochrome gradient:</strong> lightness/chroma variation within one hue, expressing magnitude</span></li>
+            <li><span class="zh-part"><strong>双向渐变：</strong>从 A 色到白再到 B 色，表达正负对比</span><span class="en-part"><strong>Diverging gradient:</strong> from color A to white to color B, expressing positive/negative contrast</span></li>
+            <li><span class="zh-part"><strong>彩虹色：</strong>沿色相环走一整圈，慎用——仅当有序且需要最大区分度</span><span class="en-part"><strong>Rainbow:</strong> a full lap around the hue circle; use with caution — only when ordered and maximum discriminability is needed</span></li>
+            <li><span class="zh-part"><strong>分类型：</strong>离散 N 色，各色之间感知距离应尽量均等</span><span class="en-part"><strong>Categorical:</strong> N discrete colors with perceptual distances as equal as possible</span></li>
+            <li><span class="zh-part"><strong>语义型：</strong>红绿表意（正负、好坏、涨跌），但必须同时提供形状/亮度编码</span><span class="en-part"><strong>Semantic:</strong> red-green semantics (positive/negative, good/bad, up/down), but must also provide shape/lightness encoding</span></li>
+          </ul>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 1) 单色渐变（5 级，L 从 90 → 30）
+const mono = Array.from({length: 5}, (_, i) =>
+  d3.hcl(210, 50, 90 - i * 15).formatHex()
+);
+
+// 2) 双向渐变（蓝-白-橙，用 scaleDiverging）
+const div5 = d3.scaleDiverging(
+  t => d3.interpolateHcl('#2563eb', '#ffffff', '#f97316')(t),
+  [-1, 0, 1]
+).range([-1, -0.5, 0, 0.5, 1]).map(v => div5(v));
+
+// 3) 彩虹色（沿 H 走一圈）
+const rainbow = Array.from({length: 8}, (_, i) =>
+  d3.hcl((i / 8) * 360, 60, 55).formatHex()
+);
+
+// 4) 分类型（Wong 8 色即经典一例）
+const qualitative = ['#000000','#E69F00','#56B4E9','#009E73',
+                     '#F0E442','#0072B2','#D55E00','#CC79A1'];
+
+// 5) 语义型（红涨绿跌，但需同时加形状/亮度区分）
+const semantic = { up: '#dc2626', down: '#16a34a' };
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · 5 大色系并排展示</span><span class="en-part">Demo · Five color systems side by side</span></div>
+            <svg id="demo-3-4-svg" width="760" height="260"></svg>
+            <div class="demo-note"><span class="zh-part">每行一个色系，附 HCL 参数说明。</span><span class="en-part">One color system per row, with HCL parameter notes.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-5">
+        <h2 class="sec-title">3.5 经典科研配色</h2>
+          <p class="sec-subtitle"><span class="zh-part">两套最值得记住的色盲安全离散色板</span><span class="en-part">Two colorblind-safe discrete palettes worth memorizing</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <ul class="checklist">
+            <li><span class="zh-part"><strong>Wong (2011, Nature Methods)：</strong>8 色，避开纯红绿冲突，同时在黑白打印下也可区分</span><span class="en-part"><strong>Wong (2011, Nature Methods):</strong> 8 colors, avoiding pure red-green conflict, and also distinguishable in black-and-white printing</span></li>
+            <li><span class="zh-part"><strong>Paul Tol (2012)：</strong>给定性、发散、连续各一套，文档齐全</span><span class="en-part"><strong>Paul Tol (2012):</strong> provides one set each for qualitative, diverging, and sequential; well documented</span></li>
+          </ul>
+          <div class="alert-box">
+            <span class="zh-part"><strong>口诀：</strong>科研图配色，<em>不要</em>用 jet/rainbow；用 Viridis / Cividis / Wong / Tol。</span>
+            <span class="en-part"><strong>Mnemonic:</strong> For scientific figures, <em>don't</em> use jet/rainbow; use Viridis / Cividis / Wong / Tol.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// Wong (2011, Nature Methods) —— 色盲安全 + 黑白可辨
+const wong8 = [
+  '#000000', // black
+  '#E69F00', // orange
+  '#56B4E9', // sky blue
+  '#009E73', // bluish green
+  '#F0E442', // yellow
+  '#0072B2', // blue
+  '#D55E00', // vermillion
+  '#CC79A1'  // reddish purple
+];
+
+// Paul Tol qualitative (8 色)
+const tolQualitative = [
+  '#332288', // indigo
+  '#117733', // forest
+  '#44AA99', // teal
+  '#88CCEE', // sky
+  '#DDCC77', // sand
+  '#CC6677', // rose
+  '#AA4499', // purple
+  '#882255'  // wine
+];
+
+// 使用：d3.scaleOrdinal(wong8)
+const ordinal = d3.scaleOrdinal(wong8);
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · 两套色盲安全离散色板</span><span class="en-part">Demo · Two colorblind-safe discrete palettes</span></div>
+            <svg id="demo-3-5-svg" width="760" height="180"></svg>
+            <div class="demo-note"><span class="zh-part">每行一个色板；同时在黑白打印下也可区分。</span><span class="en-part">One palette per row; also distinguishable in black-and-white printing.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-6">
+        <h2 class="sec-title">3.6 对错案例</h2>
+          <p class="sec-subtitle"><span class="zh-part">同样的数据，配色选择如何扭曲感知</span><span class="en-part">How color choices distort perception of the same data</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">同样一张分类散点图，用 jet 看似鲜艳但会引入「假边界」——人眼会把颜色突变处识别为数据边界；换成 Viridis 则边界感弱、感知线性。</span><span class="en-part">For the same categorical scatter plot, jet looks vivid but introduces "false boundaries" — the eye interprets abrupt color changes as data boundaries; switching to Viridis weakens the boundary sense and makes perception linear.</span></p>
+          <p><span class="zh-part">错例还包括：用彩虹色表示定序数据、纯红配纯绿表示二元类别但不加形状区分、渐变方向与数据大小不匹配等。</span><span class="en-part">Bad cases also include: using rainbow for ordinal data, pure red paired with pure green for binary categories without shape distinction, and gradient direction not matching data magnitude.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 生成一批二维高斯点
+const data = d3.range(200).map(() => ({
+  x: d3.randomNormal()(),
+  y: d3.randomNormal()(),
+  v: d3.randomNormal()()
+}));
+
+// ❌ 错：Jet 会引入假边界
+const jet = d3.scaleSequential(
+  d3.interpolateRgbBasis([
+    '#00008f','#0000ff','#00ffff',
+    '#00ff00','#ffff00','#ff0000','#7f0000'
+  ])
+).domain(d3.extent(data, d => d.v));
+
+// ✅ 对：Viridis 感知线性 + CVD 友好
+const viridis = d3.scaleSequential(d3.interpolateViridis)
+  .domain(d3.extent(data, d => d.v));
+
+// 画散点：
+// svg.selectAll('circle').data(data).enter().append('circle')
+//   .attr('cx', d => x(d.x)).attr('cy', d => y(d.y))
+//   .attr('fill', d => viridis(d.v));  // 或 jet(d.v) 对比
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · 同一份数据，两种配色的感知差异</span><span class="en-part">Demo · Perceptual difference of two color schemes on the same data</span></div>
+            <svg id="demo-3-6-svg" width="760" height="360"></svg>
+            <div class="demo-note"><span class="zh-part">左：Jet（引入假边界）；右：Viridis（感知线性 + CVD 友好）。</span><span class="en-part">Left: Jet (introduces false boundaries); Right: Viridis (perceptually linear + CVD-friendly).</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-7">
+        <h2 class="sec-title">3.7 鲜艳+低饱和学生成器</h2>
+          <p class="sec-subtitle"><span class="zh-part">给定 N，一键生成两套离散色板</span><span class="en-part">Given N, generate two sets of discrete palettes in one click</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">一套高彩度（课堂展示/大屏），一套低饱和（论文截图/浅色文档/黑白打印友好）。核心就是固定色相间距、调节 C 和 L：</span><span class="en-part">One high-chroma set (classroom display / big screen), one low-saturation set (paper screenshots / light documents / B&W-print friendly). The core is to fix hue spacing and adjust C and L:</span></p>
+          <div class="alert-box">
+            <span class="zh-part"><strong>切换到演示 Tab：</strong>拖动滑块改变 N，实时对比鲜艳 vs 低饱和两套色板的可读性。</span>
+            <span class="en-part"><strong>Switch to the Demo tab:</strong> drag the slider to change N and compare the readability of the vivid vs low-saturation palettes in real time.</span>
+          </div>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">function genPalette(N, vivid) {
+  const C = vivid ? 70 : 30;   // 彩度
+  const L = vivid ? 55 : 65;   // 亮度（低饱和偏亮，浅底好看）
+  return Array.from({length: N}, (_, i) => {
+    const h = (i * 360 / N) % 360;
+    return d3.hcl(h, C, L).formatHex();
+  });
+}
+
+// 课堂大屏：鲜艳
+genPalette(6, true);
+// → ['#ff6bb5','#c87800','#0098ea','#00ab6e','#d1a200','#b366ff']
+
+// 论文截图：低饱和
+genPalette(6, false);
+// → ['#f5c7dd','#e3c69a','#9fc7e7','#9fd4c0','#e7d59a','#c8aee0']
+
+// 演示滑块联动（见演示 Tab）
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · 鲜艳 vs 低饱和 HCL 生成器</span><span class="en-part">Demo · Vivid vs Low-Saturation HCL Generator</span></div>
+            <div class="demo-controls">
+              <label class="text-xs text-slate-500"><span class="zh-part">N = </span><span class="en-part">N = </span><span id="demo-3-7-n">6</span></label>
+              <input id="demo-3-7-range" type="range" min="3" max="12" value="6" />
+            </div>
+            <svg id="demo-3-7-svg" width="760" height="140"></svg>
+            <div class="demo-note"><span class="zh-part">上：鲜艳版（C=70, L=55）；下：低饱和版（C=30, L=65）。</span><span class="en-part">Top: vivid (C=70, L=55); bottom: low-saturation (C=30, L=65).</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-8">
+        <h2 class="sec-title">3.8 CVD 论文图测</h2>
+          <p class="sec-subtitle"><span class="zh-part">Color Vision Deficiency 视角下检验你的配色</span><span class="en-part">Test your color scheme from the Color Vision Deficiency perspective</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">用色盲模拟（Protanopia / Deuteranopia / Tritanopia）对论文图重新渲染，检验不同色板在 CVD 视角下是否仍可分辨。</span><span class="en-part">Re-render paper figures with colorblind simulation (Protanopia / Deuteranopia / Tritanopia) to check whether different palettes remain distinguishable under CVD.</span></p>
+          <ul class="checklist">
+            <li><span class="zh-part">红绿色盲（Protanopia / Deuteranopia）最常见，约占男性 8%</span><span class="en-part">Red-green colorblindness (Protanopia / Deuteranopia) is the most common, affecting about 8% of males</span></li>
+            <li><span class="zh-part">蓝黄色盲（Tritanopia）较少，约 0.01%</span><span class="en-part">Blue-yellow colorblindness (Tritanopia) is rare, about 0.01%</span></li>
+            <li><span class="zh-part">Wong / Tol 几乎对所有 CVD 友好；Viridis 本身就是为色盲优化的顺序色板</span><span class="en-part">Wong / Tol are friendly to almost all CVD; Viridis itself is a sequential palette optimized for colorblindness</span></li>
+          </ul>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 简化版 Protanopia 模拟矩阵 (RGB 空间)
+// 参考 Machado et al. 2009
+const protanopia = [
+  [0.567, 0.433, 0.000],
+  [0.558, 0.442, 0.000],
+  [0.000, 0.242, 0.758]
+];
+
+function simulateCVD(hex, matrix) {
+  const {r, g, b} = d3.rgb(hex);
+  const nr = r * matrix[0][0] + g * matrix[0][1] + b * matrix[0][2];
+  const ng = r * matrix[1][0] + g * matrix[1][1] + b * matrix[1][2];
+  const nb = r * matrix[2][0] + g * matrix[2][1] + b * matrix[2][2];
+  return d3.rgb(nr, ng, nb).formatHex();
+}
+
+// 使用：
+simulateCVD('#dc2626', protanopia);  // 红色在 Protanopia 下变成...
+simulateCVD('#16a34a', protanopia);  // 绿色可能与红撞色
+
+// 更好的方案：用 color.js (https://github.com/LeaVerou/color.js)
+// 它内建 CVD 模拟：color.to('protanopia')
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · Protanopia（红绿色盲）模拟</span><span class="en-part">Demo · Protanopia (red-green colorblindness) simulation</span></div>
+            <svg id="demo-3-8-svg" width="760" height="360"></svg>
+            <div class="demo-note"><span class="zh-part">上：正常视觉；下：Protanopia 视角。注意 Wong 8 色几乎不受影响，而传统纯红绿会撞成一片黄灰。</span><span class="en-part">Top: normal vision; bottom: Protanopia view. Note that Wong 8 colors are barely affected, while traditional pure red-green collapses into a yellowish gray.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-extra1">
+        <h2 class="sec-title">补充 demo 集合</h2>
+          <p class="sec-subtitle"><span class="zh-part">本章附加的交互/可视化 demo</span><span class="en-part">Additional interactive/visualization demos in this chapter</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">Lab 色域纺锤交互、HCL 色相环、CVD 论文图对比器，均在右侧演示 Tab 中提供。</span><span class="en-part">The interactive Lab gamut spindle, HCL hue wheel, and CVD paper figure comparator are all provided in the Demo tab on the right.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 这些 demo 的完整代码在演示 Tab 中直接以
+// window.registerDemo('sec-3-extra1', fn) 形式注册，
+// 随页面懒加载。
+
+// 如果你想在自己的项目中用同样思路：
+window.registerDemo('my-section', function () {
+  var svg = d3.select('#my-section-svg');
+  // ...D3 绘制代码
+});
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · HCL 色相环（固定 C、L，扫 H）</span><span class="en-part">Demo · HCL hue wheel (fixed C, L, sweep H)</span></div>
+            <svg id="demo-3-extra1-svg" width="760" height="360"></svg>
+            <div class="demo-note"><span class="zh-part">每个扇形代表一个色相，彩度 C=65，亮度 L=60。</span><span class="en-part">Each sector represents one hue, with chroma C=65 and lightness L=60.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-extra2">
+        <h2 class="sec-title">common.demo-folder</h2>
+          <p class="sec-subtitle"><span class="zh-part">章节 demo 的组织约定</span><span class="en-part">Organization conventions for chapter demos</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">所有章节共用一个 <code>common/demo</code> 思路：每章的 demo 自治，通过 <code>window.registerDemo('sec-X-Y', fn)</code> 注册，页面 JS 统一懒加载。共享数据放在项目根的 <code>data/</code>，用相对路径 <code>../data/</code> 读取。</span><span class="en-part">All chapters share a <code>common/demo</code> idea: each chapter's demos are self-contained, registered via <code>window.registerDemo('sec-X-Y', fn)</code>, and lazily loaded by the page JS. Shared data lives in the project root <code>data/</code>, read via the relative path <code>../data/</code>.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">// 目录结构
+// vis-course/
+// ├── lesson-01/index.html   ← registerDemo('sec-1-X', fn)
+// ├── lesson-02/index.html
+// ├── lesson-03/index.html
+// ├── js/main.js             ← registerDemo + IntersectionObserver 懒加载
+// ├── css/style.css
+// └── data/*.csv             ← 共享数据，各章用 ../data/xxx.csv 读取
+
+// 每个 demo fn 内部自行选择容器：
+//   d3.select('#demo-3-1-svg')
+//   d3.select('#demo-3-extra1-svg')
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · 懒加载触发时机可视化</span><span class="en-part">Demo · Lazy-load trigger timing visualization</span></div>
+            <svg id="demo-3-extra2-svg" width="760" height="180"></svg>
+            <div class="demo-note"><span class="zh-part">进入演示 Tab 并滚到本节时，下面的圆会变色——表示 demo 被 registerDemo 注册并执行。</span><span class="en-part">When you enter the Demo tab and scroll to this section, the circle below changes color — indicating the demo was registered by registerDemo and executed.</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="lesson-section" id="sec-3-extra3">
+        <h2 class="sec-title">完整讲义 markdown</h2>
+          <p class="sec-subtitle"><span class="zh-part">本页面是讲义的可视化摘要版本</span><span class="en-part">This page is a visual summary version of the lecture notes</span></p>
+
+        <div class="sec-tab-bar">
+          <button class="sec-tab-btn active" data-tab="read">📖 讲解</button>
+          <button class="sec-tab-btn" data-tab="code">⌨️ 关键代码</button>
+          <button class="sec-tab-btn" data-tab="demo">▶️ 演示</button>
+        </div>
+
+        <div class="sec-tab-panel active" data-panel="read">
+          <p><span class="zh-part">课堂完整讲义以 markdown 形式提供；后续可加 <code>marked.js</code> 把 <code>.md</code> 直接渲染进讲解 Tab，保持讲义与页面的同源更新。</span><span class="en-part">The full classroom lecture notes are provided as markdown; later, <code>marked.js</code> can be added to render <code>.md</code> directly into the Read tab, keeping notes and pages updated from the same source.</span></p>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="code">
+          <pre class="code-block"><code data-raw">&lt;!-- 引入 marked.js --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- 预留渲染容器 --&gt;
+&lt;div id="lecture-md"&gt;&lt;/div&gt;
+
+// 渲染
+fetch('../lectures/lesson-03.md')
+  .then(r => r.text())
+  .then(md => {
+    document.getElementById('lecture-md').innerHTML = marked.parse(md);
+  });
+
+// 这样讲义与网页同源更新，维护成本最低。
+</code></pre>
+        </div>
+
+        <div class="sec-tab-panel" data-panel="demo">
+          <div class="demo-stage">
+            <div class="demo-title"><span class="zh-part">Demo · 本课程封面配色（Tableau 10 + 自定义）</span><span class="en-part">Demo · Course cover palette (Tableau 10 + custom)</span></div>
+            <svg id="demo-3-extra3-svg" width="760" height="180"></svg>
+            <div class="demo-note"><span class="zh-part">Tableau 10 是 D3 内置的经典离散色板，适合一般分类图。</span><span class="en-part">Tableau 10 is a classic discrete palette built into D3, suitable for general categorical charts.</span></div>
+          </div>
+        </div>
+      </section>
+</main>
+  </div>
+
+  <script src="../js/i18n.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+
+  function t(key) {
+    var dict = (window.getI18n && window.getI18n()) || {};
+    return dict[key] !== undefined ? dict[key] : key;
+  }
+
+  /* ====== 3.1 颜色模型 ====== */
+  window.registerDemo('sec-3-1', function () {
+    var svg = d3.select('#demo-3-1-svg');
+    var W = 760, cellW = 680;
+    var ramps = [
+      { name: t('l3_d31_rgb'), fn: d3.interpolateRgb('#dbeafe', '#f97316') },
+      { name: t('l3_d31_hsl'), fn: d3.interpolateHsl('#dbeafe', '#f97316') },
+      { name: t('l3_d31_hcl'), fn: d3.interpolateHcl('#dbeafe', '#f97316') }
+    ];
+    ramps.forEach(function (r, ri) {
+      var g = svg.append('g').attr('transform', 'translate(60,' + (ri * 50 + 10) + ')');
+      for (var i = 0; i < cellW; i += 4) {
+        g.append('rect').attr('x', i).attr('y', 0).attr('width', 4).attr('height', 30)
+          .attr('fill', r.fn(i / cellW));
+      }
+      g.append('text').attr('x', -8).attr('y', 18).attr('text-anchor', 'end').attr('font-size', 12).text(r.name);
+    });
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-1'); });
+
+  /* ====== 3.2 colormap ====== */
+  window.registerDemo('sec-3-2', function () {
+    var svg = d3.select('#demo-3-2-svg');
+    var W = 760, cellW = 680;
+    var ramps = [
+      { name: 'Viridis',   fn: d3.interpolateViridis },
+      { name: t('l3_d32_jet'),  fn: d3.interpolateRgbBasis(['#00008f','#0000ff','#00ffff','#00ff00','#ffff00','#ff0000','#7f0000']) },
+      { name: t('l3_d32_hcl'), fn: d3.interpolateHcl('#dbeafe', '#f97316') }
+    ];
+    ramps.forEach(function (r, ri) {
+      var g = svg.append('g').attr('transform', 'translate(60,' + (ri * 50 + 10) + ')');
+      for (var i = 0; i < cellW; i += 4) {
+        g.append('rect').attr('x', i).attr('y', 0).attr('width', 4).attr('height', 30)
+          .attr('fill', r.fn(i / cellW));
+      }
+      g.append('text').attr('x', -8).attr('y', 18).attr('text-anchor', 'end').attr('font-size', 12).text(r.name);
+    });
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-2'); });
+
+  /* ====== 3.3 Lab 色域 ====== */
+  window.registerDemo('sec-3-3', function () {
+    var svg = d3.select('#demo-3-3-svg');
+    var W = 760, H = 240;
+    var ml = 60, mr = 30, mt = 36, mb = 40;
+    var x = d3.scaleLinear().domain([0, 140]).range([ml, W - mr]);
+    var y = d3.scaleLinear().domain([0, 100]).range([H - mb, mt]);
+
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (H - mb) + ')')
+      .call(d3.axisBottom(x).ticks(6).tickFormat(function (d) { return 'C=' + d; }));
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + ml + ',0)')
+      .call(d3.axisLeft(y).ticks(5).tickFormat(function (d) { return 'L=' + d; }));
+
+    svg.append('text').attr('x', W / 2).attr('y', 22).attr('text-anchor', 'middle')
+      .attr('font-size', 13).attr('fill', '#64748b')
+      .text(t('l3_d33_title'));
+
+    function isInSRGB(h, c, l) {
+      try {
+        return d3.hcl(h, c, l).displayable();
+      } catch (e) { return false; }
+    }
+
+    var Lsamples = [15, 30, 45, 60, 75, 90];
+    Lsamples.forEach(function (L) {
+      for (var h = 0; h < 360; h += 6) {
+        for (var c = 0; c < 140; c += 3) {
+          if (isInSRGB(h, c, L)) {
+            svg.append('circle')
+              .attr('cx', x(c))
+              .attr('cy', y(L))
+              .attr('r', 1.8)
+              .attr('fill', d3.hcl(h, c, L).formatHex())
+              .attr('opacity', 0.7);
+          }
+        }
+      }
+    });
+
+    svg.append('circle').attr('cx', x(70)).attr('cy', y(45)).attr('r', 4)
+      .attr('fill', 'none').attr('stroke', '#ef4444').attr('stroke-width', 1.5).attr('stroke-dasharray', '3,2');
+    svg.append('text').attr('x', x(70) + 8).attr('y', y(45) + 4).attr('font-size', 11).attr('fill', '#ef4444')
+      .text(t('l3_d33_anno'));
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-3'); });
+
+  /* ====== 3.4 5 大色系 ====== */
+  window.registerDemo('sec-3-4', function () {
+    var svg = d3.select('#demo-3-4-svg');
+    var W = 760, rowH = 44;
+
+    var palettes = [
+      { name: t('l3_d34_p1'), colors: Array.from({length: 6}, function (_, i) {
+          return d3.hcl(210, 50, 90 - i * 10).formatHex();
+        }) },
+      { name: t('l3_d34_p2'), colors: (function () {
+          var f = d3.scaleDiverging(d3.interpolateHcl('#2563eb', '#ffffff', '#f97316')).domain([-1, 0, 1]);
+          return [-1, -0.5, 0, 0.5, 1].map(f);
+        })() },
+      { name: t('l3_d34_p3'), colors: Array.from({length: 8}, function (_, i) {
+          return d3.hcl((i / 8) * 360, 60, 55).formatHex();
+        }) },
+      { name: t('l3_d34_p4'), colors: ['#000000','#E69F00','#56B4E9','#009E73','#F0E442','#0072B2','#D55E00','#CC79A1'] },
+      { name: t('l3_d34_p5'), colors: ['#dc2626','#16a34a'] }
+    ];
+
+    palettes.forEach(function (p, pi) {
+      var g = svg.append('g').attr('transform', 'translate(20,' + (pi * rowH + 16) + ')');
+      g.append('text').attr('x', 0).attr('y', 14).attr('font-size', 12).attr('fill', '#334155').text(p.name);
+      var boxStart = 220;
+      var cellW = Math.min(60, (W - boxStart - 40) / p.colors.length);
+      p.colors.forEach(function (c, i) {
+        g.append('rect')
+          .attr('x', boxStart + i * cellW).attr('y', 0)
+          .attr('width', cellW - 3).attr('height', 20)
+          .attr('fill', c).attr('rx', 3);
+      });
+    });
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-4'); });
+
+  /* ====== 3.5 经典科研配色 ====== */
+  window.registerDemo('sec-3-5', function () {
+    var svg = d3.select('#demo-3-5-svg');
+    var wong = ['#000000','#E69F00','#56B4E9','#009E73','#F0E442','#0072B2','#D55E00','#CC79A1'];
+    var tol  = ['#332288','#117733','#44AA99','#88CCEE','#DDCC77','#CC6677','#AA4499','#882255'];
+    var rows = [
+      { name: t('l3_d35_wong'),    colors: wong },
+      { name: t('l3_d35_tol'), colors: tol }
+    ];
+    var cellW = 80;
+    rows.forEach(function (r, ri) {
+      var g = svg.append('g').attr('transform', 'translate(80,' + (ri * 60 + 12) + ')');
+      r.colors.forEach(function (c, i) {
+        g.append('rect').attr('x', i * cellW).attr('y', 0).attr('width', cellW - 6).attr('height', 30).attr('fill', c).attr('rx', 4);
+        g.append('text').attr('x', i * cellW + 2).attr('y', 44).attr('font-size', 10).attr('fill', '#64748b').text(c);
+      });
+      svg.append('text').attr('x', 70).attr('y', ri * 60 + 22).attr('text-anchor', 'end').attr('font-size', 13).text(r.name);
+    });
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-5'); });
+
+  /* ====== 3.6 对错案例 ====== */
+  window.registerDemo('sec-3-6', function () {
+    var svg = d3.select('#demo-3-6-svg');
+    var W = 760, H = 360;
+    var ml = 60, mr = 20, mt = 40, mb = 50;
+    var halfW = (W - ml - mr) / 2 - 20;
+
+    var data = d3.range(300).map(function () {
+      return {
+        x: d3.randomNormal()() * 1.5,
+        y: d3.randomNormal()() * 1.5,
+        v: d3.randomNormal()()
+      };
+    });
+
+    var xDomain = [-3, 3], yDomain = [-3, 3];
+    var xScale = d3.scaleLinear().domain(xDomain);
+    var yScale = d3.scaleLinear().domain(yDomain);
+    var vExt = d3.extent(data, function (d) { return d.v; });
+
+    var jet = d3.scaleSequential(
+      d3.interpolateRgbBasis(['#00008f','#0000ff','#00ffff','#00ff00','#ffff00','#ff0000','#7f0000'])
+    ).domain(vExt);
+    var viridis = d3.scaleSequential(d3.interpolateViridis).domain(vExt);
+
+    var configs = [
+      { name: t('l3_d36_jet'),       scale: jet,     tx: ml },
+      { name: t('l3_d36_viridis'),   scale: viridis, tx: ml + halfW + 40 }
+    ];
+
+    configs.forEach(function (cfg, ci) {
+      var xSc = xScale.copy().range([cfg.tx, cfg.tx + halfW]);
+      var ySc = yScale.copy().range([H - mb, mt]);
+
+      svg.append('g').attr('transform', 'translate(0,' + (H - mb) + ')')
+        .call(d3.axisBottom(xSc).ticks(5));
+      svg.append('g').attr('transform', 'translate(' + cfg.tx + ',0)')
+        .call(d3.axisLeft(ySc).ticks(5));
+
+      svg.selectAll('circle.pt-' + ci).data(data).enter().append('circle')
+        .attr('cx', function (d) { return xSc(d.x); })
+        .attr('cy', function (d) { return ySc(d.y); })
+        .attr('r', 4.5)
+        .attr('fill', function (d) { return cfg.scale(d.v); })
+        .attr('opacity', 0.85)
+        .attr('stroke', '#fff').attr('stroke-width', 0.5);
+
+      svg.append('text').attr('x', cfg.tx + halfW / 2).attr('y', 22)
+        .attr('text-anchor', 'middle').attr('font-size', 13).attr('fill', '#334155')
+        .text(cfg.name);
+
+      var legendW = halfW * 0.6, legendX = cfg.tx + (halfW - legendW) / 2;
+      var legendY = H - 22;
+      for (var i = 0; i < legendW; i += 2) {
+        svg.append('rect').attr('x', legendX + i).attr('y', legendY)
+          .attr('width', 2).attr('height', 6)
+          .attr('fill', cfg.scale(vExt[0] + (vExt[1] - vExt[0]) * (i / legendW)));
+      }
+    });
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-6'); });
+
+  /* ====== 3.7 鲜艳+低饱和学生成器 ====== */
+  window.registerDemo('sec-3-7', function () {
+    var svg = d3.select('#demo-3-7-svg');
+    var range = document.getElementById('demo-3-7-range');
+    var labelN = document.getElementById('demo-3-7-n');
+    var W = 760;
+
+    function gen(N, vivid) {
+      var C = vivid ? 70 : 30;
+      var L = vivid ? 55 : 65;
+      return Array.from({length: N}, function (_, i) {
+        var h = (i * 360 / N) % 360;
+        return d3.hcl(h, C, L).formatHex();
+      });
+    }
+
+    function render() {
+      var N = +range.value;
+      labelN.textContent = N;
+      svg.selectAll('*').remove();
+
+      var palettes = [
+        { name: t('l3_d37_vivid'),    colors: gen(N, true) },
+        { name: t('l3_d37_low'), colors: gen(N, false) }
+      ];
+      var cellW = Math.min(110, (W - 180) / N);
+      palettes.forEach(function (p, pi) {
+        var g = svg.append('g').attr('transform', 'translate(180,' + (pi * 55 + 14) + ')');
+        p.colors.forEach(function (c, i) {
+          g.append('rect')
+            .attr('x', i * cellW).attr('y', 0)
+            .attr('width', cellW - 4).attr('height', 32)
+            .attr('fill', c).attr('rx', 4);
+          g.append('text')
+            .attr('x', i * cellW + (cellW - 4) / 2).attr('y', 48)
+            .attr('font-size', 10).attr('fill', '#64748b').attr('text-anchor', 'middle')
+            .text(c);
+        });
+        svg.append('text').attr('x', 170).attr('y', pi * 55 + 22)
+          .attr('text-anchor', 'end').attr('font-size', 12).text(p.name);
+      });
+    }
+
+    range.addEventListener('input', render);
+    render();
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-7'); });
+
+  /* ====== 3.8 CVD 论文图测 ====== */
+  window.registerDemo('sec-3-8', function () {
+    var svg = d3.select('#demo-3-8-svg');
+    var W = 760, H = 360;
+    var ml = 160, mr = 20, mt = 30, mb = 30;
+    var halfW = (W - ml - mr) / 2 - 10;
+
+    var wong8 = ['#000000','#E69F00','#56B4E9','#009E73','#F0E442','#0072B2','#D55E00','#CC79A1'];
+
+    var protanopia = [
+      [0.567, 0.433, 0.000],
+      [0.558, 0.442, 0.000],
+      [0.000, 0.242, 0.758]
+    ];
+    function simulate(hex, m) {
+      var rgb = d3.rgb(hex);
+      var nr = rgb.r * m[0][0] + rgb.g * m[0][1] + rgb.b * m[0][2];
+      var ng = rgb.r * m[1][0] + rgb.g * m[1][1] + rgb.b * m[1][2];
+      var nb = rgb.r * m[2][0] + rgb.g * m[2][1] + rgb.b * m[2][2];
+      return d3.rgb(nr, ng, nb).formatHex();
+    }
+    var wong8Proto = wong8.map(function (c) { return simulate(c, protanopia); });
+
+    var barData = d3.range(8).map(function (i) { return { idx: i, val: (i * 7 + 5) % 10 }; });
+
+    var configs = [
+      { cls: 'bar-normal', name: t('l3_d38_normal'), colors: wong8,    tx: ml },
+      { cls: 'bar-proto',  name: t('l3_d38_proto'), colors: wong8Proto, tx: ml + halfW + 20 }
+    ];
+
+    var xScale = d3.scaleBand().domain(barData.map(function (d) { return d.idx; }))
+      .range([0, halfW]).padding(0.2);
+    var yScale = d3.scaleLinear().domain([0, 10]).range([H - mb, mt]);
+
+    configs.forEach(function (cfg) {
+      var xSc = xScale.copy().range([cfg.tx, cfg.tx + halfW]);
+
+      svg.append('g').attr('transform', 'translate(0,' + (H - mb) + ')')
+        .call(d3.axisBottom(xSc).tickFormat(function (d) { return 'C' + d; }));
+      svg.append('g').attr('transform', 'translate(' + cfg.tx + ',0)')
+        .call(d3.axisLeft(yScale).ticks(4));
+
+      svg.selectAll('rect.' + cfg.cls).data(barData).enter().append('rect')
+        .attr('x', function (d) { return xSc(d.idx); })
+        .attr('y', function (d) { return yScale(d.val); })
+        .attr('width', xSc.bandwidth())
+        .attr('height', function (d) { return yScale(0) - yScale(d.val); })
+        .attr('fill', function (d) { return cfg.colors[d.idx]; })
+        .attr('rx', 3);
+
+      svg.append('text').attr('x', cfg.tx + halfW / 2).attr('y', 18)
+        .attr('text-anchor', 'middle').attr('font-size', 13).attr('fill', '#334155')
+        .text(cfg.name);
+    });
+
+    var legendG = svg.append('g').attr('transform', 'translate(20,' + (H - 24) + ')');
+    wong8.forEach(function (c, i) {
+      legendG.append('rect').attr('x', i * 20).attr('y', 0).attr('width', 16).attr('height', 8).attr('fill', c);
+    });
+    legendG.append('text').attr('x', 0).attr('y', -4).attr('font-size', 10).attr('fill', '#64748b').text(t('l3_d38_legend'));
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-8'); });
+
+  /* ====== 补充 1：HCL 色相环 ====== */
+  window.registerDemo('sec-3-extra1', function () {
+    var svg = d3.select('#demo-3-extra1-svg');
+    var W = 760, H = 360;
+    var cx = W / 2, cy = H / 2;
+    var R = 130;
+    var slices = 36;
+    var C = 65, L = 60;
+
+    for (var i = 0; i < slices; i++) {
+      var a0 = (i / slices) * Math.PI * 2 - Math.PI / 2;
+      var a1 = ((i + 1) / slices) * Math.PI * 2 - Math.PI / 2;
+      var x0 = cx + Math.cos(a0) * R;
+      var y0 = cy + Math.sin(a0) * R;
+      var x1 = cx + Math.cos(a1) * R;
+      var y1 = cy + Math.sin(a1) * R;
+      var path = 'M' + cx + ',' + cy + ' L' + x0 + ',' + y0 + ' A' + R + ',' + R + ' 0 0 1 ' + x1 + ',' + y1 + ' Z';
+      var hue = (i / slices) * 360;
+      svg.append('path').attr('d', path).attr('fill', d3.hcl(hue, C, L).formatHex()).attr('stroke', '#fff').attr('stroke-width', 1);
+    }
+
+    svg.append('circle').attr('cx', cx).attr('cy', cy).attr('r', 30).attr('fill', d3.hcl(0, 0, L).formatHex());
+    svg.append('text').attr('x', cx).attr('y', cy + 4).attr('text-anchor', 'middle').attr('font-size', 12).attr('fill', '#fff').text('C=' + C);
+
+    svg.append('text').attr('x', cx).attr('y', 18).attr('text-anchor', 'middle').attr('font-size', 13).attr('fill', '#64748b')
+      .text(t('l3_de1_title'));
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-extra1'); });
+
+  /* ====== 补充 2：registerDemo 懒加载示意 ====== */
+  window.registerDemo('sec-3-extra2', function () {
+    var svg = d3.select('#demo-3-extra2-svg');
+    svg.append('rect').attr('x', 300).attr('y', 60).attr('width', 160).attr('height', 60)
+      .attr('rx', 10).attr('fill', '#10b981');
+    svg.append('text').attr('x', 380).attr('y', 98).attr('text-anchor', 'middle')
+      .attr('font-size', 14).attr('fill', '#fff').attr('font-weight', 600)
+      .text(t('l3_de2_msg1'));
+    svg.append('text').attr('x', 380).attr('y', 170).attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('fill', '#64748b')
+      .text(t('l3_de2_msg2'));
+    svg.append('text').attr('x', 380).attr('y', 186).attr('text-anchor', 'middle')
+      .attr('font-size', 12).attr('fill', '#64748b')
+      .text(t('l3_de2_msg3'));
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-extra2'); });
+
+  /* ====== 补充 3：课程封面 Tableau 10 ====== */
+  window.registerDemo('sec-3-extra3', function () {
+    var svg = d3.select('#demo-3-extra3-svg');
+    var colors = d3.schemeTableau10;
+    var cellW = 60;
+    svg.append('text').attr('x', 20).attr('y', 18).attr('font-size', 13).attr('fill', '#334155').text(t('l3_de3_title'));
+    colors.forEach(function (c, i) {
+      var g = svg.append('g').attr('transform', 'translate(' + (20 + i * (cellW + 6)) + ',34)');
+      g.append('rect').attr('width', cellW).attr('height', 50).attr('rx', 5).attr('fill', c);
+      g.append('text').attr('x', cellW / 2).attr('y', 70).attr('text-anchor', 'middle').attr('font-size', 10).attr('fill', '#64748b').text(c);
+    });
+  });
+  document.addEventListener('langchange', function () { window.rerunDemo('sec-3-extra3'); });
+
+  </script>
+</body>
+</html>

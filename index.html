@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数据可视化课程 · 课程门户</title>
+  <!-- TailwindCSS CDN（play 模式，无需打包） -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- D3.js v7 CDN —— 首页也引入，满足「全部页面都引入 D3」的硬性要求 -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%232563eb' rx='3'/%3E%3Ctext x='8' y='12' font-size='10' fill='white' text-anchor='middle' font-family='sans-serif'%3EDV%3C/text%3E%3C/svg%3E" />
+</head>
+<body class="home-page">
+  <!-- ============ 顶部导航栏 ============ -->
+  <header class="site-nav">
+    <div class="nav-inner">
+      <span class="brand">📊 DV 课程</span>
+      <a class="nav-item" data-key="home" href="./index.html" data-i18n="nav_home">课程门户</a>
+      <a class="nav-item" data-key="lesson-01" href="./lesson-01/index.html" data-i18n="nav_01">第1章·数据</a>
+      <a class="nav-item" data-key="lesson-02" href="./lesson-02/index.html" data-i18n="nav_02">第2章·数据可视化流程</a>
+      <a class="nav-item" data-key="lesson-03" href="./lesson-03/index.html" data-i18n="nav_03">第3章·色彩专题</a>
+      <a class="nav-item" data-key="lesson-04" href="./lesson-04/index.html" data-i18n="nav_04">第4章·低维可视化</a>
+      <a class="nav-item" data-key="lesson-05" href="./lesson-05/index.html" data-i18n="nav_05">第5章·时序可视化</a>
+      <a class="nav-item" data-key="lesson-06" href="./lesson-06/index.html" data-i18n="nav_06">第6章·网页页面布局</a>
+      <div class="lang-toggle" id="lang-toggle">
+        <button data-lang="zh" class="active">中</button>
+        <button data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ 主体标题 + 说明 ============ -->
+  <section class="max-w-[1280px] mx-auto px-5 pt-12 pb-2 text-center">
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight" style="color:var(--ink);">
+      <span data-i18n="home_title">可视化导论</span>
+    </h1>
+    <p class="mt-3 text-sm leading-relaxed" style="color:var(--ink-soft);">
+      <span data-i18n="home_sub">点击任一卡片进入该章节，每章节含3个tab：</span>
+      <span class="font-semibold" style="color:var(--ink);">📖 <span data-i18n="tab_read">讲解</span></span> /
+      <span class="font-semibold" style="color:var(--ink);">⌨️ <span data-i18n="tab_code">关键代码</span></span> /
+      <span class="font-semibold" style="color:var(--ink);">▶️ <span data-i18n="tab_demo">演示</span></span>。
+    </p>
+    <div class="mt-3 inline-flex items-center gap-2 text-xs" style="color:var(--ink-soft);">
+      <span class="inline-block w-2 h-2 rounded-full" style="background:var(--online);"></span>
+      <span data-i18n="home_status">全部 6 章已上线 · 部署于 GitHub Pages</span>
+    </div>
+  </section>
+
+  <!-- ============ 6 张章节卡片 ============ -->
+  <main class="card-grid">
+
+    <!-- 卡片1 -->
+    <article class="chapter-card">
+      <div class="flex items-center justify-between">
+        <h3 data-i18n="ch1_title">第1章 数据</h3>
+        <span class="tag-online" data-i18n="online">✅ 已上线</span>
+      </div>
+      <p class="intro" data-i18n="ch1_intro">
+        从 DeepSeek 合成新生数据出发，展开数据生成、DIKW、Stevens 测量尺度、
+        Mackinlay 视觉通道、D3 数据变换与 Data-Join 三态。
+      </p>
+      <div class="chips">
+        <span class="chip" data-i18n="ch1_chip1">DIKW 金字塔</span>
+        <span class="chip" data-i18n="ch1_chip2">Stevens 4 尺度</span>
+        <span class="chip" data-i18n="ch1_chip3">8 个 D3 变换函数</span>
+        <span class="chip" data-i18n="ch1_chip4">Selection 三态</span>
+      </div>
+      <a class="btn-enter" href="./lesson-01/index.html" data-i18n="enter">进入章节 →</a>
+    </article>
+
+    <!-- 卡片2 -->
+    <article class="chapter-card">
+      <div class="flex items-center justify-between">
+        <h3 data-i18n="ch2_title">第2章 数据可视化流程</h3>
+        <span class="tag-online" data-i18n="online">✅ 已上线</span>
+      </div>
+      <p class="intro" data-i18n="ch2_intro">
+        Card 数据流模型、新生数据 → 分类树 → 树形列表的完整链路，
+        Reingold-Tilford 布局、DOM 事件机制。
+      </p>
+      <div class="chips">
+        <span class="chip" data-i18n="ch2_chip1">Card 模型</span>
+        <span class="chip" data-i18n="ch2_chip2">d3.rollup</span>
+        <span class="chip" data-i18n="ch2_chip3">Reingold-Tilford</span>
+        <span class="chip" data-i18n="ch2_chip4">事件委托</span>
+      </div>
+      <a class="btn-enter" href="./lesson-02/index.html" data-i18n="enter">进入章节 →</a>
+    </article>
+
+    <!-- 卡片3 -->
+    <article class="chapter-card">
+      <div class="flex items-center justify-between">
+        <h3 data-i18n="ch3_title">第3章 色彩专题</h3>
+        <span class="tag-online" data-i18n="online">✅ 已上线</span>
+      </div>
+      <p class="intro" data-i18n="ch3_intro">
+        独立专题：颜色是可视化基础。颜色模型 + colormap + Lab 色域 + 5 大色系 +
+        经典科研配色 + 对错案例 + 鲜艳+低饱和学生成器 + CVD 论文图测。8 小节，配色一站式。
+      </p>
+      <div class="chips">
+        <span class="chip" data-i18n="ch3_chip1">4 颜色空间 + CVD</span>
+        <span class="chip" data-i18n="ch3_chip2">5 大色系规则</span>
+        <span class="chip" data-i18n="ch3_chip3">Wong / Paul Tol</span>
+        <span class="chip" data-i18n="ch3_chip4">CVD 论文图测</span>
+      </div>
+      <a class="btn-enter" href="./lesson-03/index.html" data-i18n="enter_special">进入专题 →</a>
+    </article>
+
+    <!-- 卡片4 -->
+    <article class="chapter-card">
+      <div class="flex items-center justify-between">
+        <h3 data-i18n="ch4_title">第4章 低维数据可视化</h3>
+        <span class="tag-online" data-i18n="online">✅ 已上线</span>
+      </div>
+      <p class="intro" data-i18n="ch4_intro">
+        Crime 数据坐标变换、10 种曲线拟合、Cleveland 45° 倾角、
+        Marching Squares 等值线，共 5 小节。
+      </p>
+      <div class="chips">
+        <span class="chip" data-i18n="ch4_chip1">三层坐标变换</span>
+        <span class="chip" data-i18n="ch4_chip2">10 种曲线</span>
+        <span class="chip" data-i18n="ch4_chip3">Cleveland 45°</span>
+        <span class="chip" data-i18n="ch4_chip4">Marching Squares</span>
+      </div>
+      <a class="btn-enter" href="./lesson-04/index.html" data-i18n="enter">进入章节 →</a>
+    </article>
+
+    <!-- 卡片5 -->
+    <article class="chapter-card">
+      <div class="flex items-center justify-between">
+        <h3 data-i18n="ch5_title">第5章 时序数据可视化</h3>
+        <span class="tag-online" data-i18n="online">✅ 已上线</span>
+      </div>
+      <p class="intro" data-i18n="ch5_intro">
+        5 个时间属性、法国人名时间序列、van Wijk 日历热图、
+        阿基米德螺旋日历、Storyline 故事线（《侏罗纪公园》案例）。
+      </p>
+      <div class="chips">
+        <span class="chip" data-i18n="ch5_chip1">时间分解</span>
+        <span class="chip" data-i18n="ch5_chip2">日历 colormap</span>
+        <span class="chip" data-i18n="ch5_chip3">极坐标变换</span>
+        <span class="chip" data-i18n="ch5_chip4">Storygraph</span>
+      </div>
+      <a class="btn-enter" href="./lesson-05/index.html" data-i18n="enter">进入章节 →</a>
+    </article>
+
+    <!-- 卡片6 -->
+    <article class="chapter-card">
+      <div class="flex items-center justify-between">
+        <h3 data-i18n="ch6_title">第6章 网页页面布局</h3>
+        <span class="tag-online" data-i18n="online">✅ 已上线</span>
+      </div>
+      <p class="intro" data-i18n="ch6_intro">
+        从信息架构到像素落地：页面布局原理、Flex/Grid 布局、双栏布局、Tab 组件，
+        以学生数据仪表盘为案例贯穿，配套 D3 布局 demo。
+      </p>
+      <div class="chips">
+        <span class="chip" data-i18n="ch6_chip1">布局理论</span>
+        <span class="chip" data-i18n="ch6_chip2">Flex/Grid</span>
+        <span class="chip" data-i18n="ch6_chip3">双栏 + Tab</span>
+        <span class="chip" data-i18n="ch6_chip4">D3 布局</span>
+        <span class="chip" data-i18n="ch6_chip5">响应式 + 部署</span>
+      </div>
+      <a class="btn-enter" href="./lesson-06/index.html" data-i18n="enter">进入章节 →</a>
+    </article>
+
+  </main>
+
+  <!-- ============ 首页 D3 小彩蛋：一个简易课程进度条 ============ -->
+  <section class="max-w-[1280px] mx-auto px-5 pb-16">
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-bold" style="color:var(--ink);" data-i18n="progress_title">课程进度（首页 D3 演示）</h2>
+        <span class="text-xs" style="color:var(--ink-soft);" data-i18n="progress_note">所有页面均引入 D3.js v7</span>
+      </div>
+      <div id="home-d3" class="w-full"></div>
+      <p class="text-xs mt-3" style="color:var(--ink-soft);" data-i18n="progress_desc">
+        首页也通过 CDN 引入了 D3.js v7，并用 D3 渲染上面的进度条 —— 满足「全部页面都引入 D3」的硬性要求。
+      </p>
+    </div>
+  </section>
+
+  <footer style="border-top:1px solid var(--line);background:var(--card);">
+    <div class="max-w-[1280px] mx-auto px-5 py-6 text-center text-xs" style="color:var(--ink-soft);">
+      <span data-i18n="footer">数据可视化课程 · HTML + TailwindCSS + JavaScript + D3.js v7 · 部署到 GitHub Pages</span>
+    </div>
+  </footer>
+
+  <script src="./js/i18n.js"></script>
+  <script src="./js/main.js"></script>
+  <script>
+    // 首页 D3 小演示：6 章进度条
+    (function () {
+      var data = [
+        { ch: '第1章', name: '数据',            online: true },
+        { ch: '第2章', name: '数据可视化流程', online: true },
+        { ch: '第3章', name: '色彩专题',       online: true },
+        { ch: '第4章', name: '低维可视化',     online: true },
+        { ch: '第5章', name: '时序可视化',     online: true },
+        { ch: '第6章', name: '网页页面布局',   online: true }
+      ];
+      var W = 980, H = 220, M = { l: 60, r: 20, t: 30, b: 60 };
+      var svg = d3.select('#home-d3').append('svg')
+        .attr('viewBox', '0 0 ' + W + ' ' + H)
+        .attr('width', '100%').attr('height', H);
+      var x = d3.scaleBand().domain(data.map(function (d) { return d.ch; }))
+        .range([M.l, W - M.r]).padding(0.35);
+      var y = d3.scaleLinear().domain([0, 1]).range([H - M.b, M.t]);
+      svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (H - M.b) + ')')
+        .call(d3.axisBottom(x));
+      svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + M.l + ',0)')
+        .call(d3.axisLeft(y).ticks(2).tickFormat(d3.format('.0%')));
+      var bars = svg.selectAll('.bar').data(data).enter().append('rect')
+        .attr('class', 'bar').attr('x', function (d) { return x(d.ch); })
+        .attr('y', y(0)).attr('width', x.bandwidth()).attr('height', 0)
+        .attr('rx', 6);
+      bars.transition().duration(900).delay(function (d, i) { return i * 90; })
+        .attr('y', y(1)).attr('height', y(0) - y(1));
+      svg.selectAll('.label').data(data).enter().append('text')
+        .attr('class', 'label').attr('x', function (d) { return x(d.ch) + x.bandwidth() / 2; })
+        .attr('y', y(1) - 8).attr('text-anchor', 'middle')
+        .text(function (d) { return '✅'; }).style('font-size', '14px');
+    })();
+  </script>
+</body>
+</html>
