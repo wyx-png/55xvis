@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智驱新质 · 擎动未来 | 人工智能：新质生产力的核心引擎</title>
+<meta name="description" content="数据可视化专题网站：以多维度数据与交互可视化，展现人工智能作为新质生产力的作用与意义。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===== 顶部进度条 ===== -->
+<div id="progressBar"></div>
+
+<!-- ===== 左侧固定侧边栏导航 ===== -->
+<aside id="sidebar">
+  <a href="#hero" class="side-logo">
+    <span class="logo-dot"></span>
+    <span class="side-logo-text">智驱新质<em>AI × NQPF</em></span>
+  </a>
+  <ul class="side-nav">
+    <li><a href="#concept"><i>01</i><span>概念解码</span><em>CONCEPT</em></a></li>
+    <li><a href="#data"><i>02</i><span>数说AI</span><em>DATA</em></a></li>
+    <li><a href="#industry"><i>03</i><span>赋能百业</span><em>INDUSTRY</em></a></li>
+    <li><a href="#timeline"><i>04</i><span>发展历程</span><em>MILESTONES</em></a></li>
+    <li><a href="#meaning"><i>05</i><span>战略意义</span><em>SIGNIFICANCE</em></a></li>
+  </ul>
+  <div class="side-foot">
+    <div class="side-progress"><div id="sideProgressFill"></div></div>
+    <span class="side-progress-text" id="sideProgressText">阅读进度 0%</span>
+  </div>
+</aside>
+
+<!-- ===== HERO ===== -->
+<header id="hero">
+  <canvas id="netCanvas"></canvas>
+  <div class="hero-mask"></div>
+  <div class="hero-content">
+    <div class="hero-tag reveal">NEW QUALITY PRODUCTIVE FORCES · DATA VISUALIZATION</div>
+    <h1 class="hero-title">
+      <span class="line">人工智能</span>
+      <span class="line gradient-text">新质生产力的核心引擎</span>
+    </h1>
+    <p class="hero-sub"><span id="typewriter"></span><span class="caret">|</span></p>
+    <div class="hero-stats">
+      <div class="hstat reveal">
+        <div class="hstat-num"><span class="count-up" data-target="5784">0</span><i>亿元</i></div>
+        <div class="hstat-label">2023年中国AI核心产业规模</div>
+      </div>
+      <div class="hstat reveal">
+        <div class="hstat-num"><span class="count-up" data-target="246">0</span><i>EFLOPS</i></div>
+        <div class="hstat-label">中国算力总规模 · 全球第二</div>
+      </div>
+      <div class="hstat reveal">
+        <div class="hstat-num"><span class="count-up" data-target="3.8" data-decimal="1">0</span><i>万件+</i></div>
+        <div class="hstat-label">生成式AI专利申请 · 全球第一</div>
+      </div>
+      <div class="hstat reveal">
+        <div class="hstat-num"><span class="count-up" data-target="4500">0</span><i>家+</i></div>
+        <div class="hstat-label">中国人工智能企业数量</div>
+      </div>
+    </div>
+  </div>
+  <a class="scroll-hint" href="#concept"><span></span>向下探索</a>
+</header>
+
+<main>
+
+<!-- ===== 01 概念解码 ===== -->
+<section id="concept" class="section">
+  <div class="section-head reveal">
+    <div class="sec-index">01</div>
+    <h2>概念解码<span class="sec-en">What is NQPF</span></h2>
+    <p class="sec-desc">新质生产力是<b>创新起主导作用</b>，摆脱传统经济增长方式、生产力发展路径，具有<b>高科技、高效能、高质量</b>特征，符合新发展理念的先进生产力质态。它由技术革命性突破、生产要素创新性配置、产业深度转型升级而催生，<b>以全要素生产率大幅提升为核心标志</b>。</p>
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card reveal">
+      <div class="cc-icon">⚙️</div>
+      <h3>高科技</h3>
+      <p>由原创性、颠覆性科技创新驱动。人工智能正是当代最具通用性、渗透性的颠覆性技术，被称为"通用目的技术"（GPT）。</p>
+    </div>
+    <div class="concept-card reveal">
+      <div class="cc-icon">⚡</div>
+      <h3>高效能</h3>
+      <p>以数据为新型生产要素、算力为新型基础设施，AI 让生产效率实现指数级跃升——算力每投入1元，可带动3~4元经济产出。</p>
+    </div>
+    <div class="concept-card reveal">
+      <div class="cc-icon">💎</div>
+      <h3>高质量</h3>
+      <p>推动产业向价值链高端攀升，实现从"制造"到"智造"、从要素驱动到创新驱动的质量变革、效率变革、动力变革。</p>
+    </div>
+  </div>
+
+  <div class="vs-wrap reveal">
+    <div class="vs-col vs-old">
+      <h4>传统生产力</h4>
+      <ul>
+        <li>要素驱动：依赖土地、劳动力、资本投入</li>
+        <li>边际收益递减，增长存在"天花板"</li>
+        <li>高耗能、高排放的粗放式增长</li>
+        <li>经验决策，响应链条长</li>
+      </ul>
+    </div>
+    <div class="vs-badge">VS</div>
+    <div class="vs-col vs-new">
+      <h4>新质生产力 · AI驱动</h4>
+      <ul>
+        <li>创新驱动：数据×算力×算法成为新引擎</li>
+        <li>数据要素边际成本趋近于零，可无限复用</li>
+        <li>绿色集约，精准配置资源</li>
+        <li>实时感知、智能决策、自主优化</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chart-card reveal" style="margin-top:40px;">
+    <h3>一图看懂：AI 如何转化为新质生产力</h3>
+    <p class="chart-note">三大新要素 → 四种智能能力 → 三大变革 → 新质生产力（鼠标悬停可高亮流向）</p>
+    <div id="chartSankey" class="chart-box tall"></div>
+  </div>
+
+  <div class="quote-band reveal">
+    <p>"整合科技创新资源，引领发展战略性新兴产业和未来产业，<b>加快形成新质生产力</b>。"</p>
+    <span>—— 2023年9月 · 新时代推动东北全面振兴座谈会</span>
+  </div>
+</section>
+
+<!-- ===== 02 数说AI ===== -->
+<section id="data" class="section section-alt">
+  <div class="section-head reveal">
+    <div class="sec-index">02</div>
+    <h2>数说AI<span class="sec-en">AI in Data</span></h2>
+    <p class="sec-desc">一组来自工信部、中国信通院、WIPO、IDC、PwC、IFR 等机构的公开数据，见证人工智能作为新质生产力的硬核实力。滚动页面，让数据自己"说话"。</p>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card span-2 reveal">
+      <h3>中国AI核心产业规模持续壮大</h3>
+      <p class="chart-note">单位：亿元 · 2020—2023年均复合增速约24% · 来源：中国信通院、工信部</p>
+      <div id="chartChinaScale" class="chart-box"></div>
+    </div>
+
+    <div class="chart-card reveal">
+      <h3>中国AI行业应用渗透度</h3>
+      <p class="chart-note">渗透度指数（约数）· 来源：IDC、中国信通院</p>
+      <div id="chartRadar" class="chart-box"></div>
+    </div>
+
+    <div class="chart-card reveal">
+      <h3>生成式AI专利：中国遥遥领先</h3>
+      <p class="chart-note">2014—2023年专利申请量（件）· 来源：WIPO</p>
+      <div id="chartPatent" class="chart-box"></div>
+    </div>
+
+    <div class="chart-card reveal">
+      <h3>算力底座：新型基础设施</h3>
+      <p class="chart-note">中国算力总规模（EFLOPS）· 来源：工信部</p>
+      <div id="chartCompute" class="chart-box"></div>
+    </div>
+
+    <div class="chart-card reveal">
+      <h3>制造业机器人密度国际对比</h3>
+      <p class="chart-note">2023年每万名员工机器人保有量（台）· 来源：IFR</p>
+      <div id="chartRobot" class="chart-box"></div>
+    </div>
+
+    <div class="chart-card span-2 reveal">
+      <h3>全球AI市场规模：奔向万亿美元</h3>
+      <p class="chart-note">单位：十亿美元 · 2025年后为预测值 · 来源：Statista</p>
+      <div id="chartGlobal" class="chart-box"></div>
+    </div>
+
+    <div class="chart-card span-2 reveal">
+      <h3>2030年AI对全球GDP的贡献预测：15.7万亿美元</h3>
+      <p class="chart-note">单位：万亿美元（括号内为对该地区GDP的拉动幅度）· 来源：PwC《Sizing the Prize》</p>
+      <div id="chartPwc" class="chart-box"></div>
+    </div>
+
+    <div class="chart-card span-2 reveal">
+      <h3>中国AI产业生态图谱</h3>
+      <p class="chart-note">基础层 × 技术层 × 应用层的完整产业体系 · 节点可拖拽，滚轮缩放，悬停查看详情</p>
+      <div id="chartGraph" class="chart-box tall"></div>
+    </div>
+
+    <div class="chart-card reveal">
+      <h3>算力结构：智能算力崛起</h3>
+      <p class="chart-note">2023年中国算力结构 · 来源：工信部</p>
+      <div id="chartComputePie" class="chart-box"></div>
+    </div>
+
+    <div class="chart-card reveal">
+      <h3>机器人装机：全球半壁江山</h3>
+      <p class="chart-note">来源：IFR《世界机器人报告》</p>
+      <div id="chartRobotGauge" class="chart-box"></div>
+    </div>
+  </div>
+
+  <div class="data-strip reveal">
+    <div class="strip-item"><b>14.4万亿</b><span>元 · 中国AI相关市场规模（2023）</span></div>
+    <div class="strip-item"><b>70%+</b><span>智能算力增速（2023，70 EFLOPS）</span></div>
+    <div class="strip-item"><b>302款</b><span>完成备案的生成式AI服务（2024底）</span></div>
+    <div class="strip-item"><b>2.49亿</b><span>中国生成式AI产品用户规模</span></div>
+    <div class="strip-item"><b>51%</b><span>中国工业机器人装机量占全球比重</span></div>
+  </div>
+</section>
+
+<!-- ===== 03 赋能百业 ===== -->
+<section id="industry" class="section">
+  <div class="section-head reveal">
+    <div class="sec-index">03</div>
+    <h2>赋能百业<span class="sec-en">AI Empowering Industries</span></h2>
+    <p class="sec-desc">人工智能不是孤立的新产业，而是<b>重塑千行百业的通用生产力</b>。点击切换行业，看"AI+"如何落地生根；下方气泡图纵览各行业"渗透度 × 增速 × 规模"全景。</p>
+  </div>
+
+  <div class="ind-tabs reveal" id="indTabs">
+    <button class="ind-tab active" data-ind="manu">🏭 智能制造</button>
+    <button class="ind-tab" data-ind="health">🏥 智慧医疗</button>
+    <button class="ind-tab" data-ind="agri">🌾 智慧农业</button>
+    <button class="ind-tab" data-ind="trans">🚗 智慧交通</button>
+    <button class="ind-tab" data-ind="fin">💰 智慧金融</button>
+    <button class="ind-tab" data-ind="energy">🔋 智慧能源</button>
+  </div>
+  <div class="ind-panel reveal" id="indPanel">
+    <div class="ind-text">
+      <h3 id="indTitle"></h3>
+      <p id="indDesc"></p>
+      <div class="ind-chips" id="indChips"></div>
+    </div>
+    <div class="ind-visual" id="indVisual"></div>
+  </div>
+
+  <div class="chart-card reveal" style="margin-top:40px;">
+    <h3>行业赋能全景：渗透度 × 增速 × 市场规模</h3>
+    <p class="chart-note">气泡越大，AI相关市场规模越大 · 数据为公开报告整理约数，仅供示意</p>
+    <div id="chartBubble" class="chart-box tall"></div>
+  </div>
+</section>
+
+<!-- ===== 04 发展历程 ===== -->
+<section id="timeline" class="section section-alt">
+  <div class="section-head reveal">
+    <div class="sec-index">04</div>
+    <h2>发展历程<span class="sec-en">Milestones</span></h2>
+    <p class="sec-desc">从1956年达特茅斯会议的一个概念，到今天驱动新质生产力的核心引擎——人工智能的每一次跃迁，都在重新定义"生产"本身。</p>
+  </div>
+
+  <div class="tl-wrap" id="tlWrap">
+    <div class="tl-line"></div>
+  </div>
+</section>
+
+<!-- ===== 05 战略意义 ===== -->
+<section id="meaning" class="section">
+  <div class="section-head reveal">
+    <div class="sec-index">05</div>
+    <h2>战略意义<span class="sec-en">Why It Matters</span></h2>
+    <p class="sec-desc">人工智能作为新质生产力，其意义远不止于一个产业的兴衰，而是关乎发展方式、国家竞争与人民生活的<b>系统性变革</b>。</p>
+  </div>
+
+  <div class="meaning-grid">
+    <div class="m-card reveal">
+      <div class="m-num">Ⅰ</div>
+      <h3>经济增长的新引擎</h3>
+      <p>PwC预测，到2030年AI将为全球经济贡献<b>15.7万亿美元</b>，相当于再造一个"中国体量"；麦肯锡测算，仅生成式AI每年即可为全球经济注入2.6~4.4万亿美元。AI正成为拉动全要素生产率的核心变量。</p>
+    </div>
+    <div class="m-card reveal">
+      <div class="m-num">Ⅱ</div>
+      <h3>产业升级的加速器</h3>
+      <p>中国已建成<b>1200余家先进级、230余家卓越级智能工厂</b>，制造业机器人密度达每万人470台、跃居全球第三。AI推动中国制造向"中国智造"跃迁，重塑全球产业分工格局。</p>
+    </div>
+    <div class="m-card reveal">
+      <div class="m-num">Ⅲ</div>
+      <h3>国际竞争的制高点</h3>
+      <p>生成式AI专利中国超3.8万件、<b>全球第一</b>；算力总规模全球第二；AI论文数量居全球首位。谁掌握人工智能，谁就赢得未来发展的战略主动。</p>
+    </div>
+    <div class="m-card reveal">
+      <div class="m-num">Ⅳ</div>
+      <h3>美好生活的新图景</h3>
+      <p><b>2.49亿</b>中国人正在使用生成式AI产品；AI辅助诊断、智慧课堂、适老化服务、城市大脑……新质生产力的落脚点，是每个人可感可及的幸福生活。</p>
+    </div>
+  </div>
+
+  <div class="future-band reveal">
+    <div class="fb-item"><span class="fb-year">2025</span>"人工智能+"行动纵深推进，六大行动全面铺开</div>
+    <div class="fb-arrow">→</div>
+    <div class="fb-item"><span class="fb-year">2027</span>智能经济核心产业规模快速增长，AI与各领域广泛深度融合</div>
+    <div class="fb-arrow">→</div>
+    <div class="fb-item"><span class="fb-year">2030</span>中国AI核心产业规模目标超1万亿元，带动相关产业超10万亿元</div>
+    <div class="fb-arrow">→</div>
+    <div class="fb-item"><span class="fb-year">2035</span>智能经济、智能社会全面建成，为基本实现社会主义现代化提供有力支撑</div>
+  </div>
+
+  <div class="quote-band reveal">
+    <p>"加快发展新一代人工智能是我们赢得全球科技竞争主动权的<b>重要战略抓手</b>，是推动我国科技跨越发展、产业优化升级、生产力整体跃升的<b>重要战略资源</b>。"</p>
+    <span>—— 中共中央政治局第九次集体学习</span>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== 页脚 ===== -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-brand">
+      <h3>智驱新质 · 擎动未来</h3>
+      <p>人工智能作为新质生产力的作用与意义 · 数据可视化专题</p>
+    </div>
+    <div class="foot-src">
+      <h4>数据来源</h4>
+      <p>工业和信息化部 · 中国信息通信研究院 · 世界知识产权组织（WIPO）· CNNIC · IDC · Statista · PwC · 国际机器人联合会（IFR）· 国务院《关于深入实施"人工智能+"行动的意见》</p>
+      <p class="foot-note">* 图表中标注"约数"的数据为公开报告整理，不同统计口径可能存在差异，仅用于学习展示。</p>
+    </div>
+  </div>
+  <div class="foot-copy">© 2026 数据可视化课程作业 · Designed & Built with HTML / CSS / JavaScript / ECharts / GSAP</div>
+</footer>
+
+<button id="backTop" title="回到顶部">↑</button>
+
+<script src="js/vendor/echarts.min.js"></script>
+<script src="js/vendor/gsap.min.js"></script>
+<script src="js/vendor/ScrollTrigger.min.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
