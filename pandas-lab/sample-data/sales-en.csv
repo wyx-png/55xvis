@@ -1,0 +1,265 @@
+﻿"Order ID","Date","Region","Category","Channel","Sales","Quantity","Unit Price","Rating","Returned"
+SO100001,2025-05-30,"Central China","Electronics","Community",1317.98,4,329.5,5,false
+SO100002,2025-06-24,"West China","Home","Online Mall",1806.69,7,258.1,3.9,false
+SO100003,2025-03-21,"West China","Electronics","Community",2873.2,5,574.64,3.8,false
+SO100004,2025-01-12,"Central China","Beauty","Online Mall",941.86,1,941.86,3.9,false
+SO100005,2025-03-27,"West China","Beauty","Community",16359.99,12,1363.33,3.9,false
+SO100006,2025-04-27,"South China","Apparel","Community",3305.26,3,1101.75,,false
+SO100007,2025-04-12,"West China","Apparel","Community",13174.83,12,1097.9,4.1,false
+SO100008,2025-01-05,"South China","Electronics","Community",2050.09,6,341.68,3.7,false
+SO100009,2025-06-25,"South China","Home","Community",1647.11,6,274.52,3.5,false
+SO100010,2025-03-17,"Central China","Electronics","Community",10113.2,8,1264.15,4.6,false
+SO100011,2025-02-13,"South China","Beauty","Online Mall",1324.62,3,441.54,4.6,false
+SO100012,2025-05-17,"Central China","Home","Offline Store",2284.27,8,285.53,4.8,false
+SO100013,2025-04-18,"North China","Apparel","Offline Store",2488.81,4,622.2,,false
+SO100014,2025-06-26,"West China","Apparel","Live Stream",590.99,1,590.99,4.9,false
+SO100015,2025-03-29,"Central China","Electronics","Online Mall",1377.25,1,1377.25,3.6,false
+SO100016,2025-03-06,"West China","Food","Live Stream",2217.35,11,201.58,3.3,false
+SO100017,2025-01-03,"Central China","Food","Offline Store",648.93,2,324.46,4.1,false
+SO100018,2025-06-07,"East China","Beauty","Offline Store",12884.2,11,1171.29,4.1,false
+SO100019,2025-01-08,"West China","Home","Live Stream",547.41,2,273.7,3.4,false
+SO100020,2025-03-05,"East China","Home","Community",4787.01,4,1196.75,3.2,false
+SO100021,2025-06-20,"North China","Beauty","Online Mall",3403.4,2,1701.7,4.8,false
+SO100022,2025-06-09,"South China","Electronics","Online Mall",21268,10,2126.8,3.8,false
+SO100023,2025-03-30,"East China","Home","Live Stream",3978.82,10,397.88,4.7,false
+SO100024,2025-04-03,"Central China","Beauty","Offline Store",13693.68,12,1141.14,4.5,false
+SO100025,2025-01-13,"East China","Apparel","Live Stream",1017.38,9,113.04,3.3,false
+SO100026,2025-06-06,"South China","Electronics","Offline Store",937.3,5,187.46,3.4,false
+SO100027,2025-05-06,"South China","Apparel","Community",1204.17,3,401.39,4,false
+SO100028,2025-02-08,"Central China","Apparel","Offline Store",7051.09,10,705.11,3.4,true
+SO100029,2025-04-25,"Central China","Electronics","Live Stream",27027.17,12,2252.26,3.8,false
+SO100030,2025-05-05,"Central China","Electronics","Live Stream",14898.51,9,1655.39,3.4,false
+SO100031,2025-01-30,"North China","Food","Online Mall",2321,11,211,3.4,false
+SO100032,2025-06-22,"South China","Apparel","Live Stream",8366.4,9,929.6,3.8,false
+SO100033,2025-03-07,"Central China","Beauty","Online Mall",1026.75,2,513.38,4.7,false
+SO100034,2025-01-11,"West China","Electronics","Community",7073.7,5,1414.74,3.9,false
+SO100035,2025-06-24,"East China","Beauty","Live Stream",4965.42,4,1241.36,3.5,false
+SO100036,2025-05-09,"West China","Apparel","Community",6758.69,7,965.53,4.4,false
+SO100037,2025-06-04,"Central China","Food","Live Stream",6984.01,11,634.91,3.9,false
+SO100038,2025-06-08,"East China","Food","Live Stream",6397.44,9,710.83,4.9,true
+SO100039,2025-02-20,"Central China","Apparel","Community",2830.47,11,257.32,4,false
+SO100040,2025-03-23,"South China","Home","Offline Store",2602.99,12,216.92,,false
+SO100041,2025-02-14,"Central China","Beauty","Community",11844.6,10,1184.46,,false
+SO100042,2025-04-06,"East China","Beauty","Offline Store",71.12,1,71.12,4.8,false
+SO100043,2025-02-02,"Central China","Apparel","Offline Store",1147.36,1,1147.36,4.1,false
+SO100044,2025-06-04,"East China","Apparel","Live Stream",3484.07,10,348.41,3.3,false
+SO100045,2025-02-08,"North China","Food","Offline Store",1239.98,2,619.99,4.8,false
+SO100046,2025-06-27,"Central China","Apparel","Live Stream",4979.73,6,829.95,4.9,false
+SO100047,2025-06-04,"West China","Home","Live Stream",3551.58,12,295.96,4.8,false
+SO100048,2025-02-13,"North China","Electronics","Community",1187.78,3,395.93,4.6,false
+SO100049,2025-02-15,"West China","Electronics","Community",1521.03,7,217.29,3.6,true
+SO100050,2025-02-01,"South China","Home","Live Stream",771.33,1,771.33,3.7,false
+SO100051,2025-05-23,"East China","Beauty","Community",11028.13,8,1378.52,4.7,false
+SO100052,2025-03-22,"Central China","Electronics","Online Mall",1762.32,6,293.72,3.3,false
+SO100053,2025-06-12,"North China","Electronics","Live Stream",4222.4,10,422.24,4.5,false
+SO100054,2025-06-18,"Central China","Food","Live Stream",1718.44,3,572.81,4.8,false
+SO100055,2025-01-24,"North China","Food","Offline Store",3311.28,4,827.82,3.8,false
+SO100056,2025-06-23,"North China","Food","Live Stream",1657.62,2,828.81,4,true
+SO100057,2025-06-25,"North China","Food","Online Mall",2983.81,7,426.26,4.6,true
+SO100058,2025-03-24,"Central China","Home","Online Mall",4062.6,4,1015.65,4.3,false
+SO100059,2025-04-08,"South China","Beauty","Community",1810.07,3,603.36,4.2,false
+SO100060,2025-02-19,"North China","Beauty","Offline Store",1033.32,3,344.44,3.5,false
+SO100061,2025-05-02,"North China","Apparel","Live Stream",9831.64,10,983.16,3.4,true
+SO100062,2025-01-31,"South China","Food","Online Mall",5606.71,9,622.97,3.9,false
+SO100063,2025-06-11,"South China","Apparel","Community",1275.96,2,637.98,,false
+SO100064,2025-05-04,"Central China","Food","Community",576.37,12,48.03,4.8,false
+SO100065,2025-03-14,"Central China","Electronics","Offline Store",1469.22,7,209.89,4.5,false
+SO100066,2025-04-16,"South China","Beauty","Offline Store",16979.16,12,1414.93,4.8,false
+SO100067,2025-04-20,"Central China","Food","Online Mall",1186.04,2,593.02,3.5,false
+SO100068,2025-02-15,"East China","Beauty","Live Stream",3493.99,3,1164.66,3.7,false
+SO100069,2025-05-29,"Central China","Home","Online Mall",285.05,1,285.05,4.7,false
+SO100070,2025-06-04,"Central China","Electronics","Live Stream",1836.4,3,612.13,3.9,false
+SO100071,2025-02-16,"East China","Food","Live Stream",1242.5,2,621.25,3.7,false
+SO100072,2025-04-08,"West China","Beauty","Live Stream",8788.38,9,976.49,,false
+SO100073,2025-05-07,"South China","Food","Live Stream",1935.36,8,241.92,4.4,false
+SO100074,2025-03-02,"East China","Apparel","Live Stream",4372.12,4,1093.03,,false
+SO100075,2025-01-18,"South China","Food","Online Mall",5405.82,7,772.26,5,false
+SO100076,2025-01-02,"Central China","Home","Online Mall",2898.72,4,724.68,3.9,false
+SO100077,2025-02-18,"North China","Food","Live Stream",700.75,12,58.4,,false
+SO100078,2025-01-03,"East China","Electronics","Online Mall",364.47,2,182.24,4.2,false
+SO100079,2025-04-05,"Central China","Food","Online Mall",2030.34,3,676.78,4.4,false
+SO100080,2025-02-18,"East China","Food","Offline Store",2132.93,8,266.62,3.6,false
+SO100081,2025-02-06,"South China","Home","Live Stream",2464.46,6,410.74,4,false
+SO100082,2025-05-07,"North China","Home","Community",467.52,7,66.79,4.7,false
+SO100083,2025-06-29,"East China","Food","Offline Store",624.32,4,156.08,3.7,false
+SO100084,2025-04-27,"Central China","Apparel","Offline Store",1570.27,3,523.42,4.6,false
+SO100085,2025-03-26,"West China","Apparel","Community",1592.21,3,530.74,3.7,false
+SO100086,2025-02-19,"Central China","Home","Live Stream",2247,5,449.4,4,false
+SO100087,2025-01-14,"East China","Electronics","Live Stream",13967.67,10,1396.77,3.6,false
+SO100088,2025-02-21,"South China","Food","Community",6919.74,9,768.86,3.7,false
+SO100089,2025-01-31,"West China","Food","Community",1021.24,2,510.62,3.6,false
+SO100090,2025-05-07,"South China","Electronics","Online Mall",18363.84,11,1669.44,3.8,false
+SO100091,2025-03-20,"East China","Electronics","Live Stream",11824.54,6,1970.76,5,false
+SO100092,2025-04-08,"North China","Electronics","Online Mall",17532.67,11,1593.88,4.8,false
+SO100093,2025-03-30,"East China","Electronics","Offline Store",3485.13,9,387.24,3.7,true
+SO100094,2025-06-03,"Central China","Electronics","Live Stream",1450.95,9,161.22,3.7,false
+SO100095,2025-03-26,"Central China","Apparel","Live Stream",16911.83,12,1409.32,5,false
+SO100096,2025-01-15,"South China","Apparel","Community",62.89,1,62.89,4,true
+SO100097,2025-05-22,"Central China","Electronics","Offline Store",13221,10,1322.1,3.2,false
+SO100098,2025-05-23,"East China","Beauty","Online Mall",691.98,5,138.4,3.3,false
+SO100099,2025-06-07,"North China","Home","Online Mall",728.65,1,728.65,4.7,false
+SO100100,2025-05-01,"West China","Electronics","Community",585.8,3,195.27,4.2,false
+SO100101,2025-04-04,"West China","Food","Live Stream",1163.42,11,105.77,4.3,false
+SO100102,2025-03-10,"Central China","Apparel","Offline Store",7852.17,11,713.83,3.4,false
+SO100103,2025-04-24,"South China","Beauty","Offline Store",7560.21,7,1080.03,3.4,false
+SO100104,2025-05-07,"Central China","Beauty","Offline Store",2835.28,3,945.09,4.8,false
+SO100105,2025-04-13,"West China","Beauty","Community",4978.07,11,452.55,4,false
+SO100106,2025-05-12,"East China","Food","Live Stream",664.94,8,83.12,,false
+SO100107,2025-04-03,"East China","Beauty","Online Mall",11297.85,12,941.49,4.5,false
+SO100108,2025-04-22,"North China","Electronics","Live Stream",2178.72,6,363.12,5,false
+SO100109,2025-06-08,"East China","Food","Community",1307.72,10,130.77,3.3,false
+SO100110,2025-02-13,"East China","Home","Community",2493.25,3,831.08,4.3,false
+SO100111,2025-06-29,"Central China","Food","Live Stream",493.61,1,493.61,4.4,true
+SO100112,2025-02-22,"South China","Food","Live Stream",998.03,8,124.75,4.9,false
+SO100113,2025-05-12,"Central China","Home","Offline Store",6858.26,9,762.03,3.3,false
+SO100114,2025-03-07,"East China","Food","Offline Store",7338.98,9,815.44,4.1,false
+SO100115,2025-01-06,"West China","Beauty","Live Stream",3397.34,3,1132.45,4.2,false
+SO100116,2025-05-23,"West China","Home","Offline Store",7843.86,8,980.48,3.7,false
+SO100117,2025-06-09,"West China","Electronics","Community",1240.7,3,413.57,4.7,false
+SO100118,2025-02-24,"Central China","Apparel","Live Stream",14094.86,12,1174.57,4.9,false
+SO100119,2025-06-24,"South China","Apparel","Community",8225.66,9,913.96,3.4,false
+SO100120,2025-06-14,"Central China","Beauty","Online Mall",602,1,602,4.1,false
+SO100121,2025-01-09,"West China","Apparel","Community",7237.1,10,723.71,4.2,false
+SO100122,2025-06-04,"North China","Beauty","Community",10625.02,8,1328.13,3.4,false
+SO100123,2025-01-04,"West China","Home","Offline Store",921.81,6,153.63,3.5,false
+SO100124,2025-01-03,"Central China","Electronics","Offline Store",7666.34,8,958.29,4.9,false
+SO100125,2025-06-20,"East China","Beauty","Community",4199.51,3,1399.84,4.4,false
+SO100126,2025-04-16,"Central China","Beauty","Live Stream",1330.35,5,266.07,3.8,false
+SO100127,2025-04-14,"West China","Beauty","Offline Store",8209.07,11,746.28,3.7,false
+SO100128,2025-01-13,"North China","Home","Community",3410.71,4,852.68,3.5,false
+SO100129,2025-05-09,"Central China","Apparel","Online Mall",1726.1,7,246.59,4.9,false
+SO100130,2025-04-09,"South China","Electronics","Live Stream",22927.7,10,2292.77,4.2,true
+SO100131,2025-03-24,"South China","Home","Live Stream",92.9,2,46.45,4.7,false
+SO100132,2025-04-11,"East China","Food","Offline Store",951.65,11,86.51,3.9,false
+SO100133,2025-02-22,"Central China","Food","Online Mall",132.88,1,132.88,3.7,false
+SO100134,2025-01-02,"North China","Apparel","Online Mall",520.86,7,74.41,3.8,false
+SO100135,2025-04-09,"South China","Food","Offline Store",724.19,8,90.52,4,false
+SO100136,2025-01-31,"West China","Food","Offline Store",2349.19,5,469.84,4.5,false
+SO100137,2025-02-23,"Central China","Beauty","Online Mall",10326.62,11,938.78,4.7,false
+SO100138,2025-03-02,"West China","Home","Online Mall",6168.53,7,881.22,4.5,false
+SO100139,2025-03-24,"Central China","Beauty","Live Stream",6660.94,11,605.54,3.2,true
+SO100140,2025-02-06,"West China","Apparel","Online Mall",1127.62,6,187.94,4,false
+SO100141,2025-06-28,"East China","Electronics","Online Mall",636.59,1,636.59,4,false
+SO100142,2025-05-19,"North China","Electronics","Offline Store",459.24,3,153.08,3.5,false
+SO100143,2025-03-17,"East China","Home","Live Stream",2555.97,7,365.14,3.2,false
+SO100144,2025-04-15,"North China","Food","Online Mall",6880.13,11,625.47,4.5,false
+SO100145,2025-05-12,"East China","Home","Live Stream",7377.25,11,670.66,3.7,true
+SO100146,2025-03-20,"West China","Food","Community",893.36,8,111.67,3.6,false
+SO100147,2025-06-18,"West China","Apparel","Live Stream",6952.87,8,869.11,4.1,true
+SO100148,2025-04-26,"West China","Beauty","Online Mall",6389.81,7,912.83,4,false
+SO100149,2025-03-19,"Central China","Food","Online Mall",1928.36,11,175.31,3.5,false
+SO100150,2025-04-20,"North China","Food","Live Stream",1583.41,9,175.93,4.7,false
+SO100151,2025-01-23,"Central China","Food","Community",998.3,6,166.38,4.9,true
+SO100152,2025-05-19,"South China","Home","Online Mall",6913.98,11,628.54,4.4,false
+SO100153,2025-03-04,"East China","Home","Offline Store",1533.95,12,127.83,5,false
+SO100154,2025-04-08,"East China","Beauty","Offline Store",11405.14,7,1629.31,3.4,false
+SO100155,2025-06-08,"North China","Food","Live Stream",1688.39,6,281.4,3.7,false
+SO100156,2025-02-23,"West China","Electronics","Live Stream",1950.88,3,650.29,4.7,false
+SO100157,2025-01-18,"South China","Apparel","Community",6777.54,9,753.06,3.5,false
+SO100158,2025-01-01,"East China","Home","Offline Store",8325.12,8,1040.64,4.7,false
+SO100159,2025-06-23,"Central China","Beauty","Online Mall",7291.39,8,911.42,3.4,false
+SO100160,2025-02-23,"East China","Electronics","Community",5065.04,4,1266.26,4.4,false
+SO100161,2025-03-03,"Central China","Electronics","Live Stream",10657.3,7,1522.47,3.4,false
+SO100162,2025-05-02,"South China","Electronics","Offline Store",22066.1,10,2206.61,4,false
+SO100163,2025-03-25,"Central China","Beauty","Live Stream",1335.61,1,1335.61,3.7,false
+SO100164,2025-03-23,"Central China","Electronics","Online Mall",4906.48,5,981.3,3.8,false
+SO100165,2025-05-15,"West China","Food","Online Mall",943.49,7,134.78,3.4,true
+SO100166,2025-06-12,"Central China","Beauty","Online Mall",3023.75,3,1007.92,3.3,true
+SO100167,2025-01-02,"East China","Electronics","Online Mall",20608.92,12,1717.41,4.4,false
+SO100168,2025-03-02,"Central China","Apparel","Online Mall",2868.53,5,573.71,4.6,false
+SO100169,2025-06-03,"West China","Beauty","Live Stream",1760,2,880,4,true
+SO100170,2025-01-07,"South China","Food","Live Stream",2445.87,8,305.73,3.5,false
+SO100171,2025-06-17,"Central China","Apparel","Offline Store",2612.19,2,1306.1,3.3,false
+SO100172,2025-02-21,"Central China","Beauty","Online Mall",4699.14,10,469.91,4.9,false
+SO100173,2025-01-04,"North China","Electronics","Live Stream",1943.27,4,485.82,4.5,true
+SO100174,2025-01-28,"South China","Beauty","Online Mall",1719.9,9,191.1,,true
+SO100175,2025-03-02,"Central China","Electronics","Community",1475.04,1,1475.04,4.4,false
+SO100176,2025-03-16,"South China","Electronics","Online Mall",159.51,1,159.51,4.3,false
+SO100177,2025-01-29,"North China","Beauty","Offline Store",5074.5,6,845.75,4.1,false
+SO100178,2025-06-14,"West China","Electronics","Live Stream",1646.25,1,1646.25,,false
+SO100179,2025-02-21,"Central China","Apparel","Community",500.09,7,71.44,4.2,false
+SO100180,2025-02-18,"North China","Food","Community",3163.5,9,351.5,5,false
+SO100181,2025-05-14,"South China","Home","Community",357.05,2,178.53,3.9,false
+SO100182,2025-04-17,"North China","Beauty","Community",601.52,1,601.52,4.6,false
+SO100183,2025-06-16,"South China","Electronics","Community",4275.23,4,1068.81,3.4,false
+SO100184,2025-04-16,"North China","Beauty","Offline Store",998.26,1,998.26,4.1,false
+SO100185,2025-05-22,"South China","Apparel","Community",829.08,6,138.18,4,false
+SO100186,2025-01-29,"East China","Food","Live Stream",2297.29,5,459.46,4.6,false
+SO100187,2025-02-28,"West China","Apparel","Offline Store",218.01,4,54.5,4.5,true
+SO100188,2025-05-12,"Central China","Beauty","Offline Store",16014.6,12,1334.55,,false
+SO100189,2025-03-25,"North China","Apparel","Community",2946.8,5,589.36,4.5,false
+SO100190,2025-05-15,"Central China","Food","Online Mall",1858,3,619.33,4.8,false
+SO100191,2025-06-20,"West China","Home","Online Mall",3544.3,12,295.36,,false
+SO100192,2025-05-03,"East China","Food","Online Mall",287.77,9,31.97,4.7,false
+SO100193,2025-04-17,"Central China","Beauty","Online Mall",1151.04,11,104.64,4.5,false
+SO100194,2025-01-17,"West China","Beauty","Offline Store",1064.63,10,106.46,3.3,false
+SO100195,2025-01-27,"North China","Beauty","Offline Store",680.76,2,340.38,3.6,false
+SO100196,2025-06-22,"North China","Beauty","Offline Store",1063.38,8,132.92,3.3,true
+SO100197,2025-02-25,"East China","Apparel","Live Stream",569.89,7,81.41,3.3,false
+SO100198,2025-04-04,"East China","Beauty","Offline Store",456.19,7,65.17,4.9,false
+SO100199,2025-02-06,"South China","Apparel","Online Mall",2131.36,3,710.45,4.5,false
+SO100200,2025-03-10,"North China","Food","Live Stream",221.27,2,110.64,4.5,false
+SO100201,2025-05-23,"Central China","Apparel","Community",2197.65,2,1098.83,3.7,false
+SO100202,2025-06-20,"West China","Electronics","Online Mall",8713.31,11,792.12,3.7,false
+SO100203,2025-01-17,"West China","Home","Offline Store",105.93,2,52.97,3.6,false
+SO100204,2025-01-05,"Central China","Home","Live Stream",14576.08,12,1214.67,4.2,false
+SO100205,2025-03-23,"North China","Beauty","Online Mall",1838.26,3,612.75,4.7,true
+SO100206,2025-06-18,"Central China","Apparel","Live Stream",2810.81,3,936.94,3.8,false
+SO100207,2025-03-12,"South China","Home","Online Mall",4773.6,10,477.36,3.6,false
+SO100208,2025-06-15,"Central China","Home","Community",2185.24,4,546.31,3.5,false
+SO100209,2025-01-17,"Central China","Food","Community",6618.78,9,735.42,4.4,false
+SO100210,2025-01-31,"Central China","Home","Online Mall",581.88,2,290.94,3.5,false
+SO100211,2025-03-27,"West China","Food","Community",155.85,2,77.92,3.7,false
+SO100212,2025-01-25,"North China","Electronics","Live Stream",224.59,3,74.86,4.1,false
+SO100213,2025-03-25,"Central China","Home","Live Stream",11679.98,11,1061.82,5,false
+SO100214,2025-03-22,"East China","Home","Live Stream",1285.04,6,214.17,4,false
+SO100215,2025-03-08,"West China","Beauty","Community",5739.95,6,956.66,3.3,false
+SO100216,2025-06-19,"South China","Electronics","Offline Store",2800.22,3,933.41,4.4,false
+SO100217,2025-03-07,"Central China","Apparel","Community",1238.72,2,619.36,,false
+SO100218,2025-01-22,"East China","Electronics","Online Mall",789.59,1,789.59,3.3,true
+SO100219,2025-06-28,"Central China","Home","Live Stream",451.05,1,451.05,3.9,false
+SO100220,2025-02-17,"Central China","Home","Community",5499.65,8,687.46,3.6,false
+SO100221,2025-05-01,"West China","Apparel","Community",6891.55,11,626.5,3.5,false
+SO100222,2025-01-12,"Central China","Apparel","Community",3698.62,11,336.24,,false
+SO100223,2025-01-09,"East China","Home","Online Mall",1843.48,5,368.7,4.9,false
+SO100224,2025-04-27,"Central China","Beauty","Community",3003.52,8,375.44,4.9,false
+SO100225,2025-06-07,"Central China","Apparel","Offline Store",5765.65,10,576.56,4.1,true
+SO100226,2025-05-15,"Central China","Beauty","Offline Store",7722.82,6,1287.14,3.5,false
+SO100227,2025-05-24,"Central China","Food","Online Mall",1457,5,291.4,4.1,false
+SO100228,2025-02-05,"South China","Electronics","Live Stream",5391.86,4,1347.96,4.5,true
+SO100229,2025-04-24,"North China","Apparel","Online Mall",7327.93,9,814.21,4,false
+SO100230,2025-03-19,"West China","Apparel","Community",4203.07,11,382.1,3.6,false
+SO100231,2025-02-12,"South China","Food","Live Stream",184.41,1,184.41,5,false
+SO100232,2025-01-10,"East China","Food","Offline Store",1451.53,4,362.88,3.8,false
+SO100233,2025-01-29,"West China","Food","Offline Store",388.93,2,194.47,4.3,false
+SO100234,2025-06-09,"South China","Home","Online Mall",5451.48,6,908.58,3.9,false
+SO100235,2025-01-18,"South China","Home","Community",8046.62,11,731.51,,false
+SO100236,2025-04-10,"Central China","Home","Live Stream",6789.78,7,969.97,4.2,false
+SO100237,2025-02-21,"North China","Home","Offline Store",8755.82,12,729.65,3.9,false
+SO100238,2025-03-08,"North China","Apparel","Live Stream",1015.92,4,253.98,3.6,false
+SO100239,2025-01-08,"South China","Electronics","Offline Store",1590.54,3,530.18,3.7,false
+SO100240,2025-02-08,"South China","Apparel","Live Stream",13586.59,11,1235.14,4.6,false
+SO100241,2025-02-12,"South China","Beauty","Offline Store",8069.15,9,896.57,4.7,false
+SO100242,2025-04-18,"Central China","Apparel","Offline Store",6315.34,8,789.42,4.9,false
+SO100243,2025-04-16,"East China","Apparel","Online Mall",992.77,3,330.92,4.6,false
+SO100244,2025-02-21,"West China","Home","Online Mall",873.15,1,873.15,4.6,false
+SO100245,2025-02-02,"East China","Food","Offline Store",2006.42,3,668.81,4.8,true
+SO100246,2025-03-21,"South China","Electronics","Online Mall",10227.88,10,1022.79,4.4,false
+SO100247,2025-01-18,"North China","Electronics","Community",8004.91,7,1143.56,4.4,false
+SO100248,2025-06-08,"North China","Beauty","Online Mall",6348.65,5,1269.73,4.5,false
+SO100249,2025-04-08,"Central China","Electronics","Live Stream",6851.25,5,1370.25,4.5,false
+SO100250,2025-02-09,"South China","Apparel","Online Mall",658.58,1,658.58,4.7,false
+SO100251,2025-05-04,"West China","Food","Community",3183.92,12,265.33,4.5,false
+SO100252,2025-02-17,"East China","Beauty","Online Mall",4148.51,5,829.7,4.4,false
+SO100253,2025-03-08,"South China","Beauty","Live Stream",10456.92,10,1045.69,4.3,false
+SO100254,2025-01-29,"South China","Electronics","Online Mall",9620.52,8,1202.57,4.6,false
+SO100255,2025-05-08,"Central China","Food","Live Stream",1332.49,3,444.16,,false
+SO100256,2025-02-22,"East China","Home","Online Mall",7272.43,9,808.05,3.8,false
+SO100257,2025-01-07,"North China","Home","Offline Store",7573.96,12,631.16,4.2,false
+SO100258,2025-01-16,"East China","Apparel","Online Mall",751.51,1,751.51,4.7,false
+SO100259,2025-04-30,"South China","Beauty","Offline Store",5317.86,7,759.69,4.1,false
+SO100260,2025-04-17,"North China","Beauty","Community",11568.74,11,1051.7,4.6,false
+SO100001,2025-05-30,"Central China","Electronics","Community",1317.98,4,329.5,5,false
+SO100006,2025-04-27,"South China","Apparel","Community",3305.26,3,1101.75,,false
+SO100010,2025-03-17,"Central China","Electronics","Community",10113.2,8,1264.15,4.6,false
+SO100012,2025-05-17,"Central China","Home","Offline Store",2284.27,8,285.53,4.8,false

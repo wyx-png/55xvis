@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Visual Pandas Lab · 可视化 Pandas 数据分析工作台</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">Pd</div>
+    <div class="brand-txt">
+      <h1 id="appTitle">Visual Pandas Lab</h1>
+      <p id="appSub">可视化 Pandas 数据分析工作台</p>
+    </div>
+  </div>
+  <div class="ds-badge">
+    <span class="ds-dot"></span>
+    <span id="dsName">数据集</span>
+    <span class="ds-sep">·</span>
+    <span id="dsShape">0 行 × 0 列</span>
+    <span class="ds-sep">·</span>
+    <span id="df2Tag" class="df2-tag hidden">df2</span>
+  </div>
+  <div class="top-actions">
+    <button class="btn ghost" id="btnHelp" data-i18n="app.help">帮助</button>
+    <button class="btn ghost" id="btnReset" data-i18n="app.reset" title="">重置</button>
+    <button class="btn lang" id="btnLang">EN</button>
+  </div>
+</header>
+
+<main class="layout">
+  <aside class="sidebar">
+    <nav class="mod-nav" id="modNav"></nav>
+    <div class="panel-scroll">
+      <div class="panel" id="panel"></div>
+    </div>
+  </aside>
+
+  <section class="work">
+    <div class="pipeline-wrap">
+      <div class="pipeline-head">
+        <span class="pipe-title" id="pipeTitle">操作链</span>
+        <span class="pipe-count" id="pipeCount"></span>
+        <div class="pipe-actions">
+          <button class="btn tiny ghost" id="btnCopyCode">复制代码</button>
+          <button class="btn tiny ghost" id="btnClearPipe">清空</button>
+        </div>
+      </div>
+      <div class="pipeline" id="pipeline"></div>
+    </div>
+
+    <div class="tabs" id="tabs"></div>
+
+    <div class="pane" id="paneData">
+      <div class="grid-bar">
+        <input type="search" id="gridSearch" class="input search" placeholder="">
+        <span class="grow"></span>
+        <span class="rows-all" id="rowsAll"></span>
+        <select id="pageSize" class="input mini"></select>
+        <button class="btn tiny ghost" id="btnPrevPage"></button>
+        <span class="page-ind" id="pageInd"></span>
+        <button class="btn tiny ghost" id="btnNextPage"></button>
+      </div>
+      <div class="grid-wrap"><table class="grid" id="grid"></table></div>
+    </div>
+
+    <div class="pane hidden" id="paneProfile">
+      <div id="profile"></div>
+    </div>
+
+    <div class="pane hidden" id="paneChart">
+      <div class="chart-builder" id="chartBuilder"></div>
+      <div class="chart-box"><div id="chartBox"></div></div>
+    </div>
+
+    <div class="pane hidden" id="paneCode">
+      <div class="code-desc" id="codeDesc"></div>
+      <pre class="code-box" id="codeBox"></pre>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-mask hidden" id="helpMask">
+  <div class="modal">
+    <h3 id="helpTitle">使用说明</h3>
+    <div id="helpBody"></div>
+    <div class="modal-foot"><button class="btn primary" id="btnCloseHelp">关闭</button></div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept=".csv,.tsv,.txt,.json,.xlsx,.xls" hidden>
+
+<script src="js/vendor/echarts.min.js"></script>
+<script src="js/vendor/papaparse.min.js"></script>
+<script src="js/vendor/xlsx.full.min.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/datasets.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
