@@ -788,13 +788,15 @@
     pivot(df, p) {
       const idx = p.index, colk = p.columns, val = p.values, agg = p.agg || 'sum';
       if (!idx || !colk || !val) throw new Error(T('toast.needCol'));
+      /* 列 key 校验：key 失效（列集合已变化）时给出友好提示，绝不让 undefined 进入结果列 */
+      const idxCol = colOf(df, idx), colCol = colOf(df, colk), valCol = colOf(df, val);
+      if (!idxCol || !colCol || !valCol) throw new Error(T('toast.needCol'));
       const colKeys = Array.from(new Set(df.rows.map(r => r[colk]).filter(v => !isNull(v)).map(v => String(v))));
       const idxKeys = Array.from(new Set(df.rows.map(r => r[idx]).filter(v => !isNull(v)).map(v => String(v))));
-      const srcCol = colOf(df, colk);
-      const outCols = [colOf(df, idx)].concat(colKeys.map(k => ({
+      const outCols = [idxCol].concat(colKeys.map(k => ({
         key: 'p_' + k,
-        zh: (srcCol.map && srcCol.map[k] ? srcCol.map[k].zh : (srcCol.map ? k : (colOf(df, colk).zh + '_' + k))),
-        en: (srcCol.map && srcCol.map[k] ? srcCol.map[k].en : (colOf(df, colk).en + '_' + k)),
+        zh: (colCol.map && colCol.map[k] ? colCol.map[k].zh : (colCol.map ? k : colCol.zh + '_' + k)),
+        en: (colCol.map && colCol.map[k] ? colCol.map[k].en : colCol.en + '_' + k),
         dtype: 'number',
       })));
       const rows = idxKeys.map(ik => {
@@ -810,7 +812,7 @@
       });
       return {
         df: { nameKey: df.nameKey, name: df.name, cols: outCols, rows },
-        code: 'df = df.pivot_table(index="' + label(colOf(df, idx)) + '", columns="' + label(colOf(df, colk)) + '", values="' + label(colOf(df, val)) + '", aggfunc="' + agg + '"' + (p.fill0 ? ', fill_value=0' : '') + ').reset_index()',
+        code: 'df = df.pivot_table(index="' + label(idxCol) + '", columns="' + label(colCol) + '", values="' + label(valCol) + '", aggfunc="' + agg + '"' + (p.fill0 ? ', fill_value=0' : '') + ').reset_index()',
       };
     },
     melt(df, p) {

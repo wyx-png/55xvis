@@ -32,7 +32,13 @@
     if (!State.sel[group]) State.sel[group] = new Set();
     return State.sel[group];
   };
-  const selArr = group => Array.from(S(group));
+  /* 取某组列选择集合并过滤失效 key（操作后列集合可能变化，旧 key 不再存在）。
+     aggs（聚合函数名）、lvals（数据值）等非列 key 的组合传 false 跳过过滤 */
+  const selArr = (group, isColKeys) => {
+    if (isColKeys === false) return Array.from(S(group));
+    const cur = State.cur;
+    return Array.from(S(group)).filter(k => !cur || cur.cols.some(c => c.key === k));
+  };
 
   /* ================= 数据载入 ================= */
   function setBase(df, keepSteps) {
@@ -259,7 +265,13 @@
     const list = df.cols.filter(filterFn || (() => true));
     /* 日期列优先排在前面（resample 等场景需要） */
     list.sort((a, b) => (a.dtype === 'date' ? 0 : 1) - (b.dtype === 'date' ? 0 : 1));
-    const v = F(mod, field, list.length ? list[0].key : '');
+    let v = F(mod, field, list.length ? list[0].key : '');
+    /* 数据列变化后记住的旧 key 可能已不存在（下拉框只会显示第一项）——
+       此时静默修正回第一个可用列，避免把无效 key 传给引擎 */
+    if (v !== '' && !list.some(c => c.key === v)) {
+      v = list.length ? list[0].key : '';
+      State.form[mod][field] = v;
+    }
     return '<select data-f="' + field + '" data-mod="' + mod + '">'
       + (noneLabel ? '<option value=""' + (v === '' ? ' selected' : '') + '>' + esc(noneLabel) + '</option>' : '')
       + list.map(c =>
@@ -949,7 +961,7 @@
         filter: { conds: State.conds.slice(), logic: F('select', 'logic', 'and') },
         iloc: { start: F('select', 'istart', 0), end: F('select', 'iend', df.rows.length) },
         query: { expr: F('select', 'qexpr', '') },
-        loc: { col: F('select', 'lcol'), values: selArr('lvals') },
+        loc: { col: F('select', 'lcol'), values: selArr('lvals', false) },
         resample: { col: F('transform', 'rsdate'), value: F('transform', 'rsval'), freq: F('transform', 'rsfreq', 'M'), agg: F('transform', 'rsagg', 'sum') },
         crosstab: { index: F('group', 'ctidx'), columns: F('group', 'ctcols'), values: F('group', 'ctvals'), agg: F('group', 'ctagg', 'sum') },
         dropna: { how: F('clean', 'dhow', 'any'), cols: selArr('subset') },
@@ -968,7 +980,7 @@
         pct: { col: F('transform', 'dcol'), periods: F('transform', 'dper', 1) },
         rolling: { col: F('transform', 'wcol'), window: F('transform', 'wwin', 7), fn: F('transform', 'wfn', 'mean') },
         bin: { col: F('transform', 'bcol'), bins: F('transform', 'bnum', 4), method: F('transform', 'bmth', 'width') },
-        group: { groups: selArr('gcols'), measures: selArr('mcols'), aggs: selArr('aggs'), sort: F('group', 'gsort', 'none') },
+        group: { groups: selArr('gcols'), measures: selArr('mcols'), aggs: selArr('aggs', false), sort: F('group', 'gsort', 'none') },
         pivot: { index: F('group', 'pidx'), columns: F('group', 'pcols'), values: F('group', 'pvals'), agg: F('group', 'pagg', 'sum'), fill0: !!F('group', 'pfill', false) },
         melt: { ids: selArr('ids'), values: selArr('vals') },
         merge: { df2: State.df2, key: F('combine', 'mkey'), how: F('combine', 'mhow', 'left'), suffixes: ['_x', '_y'] },
