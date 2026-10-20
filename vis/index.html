@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《可视化导论》课程门户 · 学习地图版</title>
+<meta name="description" content="中国石油大学（华东）《可视化导论》课程门户：从数据到图表的 JavaScript + D3.js 实战课程，含学习路径、知识图谱、图表速查与视觉通道速查。">
+<link rel="stylesheet" href="home.css">
+</head>
+<body>
+
+<!-- ============ 顶部导航 ============ -->
+<header class="topbar" id="topbar">
+  <div class="wrap tb-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark">VIS</span>
+      <span class="brand-txt">可视化导论 · 学习地图</span>
+    </a>
+    <nav class="tb-nav">
+      <a href="#path">学习路径</a>
+      <a href="#graph">知识图谱</a>
+      <a href="#chapters">章节</a>
+      <a href="#gallery">图表速查</a>
+      <a href="#channels">视觉通道</a>
+      <a href="#glossary">概念索引</a>
+      <a href="#about">关于</a>
+    </nav>
+    <div class="tb-right">
+      <div class="progress-mini" title="学习进度（保存在本机）">
+        <div class="pm-bar"><i id="pmFill"></i></div>
+        <span id="pmText">0%</span>
+      </div>
+      <button class="lang-btn" id="langBtn" title="中英切换">EN</button>
+    </div>
+  </div>
+  <div class="scroll-progress"><i id="spFill"></i></div>
+</header>
+
+<!-- ============ Hero ============ -->
+<section class="hero" id="top">
+  <div class="wrap hero-inner">
+    <div class="hero-left">
+      <p class="eyebrow">中国石油大学（华东） · 授课教师：李昕 · 参考教材：陈为《可视化导论》</p>
+      <h1>《可视化导论》</h1>
+      <p class="hero-sub">从数据到图表：JavaScript + D3.js 实战课程</p>
+      <p class="hero-desc">
+        一门以<strong>案例为中心</strong>的可视化入门课。本站在原课程门户基础上重构为「学习地图」版：
+        用<strong>可视化本身</strong>讲清楚课程结构——先看路径、再看知识网络、然后按章节深入，
+        随时可查图表选型与视觉通道。
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#path">开始学习路径 →</a>
+        <a class="btn ghost" href="#gallery">图表速查</a>
+        <a class="btn ghost" href="index-original.html">查看原版首页</a>
+      </div>
+      <div class="hero-stats" id="heroStats"></div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-viz">
+        <p class="viz-cap">课程知识结构 · D3 实时绘制</p>
+        <svg id="heroGraph" viewBox="0 0 480 340" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 学习路径 ============ -->
+<section class="sec" id="path">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>学习路径</h2>
+      <p class="sec-desc">五章按顺序推进，越往后越综合。点击节点进入章节，学完可点节点上的「完成」按钮记录进度（保存在本机浏览器）。</p>
+    </div>
+    <div class="card">
+      <svg id="pathViz" viewBox="0 0 1120 280" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div class="path-legend">
+      <span><i class="dot done"></i>已完成</span>
+      <span><i class="dot cur"></i>当前章</span>
+      <span><i class="dot todo"></i>未开始</span>
+      <span class="tip">提示：第 3 章色彩、第 5 章时序相对独立，可按需要提前阅读</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 知识图谱 ============ -->
+<section class="sec alt" id="graph">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>课程知识图谱</h2>
+      <p class="sec-desc">课程的核心概念与它们之间的依赖关系。节点按章节着色，连线表示「学它之前最好先懂什么」；鼠标悬停看说明，点击节点跳转对应章节。</p>
+    </div>
+    <div class="graph-wrap card">
+      <div class="graph-side">
+        <div class="gs-title">按章节筛选</div>
+        <div id="graphFilters" class="chips"></div>
+        <div class="gs-title">节点说明</div>
+        <div id="graphInfo" class="graph-info">
+          <p class="gi-hint">把鼠标移到节点上，或点击节点查看说明。</p>
+        </div>
+        <div class="gs-title">图例</div>
+        <div id="graphLegend" class="legend-list"></div>
+      </div>
+      <div class="graph-main">
+        <svg id="kgViz" viewBox="0 0 760 560" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="graph-tip">可拖拽节点调整布局 · 滚轮缩放 · 拖背景平移</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 章节卡片 ============ -->
+<section class="sec" id="chapters">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>课程章节</h2>
+      <p class="sec-desc">每张卡片内嵌一张<strong>实时绘制的示意图</strong>（不是图片），把本章核心内容一眼呈现。进入章节后可在左侧选小节、顶部切换「讲解 / 关键代码 / 演示」三个视图。</p>
+    </div>
+    <div id="chapterCards" class="chapter-grid"></div>
+  </div>
+</section>
+
+<!-- ============ 图表速查 ============ -->
+<section class="sec alt" id="gallery">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>图表速查与实时演示</h2>
+      <p class="sec-desc">拿到一份数据该画什么图？这里按「你想回答什么问题」分类，点击即用同一份示例数据<strong>实时渲染</strong>对应图表，并给出适用与不适用说明。</p>
+    </div>
+    <div class="gallery-wrap card">
+      <div class="gallery-tabs" id="galleryTabs"></div>
+      <div class="gallery-body">
+        <div class="gallery-list" id="galleryList"></div>
+        <div class="gallery-stage">
+          <div class="gs-head">
+            <span id="gsTitle">—</span>
+            <span class="gs-tag" id="gsTag"></span>
+          </div>
+          <svg id="galleryChart" viewBox="0 0 620 380" preserveAspectRatio="xMidYMid meet"></svg>
+          <p class="gs-note" id="gsNote"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 视觉通道 ============ -->
+<section class="sec" id="channels">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>视觉通道速查（Mackinlay 排序）</h2>
+      <p class="sec-desc">同样一组数值，用不同视觉通道编码，人眼读取的精度差别很大。下面用同一份数据实时演示八种通道的效果，按 Mackinlay 1986 的推荐顺序排列。</p>
+    </div>
+    <div class="card">
+      <svg id="channelViz" viewBox="0 0 1120 320" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="chan-demo">
+        <div class="cd-left">
+          <p class="cd-title">Stevens 测量尺度 × 视觉通道匹配</p>
+          <p class="cd-desc">选择一种数据类型，看推荐用什么视觉通道编码：</p>
+          <div class="chips" id="stevensTabs"></div>
+          <div id="stevensResult" class="stevens-result"></div>
+        </div>
+        <div class="cd-right">
+          <svg id="stevensViz" viewBox="0 0 420 260" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 概念索引 ============ -->
+<section class="sec alt" id="glossary">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>概念索引</h2>
+      <p class="sec-desc">课程中出现的全部核心术语，支持中英文关键词搜索，点击直接跳到所属章节。</p>
+    </div>
+    <div class="card">
+      <div class="glossary-bar">
+        <input id="glossaryInput" class="gl-input" type="search" placeholder="搜索概念，如：DIKW、视觉通道、colormap、Data-Join …">
+        <span class="gl-count" id="glCount"></span>
+      </div>
+      <div id="glossaryList" class="glossary-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 使用方式 ============ -->
+<section class="sec" id="howto">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>使用方式</h2>
+      <p class="sec-desc">四种典型使用场景（沿用原课程门户说明）。</p>
+    </div>
+    <div class="howto-grid" id="howtoGrid"></div>
+  </div>
+</section>
+
+<!-- ============ 关于 ============ -->
+<section class="sec alt" id="about">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>关于本课程</h2>
+      <p class="sec-desc">理论来源、设计原则、技术栈与数据集。</p>
+    </div>
+    <div class="about-grid" id="aboutGrid"></div>
+    <div class="ref-list card">
+      <h3>参考文献</h3>
+      <ul id="refList"></ul>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <p>© 2026 《可视化导论》课程 · 中国石油大学（华东）· 授课教师：<a href="https://cinger007.github.io" target="_blank" rel="noopener">李昕</a> · 主要参考教材：陈为《可视化导论》</p>
+    <p class="foot-sub">本站为课程门户的<strong>重构学习地图版</strong>：新增学习路径图、知识图谱、图表速查、视觉通道速查与概念索引；原章节内容（讲解 / 关键代码 / 演示）保持不变。零依赖 · D3.js v7（已本地化，离线可用）· 不含任何视频</p>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" title="回到顶部">↑</button>
+
+<script src="js/vendor/d3.min.js"></script>
+<script src="home.js"></script>
+</body>
+</html>
