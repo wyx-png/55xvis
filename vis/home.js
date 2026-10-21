@@ -474,6 +474,27 @@
       .text(d => d.keys.length + (lang === 'zh' ? ' 个关键点' : ' key points'));
     nodes.append('text').attr('text-anchor', 'middle').attr('y', 70).attr('font-size', 10.5).attr('fill', '#1d4ed8')
       .text(lang === 'zh' ? '进入章节 →' : 'Open →').style('text-decoration', 'underline');
+    // 「完成」打卡按钮：点一下标记完成（再点取消），与右上角进度联动
+    const isZhP = lang === 'zh';
+    const btn = nodes.append('g').attr('class', 'done-btn')
+      .attr('transform', 'translate(0,96)')
+      .style('cursor', 'pointer')
+      .on('click', function (e, d) {
+        e.stopPropagation();
+        if (doneSet.has(d.id)) doneSet.delete(d.id); else doneSet.add(d.id);
+        saveDone();
+        renderProgress();
+      });
+    btn.append('rect')
+      .attr('x', -46).attr('y', -11).attr('width', 92).attr('height', 22).attr('rx', 11)
+      .attr('fill', d => doneSet.has(d.id) ? '#16a34a' : '#fff')
+      .attr('stroke', d => doneSet.has(d.id) ? '#16a34a' : '#94a3b8')
+      .attr('stroke-width', 1.4);
+    btn.append('text').attr('text-anchor', 'middle').attr('y', 4)
+      .attr('font-size', 10.5).attr('font-weight', 700)
+      .attr('fill', d => doneSet.has(d.id) ? '#fff' : '#64748b')
+      .text(d => doneSet.has(d.id) ? (isZhP ? '已完成 ✓' : 'Done ✓') : (isZhP ? '标记完成' : 'Mark done'));
+    btn.append('title').text(isZhP ? '学完本章点这里打卡；再次点击可取消' : 'Click to toggle completion');
     nodes.on('click', (e, d) => { location.href = d.id + '/'; });
   }
 

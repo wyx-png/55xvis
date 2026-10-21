@@ -279,3 +279,7 @@ svg text { font-family: var(--font); }
   .sec { padding: 40px 0; }
   .ref-list ul { column-count: 1; }
 }
+
+/* 学习路径打卡按钮 */
+.pn .done-btn rect { transition: fill .2s, stroke .2s; }
+.pn .done-btn:hover rect { filter: brightness(.96); stroke-width: 2; }
