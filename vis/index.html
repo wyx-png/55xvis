@@ -6,6 +6,7 @@
 <title>《可视化导论》课程门户 · 学习地图版</title>
 <meta name="description" content="中国石油大学（华东）《可视化导论》课程门户：从数据到图表的 JavaScript + D3.js 实战课程，含学习路径、知识图谱、图表速查与视觉通道速查。">
 <link rel="stylesheet" href="home.css">
+<link rel="stylesheet" href="fx.css">
 </head>
 <body>
 
@@ -53,6 +54,12 @@
         <a class="btn ghost" href="#gallery">图表速查</a>
         <a class="btn ghost" href="index-original.html">查看原版首页</a>
       </div>
+      <div class="hero-badges">
+        <span class="hb"><i></i>D3.js v7 · 本地化</span>
+        <span class="hb"><i></i>零依赖 · 无需构建</span>
+        <span class="hb"><i></i>离线可用 · 无视频</span>
+        <span class="hb"><i></i>讲解 / 代码 / 演示 三视图</span>
+      </div>
       <div class="hero-stats" id="heroStats"></div>
     </div>
     <div class="hero-right">
@@ -62,7 +69,11 @@
       </div>
     </div>
   </div>
+  <div class="fx-cue" aria-hidden="true"><span></span>SCROLL</div>
 </section>
+
+<!-- ============ 概念滚动条 ============ -->
+<div class="fx-ticker" id="fxTicker" aria-hidden="true"></div>
 
 <!-- ============ 学习路径 ============ -->
 <section class="sec" id="path">
@@ -224,5 +235,6 @@
 
 <script src="js/vendor/d3.min.js"></script>
 <script src="home.js"></script>
+<script src="fx.js"></script>
 </body>
 </html>
