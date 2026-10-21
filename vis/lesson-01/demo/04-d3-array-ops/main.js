@@ -1,7 +1,7 @@
 // Demo 4 · D3 8 个数组函数
 // 对应讲义 3.4 数据变换
 
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+const d3 = window.d3; // 已本地化
 
 // 8 个函数的演示数据
 const SPECS = {

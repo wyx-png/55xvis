@@ -10,7 +10,7 @@
 //   3.8 CVD 论文图测  → d-3-8 cvd-paper-test
 // =========================================
 
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+const d3 = window.d3; // 已本地化：由页面先行加载 ../js/vendor/d3.min.js
 
 window.DEMOS = window.DEMOS || {};
 

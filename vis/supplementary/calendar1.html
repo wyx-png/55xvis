@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style/calendar.css">
   <!-- 使用 D3 v7 -->
-  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="../js/vendor/d3.min.js"></script>
 </head>
 
 <body>
@@ -26,7 +26,7 @@
   <script>
     (function () {
       const container = d3.select('#calendar');
-      const csvPath = '/data/calendar_data_modified.csv';
+      const csvPath = './data/calendar_data_modified.csv';
       const cellSize = 14;
       const margin = { top: 18, right: 16, bottom: 18, left: 26 };
       const monthLabelY = 10;
@@ -264,7 +264,7 @@
   <!-- Spiral calendar (fixed version with larger radius) -->
   <script>
     (function () {
-      const csvPath = '/data/calendar_data_modified.csv';
+      const csvPath = './data/calendar_data_modified.csv';
 
       async function renderSpiral(yearDesired) {
         try {

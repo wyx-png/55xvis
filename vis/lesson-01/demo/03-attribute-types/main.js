@@ -1,7 +1,7 @@
 // Demo 3 · 属性类型 × 视觉通道
 // 对应讲义 3.3 数据属性 —— 嵌入 Stevens 测量尺度 + Mackinlay 1986 视觉通道排序
 
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+const d3 = window.d3; // 已本地化
 
 // 用一份合成数据演示 4 种属性类型
 const DATA = [

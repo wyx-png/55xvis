@@ -1,7 +1,7 @@
 // Demo 5 · D3 Selection 三态模型
 // 对应讲义 3.5.1 D3 数据选择器
 
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+const d3 = window.d3; // 已本地化
 
 const svg = d3.select("#states");
 const W = 700, H = 160;

@@ -7,7 +7,7 @@
 //   4.5 等值线         → d-4-5 marching-squares
 // =========================================
 
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+const d3 = window.d3; // 已本地化：由页面先行加载 ../js/vendor/d3.min.js
 
 window.DEMOS = window.DEMOS || {};
 

@@ -41,7 +41,7 @@
     var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
     var ps = [], mouse = { x: -9999, y: -9999, on: false };
     var running = true, raf = 0;
-    var COLORS = ['#2563eb', '#0891b2', '#db2777', '#7c3aed', '#ea580c', '#0ea5e9', '#16a34a'];
+    var COLORS = ['#38bdf8', '#22d3ee', '#7dd3fc', '#818cf8', '#67e8f9', '#c4b5fd'];
 
     function resize() {
       var r = hero.getBoundingClientRect();
@@ -95,9 +95,9 @@
         if (p.y < -12) p.y = H + 12; else if (p.y > H + 12) p.y = -12;
       }
 
-      // 连线
+      // 连线（深海主题：青色细网）
       ctx.lineWidth = .7;
-      ctx.strokeStyle = '#1d4ed8';
+      ctx.strokeStyle = '#38bdf8';
       for (i = 0; i < ps.length; i++) {
         p = ps[i];
         for (j = i + 1; j < ps.length; j++) {
@@ -106,7 +106,7 @@
           d2 = dx * dx + dy * dy;
           if (d2 < L2) {
             d = Math.sqrt(d2);
-            ctx.globalAlpha = (1 - d / LINK) * .42;
+            ctx.globalAlpha = (1 - d / LINK) * .28;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
             ctx.stroke();
@@ -116,7 +116,7 @@
 
       // 鼠标到附近节点的连线
       if (mouse.on) {
-        ctx.strokeStyle = '#1d4ed8';
+        ctx.strokeStyle = '#7dd3fc';
         ctx.lineWidth = .85;
         for (i = 0; i < ps.length; i++) {
           p = ps[i];
@@ -124,22 +124,26 @@
           d2 = dx * dx + dy * dy;
           if (d2 < 32400) {
             d = Math.sqrt(d2);
-            ctx.globalAlpha = (1 - d / 180) * .55;
+            ctx.globalAlpha = (1 - d / 180) * .5;
             ctx.beginPath();
             ctx.moveTo(mouse.x, mouse.y); ctx.lineTo(p.x, p.y);
             ctx.stroke();
           }
         }
         ctx.globalAlpha = 1;
-        ctx.fillStyle = 'rgba(29,78,216,.10)';
-        ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 15, 0, 6.284); ctx.fill();
+        ctx.fillStyle = 'rgba(56,189,248,.14)';
+        ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 18, 0, 6.284); ctx.fill();
+        ctx.fillStyle = 'rgba(125,211,252,.55)';
+        ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 2.6, 0, 6.284); ctx.fill();
       }
 
-      // 节点
+      // 节点（先画大光晕，再画亮核）
       for (i = 0; i < ps.length; i++) {
         p = ps[i];
-        ctx.globalAlpha = p.a;
+        ctx.globalAlpha = p.a * .3;
         ctx.fillStyle = p.c;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3, 0, 6.284); ctx.fill();
+        ctx.globalAlpha = Math.min(1, p.a + .35);
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.284); ctx.fill();
       }
       ctx.globalAlpha = 1;

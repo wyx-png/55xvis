@@ -1,7 +1,7 @@
 // lesson.js —— Doc-01 集成教学页面交互逻辑
 // 1) 章节切换  2) Tab 切换  3) Demo 注入
 
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+const d3 = window.d3; // 已本地化：由页面先行加载 ../js/vendor/d3.min.js
 
 
 // ============================================================

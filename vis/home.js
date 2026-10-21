@@ -319,35 +319,122 @@
      ========================================================= */
   function drawHero() {
     const svg = d3.select('#heroGraph'); svg.selectAll('*').remove();
-    const W = 480, H = 340;
-    const g = svg.append('g').attr('transform', 'translate(240,170)');
+    const W = 560, H = 420;
+    const cx = W / 2, cy = H / 2 + 6;
+    const hubR = 48;
+    const g = svg.append('g');
+
+    // 深海主题配色（比浅色版更亮）
+    const NEON = ['#60a5fa', '#2dd4bf', '#f472b6', '#a78bfa', '#fb923c'];
+
+    // defs：枢纽渐变 / 辉光滤镜
+    const defs = svg.append('defs');
+    const grad = defs.append('radialGradient').attr('id', 'fxhHub');
+    grad.append('stop').attr('offset', '0%').attr('stop-color', '#67e8f9');
+    grad.append('stop').attr('offset', '45%').attr('stop-color', '#0ea5e9');
+    grad.append('stop').attr('offset', '100%').attr('stop-color', '#1e3a8a');
+    const flt = defs.append('filter').attr('id', 'fxhGlow')
+      .attr('x', '-120%').attr('y', '-120%').attr('width', '340%').attr('height', '340%');
+    flt.append('feGaussianBlur').attr('stdDeviation', 3.2).attr('result', 'b');
+    const mg = flt.append('feMerge');
+    mg.append('feMergeNode').attr('in', 'b');
+    mg.append('feMergeNode').attr('in', 'SourceGraphic');
+
+    // 五章节点：手工错落布局（打破均匀五边形的呆板感）+ 轻微倾斜
+    const LAYOUT = [
+      { a: -90, rx: 4,   ry: 154, tilt: 0    },
+      { a: -16, rx: 196, ry: 94,  tilt: 2.4  },
+      { a: 58,  rx: 188, ry: 150, tilt: -1.8 },
+      { a: 122, rx: 212, ry: 116, tilt: 1.6  },
+      { a: 188, rx: 190, ry: 88,  tilt: -2.4 },
+    ];
     const nodes = CHAPTERS.map((c, i) => ({
-      id: c.id, r: 34, color: CH_COLOR[i],
-      label: (lang === 'zh' ? '第' + c.no + '章' : 'Ch' + c.no),
-      sub: T(c.title),
-      ang: (i / CHAPTERS.length) * Math.PI * 2 - Math.PI / 2,
+      id: c.id, no: c.no, color: NEON[i],
+      label: lang === 'zh' ? '第' + c.no + '章' : 'Chapter ' + c.no,
+      title: T(c.title), L: LAYOUT[i],
     }));
-    const cx = 0, cy = 0, R = 108;
-    nodes.forEach(n => { n.x = cx + Math.cos(n.ang) * R; n.y = cy + Math.sin(n.ang) * R; });
-    // 连线到中心
-    g.selectAll('line.spoke').data(nodes).join('line').attr('class', 'spoke')
-      .attr('x1', cx).attr('y1', cy).attr('x2', d => d.x).attr('y2', d => d.y)
-      .attr('stroke', d => d.color).attr('stroke-opacity', .35).attr('stroke-width', 1.6)
-      .attr('stroke-dasharray', '3 3');
-    // 中心
-    g.append('circle').attr('r', 44).attr('fill', '#fff').attr('stroke', '#1d4ed8').attr('stroke-width', 2);
-    g.append('text').attr('text-anchor', 'middle').attr('y', -2).attr('font-size', 13).attr('font-weight', 700).attr('fill', '#16233b')
+    nodes.forEach(n => {
+      const rad = n.L.a * Math.PI / 180;
+      n.x = cx + Math.cos(rad) * n.L.rx;
+      n.y = cy + Math.sin(rad) * n.L.ry;
+    });
+
+    // 双层虚线轨道（有透视感的椭圆）
+    g.append('ellipse').attr('cx', cx).attr('cy', cy).attr('rx', 214).attr('ry', 156)
+      .attr('fill', 'none').attr('stroke', 'rgba(125,211,252,.30)').attr('stroke-width', 1)
+      .attr('stroke-dasharray', '2 7');
+    g.append('ellipse').attr('cx', cx).attr('cy', cy).attr('rx', 120).attr('ry', 86)
+      .attr('fill', 'none').attr('stroke', 'rgba(125,211,252,.18)').attr('stroke-width', 1)
+      .attr('stroke-dasharray', '1 6');
+
+    // 弧形发光连线 + 沿线流动的数据光点（光晕 + 亮核）
+    nodes.forEach((n, i) => {
+      const k = .13 + (i % 3) * .045;
+      const mx = (cx + n.x) / 2 + (n.y - cy) * k;
+      const my = (cy + n.y) / 2 - (n.x - cx) * k;
+      const d = 'M' + cx + ',' + cy + ' Q' + mx + ',' + my + ' ' + n.x + ',' + n.y;
+      g.append('path').attr('d', d).attr('fill', 'none')
+        .attr('stroke', n.color).attr('stroke-opacity', .6)
+        .attr('stroke-width', 1.8).attr('stroke-dasharray', '5 6');
+      [0, 1].forEach(j => {
+        const dot = g.append('circle')
+          .attr('r', j === 0 ? 6.5 : 2.8)
+          .attr('fill', n.color)
+          .attr('fill-opacity', j === 0 ? .3 : 1)
+          .attr('filter', j === 0 ? null : 'url(#fxhGlow)');
+        dot.append('animateMotion')
+          .attr('dur', (2.6 + i * .38) + 's').attr('repeatCount', 'indefinite')
+          .attr('begin', (-(i * .7 + j * .12)) + 's')
+          .attr('path', d);
+      });
+    });
+
+    // 中心枢纽（青蓝渐变球 + 双层呼吸光环 + 外环）
+    const hub = g.append('g');
+    hub.append('circle').attr('cx', cx).attr('cy', cy).attr('r', hubR + 22)
+      .attr('fill', 'none').attr('stroke', 'rgba(103,232,249,.55)').attr('stroke-width', 1.2)
+      .attr('class', 'fxh-halo');
+    hub.append('circle').attr('cx', cx).attr('cy', cy).attr('r', hubR + 34)
+      .attr('fill', 'none').attr('stroke', 'rgba(56,189,248,.4)').attr('stroke-width', 1)
+      .attr('class', 'fxh-halo fxh-halo2');
+    hub.append('circle').attr('cx', cx).attr('cy', cy).attr('r', hubR).attr('fill', 'url(#fxhHub)')
+      .attr('filter', 'url(#fxhGlow)');
+    hub.append('circle').attr('cx', cx).attr('cy', cy).attr('r', hubR).attr('fill', 'none')
+      .attr('stroke', 'rgba(224,242,254,.65)').attr('stroke-width', 1.2);
+    hub.append('text').attr('x', cx).attr('y', cy - 1).attr('text-anchor', 'middle')
+      .attr('font-size', 17).attr('font-weight', 800).attr('fill', '#fff')
       .text(lang === 'zh' ? '可视化' : 'VIS');
-    g.append('text').attr('text-anchor', 'middle').attr('y', 15).attr('font-size', 10).attr('fill', '#7b8794')
+    hub.append('text').attr('x', cx).attr('y', cy + 17).attr('text-anchor', 'middle')
+      .attr('font-size', 10).attr('fill', 'rgba(224,242,254,.9)')
       .text(lang === 'zh' ? '数据 → 图形' : 'data → chart');
-    // 章节节点
-    const ng = g.selectAll('g.n').data(nodes).join('g').attr('class', 'n')
-      .attr('transform', d => 'translate(' + d.x + ',' + d.y + ')').style('cursor', 'pointer')
-      .on('click', (e, d) => { location.href = d.id + '/'; });
-    ng.append('circle').attr('r', d => d.r).attr('fill', '#fff').attr('stroke', d => d.color).attr('stroke-width', 2)
-      .attr('fill-opacity', .95);
-    ng.append('text').attr('text-anchor', 'middle').attr('y', -2).attr('font-size', 11.5).attr('font-weight', 700).attr('fill', d => d.color).text(d => d.label);
-    ng.append('text').attr('text-anchor', 'middle').attr('y', 13).attr('font-size', 10).attr('fill', '#475569').text(d => d.sub);
+
+    // 章节卡片：深色玻璃 + 发光描边
+    const PW = 162, PH = 58;
+    const ng = g.selectAll('g.fxh-node').data(nodes).join('g')
+      .attr('class', 'fxh-node')
+      .attr('transform', d =>
+        'translate(' + (d.x - PW / 2) + ',' + (d.y - PH / 2) + ') rotate(' + d.L.tilt + ',' + d.x + ',' + d.y + ')')
+      .style('cursor', 'pointer')
+      .on('click', (e, d) => { location.href = d.id + '/'; })
+      .on('mouseenter', function () { d3.select(this).raise(); });
+    const inner = ng.append('g').attr('class', 'fxh-inner');
+    ng.each(function (d, i) { d3.select(this).select('.fxh-inner').style('animation-delay', (i * .55) + 's'); });
+    inner.append('rect').attr('width', PW).attr('height', PH).attr('rx', 15)
+      .attr('fill', 'rgba(7,18,40,.82)').attr('stroke', d => d.color).attr('stroke-width', 1.6)
+      .attr('stroke-opacity', .9);
+    inner.append('rect').attr('width', PW).attr('height', PH).attr('rx', 15)
+      .attr('fill', d => d.color).attr('fill-opacity', .10);
+    inner.append('circle').attr('cx', 28).attr('cy', PH / 2).attr('r', 15)
+      .attr('fill', d => d.color).attr('filter', 'url(#fxhGlow)');
+    inner.append('text').attr('x', 28).attr('y', PH / 2 + 4.5).attr('text-anchor', 'middle')
+      .attr('font-size', 13).attr('font-weight', 800).attr('fill', '#04101f').text(d => d.no);
+    const isZh = lang === 'zh';
+    inner.append('text').attr('x', 52).attr('y', isZh ? 25 : 24)
+      .attr('font-size', isZh ? 12.5 : 10.5).attr('font-weight', 700).attr('fill', '#eaf3ff')
+      .text(d => d.title);
+    inner.append('text').attr('x', 52).attr('y', isZh ? 43 : 42)
+      .attr('font-size', 10).attr('font-weight', 600).attr('fill', d => d.color)
+      .text(d => d.label);
   }
 
   /* =========================================================

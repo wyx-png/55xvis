@@ -139,6 +139,31 @@ html.fx.fx-ready .hero-right { opacity: 1 !important; animation: none !important
 .btn.primary { position: relative; overflow: hidden; }
 .btn.primary:hover { box-shadow: 0 12px 26px rgba(29, 78, 216, .3); }
 
+/* ---------- Hero 轨道图（fxh） ---------- */
+#heroGraph { width: 100%; height: auto; display: block; }
+.fxh-node { transition: filter .2s; }
+.fxh-node:hover { filter: drop-shadow(0 10px 18px rgba(29, 78, 216, .25)); }
+html.fx .fxh-node { opacity: 1; }
+.fxh-inner {
+  transform-box: fill-box; transform-origin: center;
+  animation: fxhBob 5.5s ease-in-out infinite;
+}
+@keyframes fxhBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+.fxh-halo {
+  transform-box: fill-box; transform-origin: center;
+  animation: fxhHalo 3.2s ease-out infinite;
+}
+@keyframes fxhHalo {
+  0%   { transform: scale(.82); opacity: .85; }
+  75%  { transform: scale(1.22); opacity: 0; }
+  100% { transform: scale(1.22); opacity: 0; }
+}
+.fxh-link { animation: fxhLinkIn .8s ease-out backwards .15s; }
+@keyframes fxhLinkIn { from { opacity: 0; } to { opacity: 1; } }
+
 /* 滚动提示 */
 .fx-cue {
   position: relative; z-index: 2; text-align: center; margin-top: 42px;
@@ -226,5 +251,145 @@ html.fx .fx-reveal.fx-in {
   .fx-particles, .fx-blob { display: none !important; }
   .fx-track { animation: none; }
   .hero-viz::after, .viz-cap::before, .fx-cue span { animation: none; }
+  html.fx .fxh-node { opacity: 1; animation: none; }
+  .fxh-inner, .fxh-halo, .fxh-link { animation: none !important; }
   html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   深海科技主题（AI Deep-Sea）
+   —— 覆盖首屏 / 顶栏 / 概念条配色，下方内容区保持浅色
+   ============================================================ */
+
+/* 顶栏：深海玻璃 */
+.topbar {
+  background: rgba(4, 12, 28, .66);
+  border-bottom: 1px solid rgba(56, 189, 248, .16);
+}
+.topbar.scrolled {
+  background: rgba(4, 12, 28, .88);
+  box-shadow: 0 10px 34px rgba(2, 8, 20, .55);
+  border-bottom-color: rgba(56, 189, 248, .22);
+}
+.brand-txt { color: #e6f2ff; }
+.tb-nav a { color: #9db8d9; }
+.tb-nav a:hover { background: rgba(56, 189, 248, .12); color: #7dd3fc; }
+.tb-nav a.active { background: rgba(56, 189, 248, .18); color: #7dd3fc; }
+.progress-mini { color: #7e96b8; }
+.pm-bar { background: rgba(125, 211, 252, .16); }
+.lang-btn {
+  background: rgba(56, 189, 248, .1); border: 1px solid rgba(125, 211, 252, .35);
+  color: #cfe6ff;
+}
+.lang-btn:hover { background: rgba(56, 189, 248, .22); color: #fff; }
+
+/* Hero：深海渐变 + 星云光斑 */
+.hero {
+  background:
+    radial-gradient(1000px 520px at 82% -12%, rgba(14, 116, 144, .38) 0%, rgba(14, 116, 144, 0) 60%),
+    radial-gradient(820px 480px at 8% 4%, rgba(30, 64, 175, .42) 0%, rgba(30, 64, 175, 0) 62%),
+    radial-gradient(640px 420px at 55% 110%, rgba(8, 145, 178, .25) 0%, rgba(8, 145, 178, 0) 65%),
+    linear-gradient(180deg, #030b1c 0%, #061630 34%, #082347 68%, #0a2c55 100%);
+}
+.fx-blob.b1 { background: radial-gradient(circle at 40% 40%, rgba(14, 165, 233, .5) 0%, rgba(14, 165, 233, 0) 68%); opacity: .6; }
+.fx-blob.b2 { background: radial-gradient(circle at 60% 50%, rgba(34, 211, 238, .42) 0%, rgba(34, 211, 238, 0) 68%); opacity: .55; }
+.fx-blob.b3 { background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, .4) 0%, rgba(99, 102, 241, 0) 70%); opacity: .4; }
+
+/* Hero 文字 */
+.eyebrow { color: #7e9cc4; }
+.hero h1 {
+  font-size: 62px;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.12;
+  margin-bottom: 10px;
+  background: linear-gradient(100deg, #ffffff 0%, #cFF3ff 22%, #7dd3fc 45%, #22d3ee 62%, #38bdf8 80%, #a5f3fc 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 26px rgba(34, 211, 238, .38)) drop-shadow(0 4px 18px rgba(14, 165, 233, .28));
+  animation: fxTitleFlow 7s ease-in-out infinite;
+}
+@keyframes fxTitleFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+/* 书名号弱化为描边感 */
+.hero h1 .h1-bracket {
+  font-weight: 300;
+  background: linear-gradient(180deg, #7dd3fc, rgba(125, 211, 252, .25));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-text-stroke: 1px rgba(125, 211, 252, .45);
+}
+.hero-sub { color: #67e8f9; font-size: 20px; letter-spacing: .4px; }
+.hero-desc { color: #b6c8e4; }
+.hero-desc strong { color: #f0f9ff; }
+
+/* 按钮 / 徽章 / 统计 */
+.btn.primary {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, .38), 0 0 0 1px rgba(125, 211, 252, .25) inset;
+}
+.btn.primary:hover { background: linear-gradient(135deg, #22d3ee, #1d4ed8); box-shadow: 0 12px 32px rgba(34, 211, 238, .45); }
+.btn.ghost {
+  background: rgba(10, 26, 52, .55); border-color: rgba(125, 211, 252, .28); color: #cfe6ff;
+  backdrop-filter: blur(6px);
+}
+.btn.ghost:hover { border-color: #7dd3fc; color: #7dd3fc; }
+.hb {
+  background: rgba(9, 24, 50, .6); border-color: rgba(125, 211, 252, .22);
+  color: #b6c8e4; backdrop-filter: blur(6px);
+}
+.hb:hover { border-color: rgba(125, 211, 252, .55); color: #7dd3fc; }
+.hero-stats .hs-item { border-right-color: rgba(125, 211, 252, .18); }
+.hero-stats .hs-item .hs-num { color: #f0f9ff !important; text-shadow: 0 0 22px rgba(56, 189, 248, .45); }
+.hero-stats .hs-item .hs-lab { color: #7e96b8 !important; }
+
+/* Hero 图卡：深色玻璃 + 青色辉光 */
+.hero-viz {
+  background: rgba(5, 15, 34, .62);
+  border: 1px solid rgba(56, 189, 248, .3);
+  box-shadow: 0 34px 90px -30px rgba(1, 6, 16, .85), 0 0 46px rgba(14, 165, 233, .16);
+}
+.hero-viz::after {
+  background: linear-gradient(105deg, transparent 34%, rgba(125, 211, 252, .14) 50%, transparent 66%);
+}
+.viz-cap { color: #7dd3fc; }
+.viz-cap::before { background: #22d3ee; box-shadow: 0 0 0 3px rgba(34, 211, 238, .22); }
+
+/* 轨道图节点辉光 */
+.fxh-node:hover { filter: drop-shadow(0 0 14px rgba(34, 211, 238, .5)); }
+
+/* 滚动提示 */
+.fx-cue { color: #5f7ea6; }
+.fx-cue span { border-color: rgba(125, 211, 252, .5); }
+
+/* 概念滚动条：深海玻璃 + 底部过渡回浅色 */
+.fx-ticker {
+  background: linear-gradient(180deg, #061630, #0a2143);
+  border-top: 1px solid rgba(56, 189, 248, .14);
+  border-bottom: none;
+  -webkit-mask-image: none; mask-image: none;
+}
+.fxt { color: #8fa9cc; border-right-color: rgba(125, 211, 252, .14); }
+.fxt b { color: #cfe6ff; }
+.fxt em { color: #64789a; }
+.fxt:nth-child(4n+1) b { color: #7dd3fc; }
+.fxt:nth-child(4n+2) b { color: #2dd4bf; }
+.fxt:nth-child(4n+3) b { color: #a78bfa; }
+.fxt:nth-child(4n+4) b { color: #f472b6; }
+.fx-fade {
+  height: 76px; margin-top: -1px;
+  background: linear-gradient(180deg, #0a2143 0%, rgba(10, 33, 67, 0) 92%),
+              linear-gradient(180deg, #0a2143 0%, var(--bg) 100%);
+  background-blend-mode: normal;
+}
+
+/* 标题响应式（深海主题块之后生效） */
+@media (max-width: 1080px) {
+  .hero h1 { font-size: 52px; }
+  .hero-sub { font-size: 18px; }
+}
+@media (max-width: 720px) {
+  .hero h1 { font-size: 40px; letter-spacing: -1px; }
+  .hero-sub { font-size: 16.5px; }
 }

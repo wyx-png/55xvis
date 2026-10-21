@@ -2,7 +2,7 @@
 // 对应讲义 3.1 数据加载 / 3.5.1 D3 数据选择器
 // 重点：异步加载、字段映射、类型转换
 
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+const d3 = window.d3; // 已本地化
 
 // 1. 字段映射：中文 → 英文（避免 JS 中带中文变量）
 const COLUMN_MAP = {
