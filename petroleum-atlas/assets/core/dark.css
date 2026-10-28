@@ -1,0 +1,123 @@
+/* =========================================================
+   暗色主题 Dark Theme
+   ---------------------------------------------------------
+   只做变量覆盖与少量硬编码色的修正；
+   组件规则一概不改，加载在 motion.css 之后。
+   切换：html.dark ←→ 默认浅色，localStorage('atlas.theme') 记忆。
+   ========================================================= */
+
+html.dark{
+  /* ---------- 画布 ---------- */
+  --paper:      #0f171a;
+  --paper-2:    #131d21;
+  --paper-3:    #172329;
+  --card:       #16232a;
+  --card-soft:  #192830;
+
+  /* ---------- 描边 ---------- */
+  --line:       #243239;
+  --line-2:     #2e3f48;
+  --line-3:     #3c505b;
+
+  /* ---------- 墨色 ---------- */
+  --ink:        #e7edf0;
+  --ink-2:      #c9d3d9;
+  --ink-3:      #a2b2bc;
+  --ink-4:      #8398a4;
+  --ink-inv:    #0f171a;
+
+  /* ---------- 主强调（整体提亮以保对比） ---------- */
+  --jade:       #4fa78f;
+  --jade-d:     #74c3a9;
+  --jade-l:     rgba(79,167,143,.14);
+  --clay:       #d08a52;
+  --clay-d:     #e2a674;
+  --clay-l:     rgba(208,138,82,.14);
+
+  /* ---------- 五类方法色 ---------- */
+  --c-cv:       #52ab92;
+  --c-ts:       #d69055;
+  --c-nlp:      #ad90c4;
+  --c-opt:      #72a0d8;
+  --c-kg:       #adb264;
+
+  --bg-cv:      rgba(82,171,146,.13);
+  --bg-ts:      rgba(214,144,85,.13);
+  --bg-nlp:     rgba(173,144,196,.13);
+  --bg-opt:     rgba(114,160,216,.13);
+  --bg-kg:      rgba(173,178,100,.13);
+
+  /* ---------- 语义色 ---------- */
+  --ok:         #5fab82;
+  --ok-bg:      rgba(95,171,130,.13);
+  --warn:       #d2a84f;
+  --warn-bg:    rgba(210,168,79,.13);
+  --bad:        #d87c72;
+  --bad-bg:     rgba(216,124,114,.13);
+
+  /* ---------- 阴影（暗色下加重深度、降低亮度） ---------- */
+  --sh-1: 0 1px 2px rgba(0,0,0,.4);
+  --sh-2: 0 1px 2px rgba(0,0,0,.45), 0 6px 18px -10px rgba(0,0,0,.5);
+  --sh-3: 0 2px 4px rgba(0,0,0,.45), 0 14px 34px -16px rgba(0,0,0,.6);
+}
+
+/* ---------- 页面底色晕与网格 ---------- */
+html.dark body::before{
+  background:
+    radial-gradient(1000px 620px at 6% -12%,  rgba(37,82,68,.5) 0%, rgba(37,82,68,0) 62%),
+    radial-gradient(880px 560px at 96% -6%,   rgba(86,62,36,.42) 0%, rgba(86,62,36,0) 60%),
+    radial-gradient(900px 760px at 74% 102%,  rgba(36,60,92,.5) 0%, rgba(36,60,92,0) 62%),
+    radial-gradient(760px 620px at 18% 96%,   rgba(88,44,52,.36) 0%, rgba(88,44,52,0) 60%),
+    var(--paper);
+}
+html.dark body::after{
+  background-image:
+    linear-gradient(to right, rgba(150,185,200,.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(150,185,200,.045) 1px, transparent 1px);
+}
+html.dark ::selection{background:rgba(79,167,143,.28);color:var(--ink)}
+html.dark ::-webkit-scrollbar-track{background:var(--paper-2)}
+html.dark ::-webkit-scrollbar-thumb{background:var(--line-2);border-color:var(--paper-2)}
+
+/* ---------- 浅色硬编码的修正 ---------- */
+html.dark .hdr{background:rgba(15,23,26,.80)}
+html.dark .hdr .solid{background:rgba(15,23,26,.93)}
+
+/* 页脚：去掉半透明米白底（暗色下会形成灰雾压暗文字），整体提亮一档 */
+html.dark .ftr{background:rgba(13,20,24,.5)}
+html.dark .ftr-col h5{color:var(--ink-3)}
+html.dark .ftr-col p,html.dark .ftr-col a{color:var(--ink-2)}
+html.dark .ftr-bot{color:var(--ink-3)}
+html.dark .m-tk{background:rgba(19,29,33,.6)}
+html.dark .m-tk::before{background:linear-gradient(90deg,var(--paper) 12%,rgba(15,23,26,0))}
+html.dark .m-tk::after{background:linear-gradient(270deg,var(--paper) 12%,rgba(15,23,26,0))}
+html.dark .scene-row:hover,
+html.dark .mrow:hover,
+html.dark .imp-row:hover{background:rgba(255,255,255,.045)}
+html.dark .readout{background:rgba(22,35,42,.92)}
+html.dark .cd-iframe{background:#fbfaf6}          /* 示范沙箱保持浅色画布 */
+html.dark table.matrix td a:hover{color:var(--ink-inv)}
+
+/* 矩阵热图：暗色下用卡片底色混合 */
+html.dark .matrix td.heat a{background:color-mix(in srgb, var(--mc) 24%, var(--card));color:var(--mc)}
+html.dark .matrix td.heat[data-n="2"] a{background:color-mix(in srgb, var(--mc) 46%, var(--card));color:#fff}
+html.dark .matrix td.heat[data-n="3"] a{background:color-mix(in srgb, var(--mc) 70%, var(--card));color:#fff}
+html.dark .matrix td.heat[data-n="4"] a{background:var(--mc);color:#fff}
+
+/* ---------- 主题切换按钮 ---------- */
+.theme-toggle{
+  width:31px;height:31px;border-radius:9px;border:1px solid var(--line-2);
+  background:var(--card);color:var(--ink-3);font-size:13.5px;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+  margin-right:8px;flex-shrink:0;
+  transition:color .2s,border-color .2s,transform .35s var(--m-ease, ease-out),background .2s;
+}
+.theme-toggle:hover{color:var(--jade-d);border-color:rgba(79,167,143,.45);transform:rotate(-16deg)}
+.theme-toggle:active{transform:rotate(-16deg) scale(.94)}
+
+/* ---------- 首屏统计带（深色微调） ---------- */
+html.dark .hero-stats{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.11)}
+html.dark .hero-stats .hs + .hs::before{background:rgba(255,255,255,.1)}
+html.dark .hero-stats .hs:hover{background:rgba(96,199,170,.1)}
+html.dark .dh-wm{-webkit-text-stroke-color:rgba(255,255,255,.13);opacity:.5}
+html.dark .tabs{background:rgba(15,23,26,.92)}

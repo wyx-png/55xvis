@@ -1,0 +1,605 @@
+/* =========================================================
+   动效层 Motion Layer  ——  纯视觉增强
+   ---------------------------------------------------------
+   本文件只做「怎么出现 / 怎么响应鼠标」，不改动任何
+   布局尺寸、颜色令牌与交互逻辑。
+   加载顺序：tokens → layout → ui → motion（因此可覆盖）
+   与案例上传相关的 DOM（.imp-* / #imp-ok 等）一概不碰。
+   ========================================================= */
+
+:root{
+  --m-ease:      cubic-bezier(.22,.61,.36,1);
+  --m-ease-out:  cubic-bezier(.16,.84,.44,1);
+  --m-dur:       .62s;
+  --sp:          0;               /* 滚动进度 0~1，由 JS 写入 */
+}
+
+/* =========================================================
+   1. 顶部路由进度条
+   ========================================================= */
+.m-prog{
+  position:fixed;left:0;top:0;width:100%;height:2px;z-index:300;
+  pointer-events:none;opacity:0;transition:opacity .3s var(--m-ease);
+}
+.m-prog.on{opacity:1}
+.m-prog i{
+  display:block;height:100%;width:0;border-radius:0 2px 2px 0;
+  background:linear-gradient(90deg,var(--jade) 0%, #3f9a83 48%, var(--clay) 100%);
+  box-shadow:0 0 10px rgba(47,125,107,.5);
+  transition:width .1s linear;
+}
+.m-prog.start i{width:42%;transition:width .42s var(--m-ease)}
+.m-prog.finish i{width:100%;transition:width .2s var(--m-ease)}
+
+/* =========================================================
+   2. 视图切换：整页淡入上移
+   ========================================================= */
+#view > *{animation:mVIn .52s var(--m-ease-out) backwards}
+#view > *:nth-child(2){animation-delay:.05s}
+#view > *:nth-child(3){animation-delay:.09s}
+@keyframes mVIn{
+  from{opacity:0;transform:translate3d(0,12px,0)}
+  to  {opacity:1;transform:none}
+}
+
+/* =========================================================
+   3. 头部：吸顶态 + 底部滚动进度线
+   ========================================================= */
+.hdr{position:relative;transition:box-shadow .34s var(--m-ease),background .34s var(--m-ease)}
+.hdr-in{transition:height .34s var(--m-ease)}
+.hdr.solid{background:rgba(251,250,246,.95);box-shadow:0 10px 28px -20px rgba(36,43,46,.85)}
+.hdr.solid .hdr-in{height:48px}
+/* 滚动进度：贴在 header 底边的一条渐变细线，宽度 = 阅读进度 */
+.hdr::after{
+  content:'';position:absolute;left:0;bottom:-1px;height:1.5px;width:100%;
+  background:linear-gradient(90deg,var(--jade),#3f9a83 55%,var(--clay));
+  transform:scaleX(var(--sp,0));transform-origin:0 50%;
+  transition:transform .12s linear;z-index:2;
+}
+
+/* =========================================================
+   4. 导航：当前项下方的滑动指示条
+   ========================================================= */
+.nav{position:relative}
+.nav-ind{
+  position:absolute;left:0;width:0;bottom:0;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,var(--jade),#3f9a83);
+  opacity:0;pointer-events:none;
+  transition:left .4s var(--m-ease),width .4s var(--m-ease),opacity .28s;
+}
+.nav-ind.on{opacity:1}
+/* 原有的静态下划线让位给滑动条，避免两条线重叠 */
+.nav a.on::after{opacity:0}
+
+/* 导航项 hover 微动 */
+.nav a{
+  transition:color .18s,background .18s,transform .18s var(--m-ease);
+}
+.nav a:hover{transform:translateY(-1px)}
+
+/* 添加案例按钮：呼吸光晕，提示这里是入口（交互逻辑完全不变） */
+.nav-add{position:relative;overflow:hidden}
+.nav-add::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(105deg,rgba(255,255,255,0) 34%,rgba(255,255,255,.42) 50%,rgba(255,255,255,0) 66%);
+  transform:translateX(-120%);
+  animation:mShine 5.2s var(--m-ease) 2.2s infinite;
+}
+@keyframes mShine{
+  0%,62%{transform:translateX(-120%)}
+  88%,100%{transform:translateX(120%)}
+}
+
+/* =========================================================
+   5. 滚动揭示（IntersectionObserver 打 .in）
+   ========================================================= */
+.m-rv{
+  opacity:0;transform:translate3d(0,18px,0);
+  transition:opacity var(--m-dur) var(--m-ease-out),transform var(--m-dur) var(--m-ease-out);
+  transition-delay:calc(var(--m-i,0) * 74ms);
+}
+.m-rv.in{opacity:1;transform:none}
+
+/* =========================================================
+   6. 卡片聚光灯：鼠标位置生成径向高光
+   ========================================================= */
+.m-spot::after{
+  content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:0;
+  background:radial-gradient(230px circle at var(--mx,50%) var(--my,50%),
+             rgba(47,125,107,.13), rgba(47,125,107,0) 68%);
+  transition:opacity .3s var(--m-ease);
+}
+.m-spot:hover::after{opacity:1}
+
+/* =========================================================
+   7. HERO 区
+   ========================================================= */
+.hero{position:relative;overflow:hidden}
+.hero > .wrap{position:relative;z-index:1}
+.m-hero-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+
+/* 两团低饱和色晕，让纸面"有光"，不做暗底 */
+.hero::before{
+  content:'';position:absolute;inset:-14% -6% auto -6%;height:100%;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(46% 52% at 14% 26%, rgba(47,125,107,.11) 0%, rgba(47,125,107,0) 68%),
+    radial-gradient(40% 46% at 88% 14%, rgba(178,106,57,.10) 0%, rgba(178,106,57,0) 66%);
+}
+
+/* 标题：逐行遮罩上滑 */
+.hero h1 .m-ln{display:block;overflow:hidden;padding-bottom:.06em}
+.hero h1 .m-ln > i{
+  display:block;font-style:normal;
+  transform:translate3d(0,110%,0);
+  animation:mLnUp .92s var(--m-ease-out) forwards;
+}
+.hero h1 .m-ln:nth-of-type(2) > i{animation-delay:.1s}
+@keyframes mLnUp{to{transform:none}}
+
+/* 徽章与正文：跟在标题之后依次进场 */
+.hero-top,.hero-lead,.hero-note,.hero-acts,.spec{
+  animation:mFadeUp .7s var(--m-ease-out) backwards;
+}
+.hero-top{animation-delay:.02s}
+.hero-lead{animation-delay:.34s}
+.hero-note{animation-delay:.44s}
+.hero-acts{animation-delay:.54s}
+.spec{animation-delay:.24s}
+@keyframes mFadeUp{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:none}}
+
+/* 徽章上的脉冲点 */
+.hero-badge{position:relative;padding-left:18px}
+.hero-badge::before{
+  content:'';position:absolute;left:9px;top:50%;width:5px;height:5px;margin-top:-2.5px;
+  border-radius:50%;background:var(--jade);
+}
+.hero-badge::after{
+  content:'';position:absolute;left:9px;top:50%;width:5px;height:5px;margin-top:-2.5px;
+  border-radius:50%;background:var(--jade);opacity:.55;
+  animation:mPulse 2.4s var(--m-ease) infinite;
+}
+.hero-badge.alt::before{background:var(--clay)}
+.hero-badge.alt::after{background:var(--clay);animation-delay:.4s}
+@keyframes mPulse{
+  0%{transform:scale(1);opacity:.5}
+  70%,100%{transform:scale(3.2);opacity:0}
+}
+
+/* =========================================================
+   8. 场景名滚动带
+   ========================================================= */
+.m-tk{
+  position:relative;overflow:hidden;height:36px;display:flex;align-items:center;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:rgba(245,242,234,.6);
+}
+.m-tk::before,.m-tk::after{
+  content:'';position:absolute;top:0;bottom:0;width:70px;z-index:2;pointer-events:none;
+}
+.m-tk::before{left:0;background:linear-gradient(90deg,var(--paper) 12%,rgba(251,250,246,0))}
+.m-tk::after{right:0;background:linear-gradient(270deg,var(--paper) 12%,rgba(251,250,246,0))}
+.m-tk-row{
+  display:flex;gap:0;width:max-content;white-space:nowrap;
+  animation:mTk 78s linear infinite;
+}
+.m-tk:hover .m-tk-row{animation-play-state:paused}
+@keyframes mTk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.m-tk-i{
+  display:inline-flex;align-items:center;gap:7px;padding:0 15px;
+  font-size:11.5px;color:var(--ink-3);border-right:1px solid var(--line);
+}
+.m-tk-i i{width:5px;height:5px;border-radius:50%;background:var(--mc,var(--line-3));flex-shrink:0}
+.m-tk-i b{font-family:var(--mono);font-size:9px;color:var(--ink-4);letter-spacing:.09em}
+
+/* =========================================================
+   9. 章节标题：进场时下划线展开
+   ========================================================= */
+.sec-head h2{position:relative;display:inline-block}
+.sec-head h2::after{
+  content:'';position:absolute;left:0;bottom:-4px;height:2px;width:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--jade),rgba(178,106,57,.45) 62%,rgba(178,106,57,0));
+  transform:scaleX(0);transform-origin:0 50%;
+  transition:transform .78s var(--m-ease-out) .16s;
+}
+.m-rv.in h2::after, .sec-head.m-on h2::after{transform:scaleX(1)}
+
+/* =========================================================
+   10. 卡片 / 环节卡 / 场景行的 hover 质感
+   ========================================================= */
+.mcard,.field,.card,.step{
+  transition:background .2s var(--m-ease),border-color .2s var(--m-ease),
+             box-shadow .24s var(--m-ease),transform .24s var(--m-ease);
+}
+.mcard:hover{transform:translateY(-3px);box-shadow:var(--sh-2);z-index:2}
+.field:hover{background:var(--card-soft)}
+.card:hover{box-shadow:var(--sh-2)}
+
+/* 环节卡上的数字：hover 时轻微放大，暗示可点 */
+.step-n{transition:color .2s var(--m-ease),transform .24s var(--m-ease)}
+.step:hover .step-n{color:var(--jade-d);transform:translateY(-1px)}
+
+/* 方法卡顶部的色条：hover 加粗 */
+.mcard::before{transition:height .22s var(--m-ease)}
+.mcard:hover::before{height:4px}
+
+/* =========================================================
+   11. 回到顶部：悬浮按钮 + 环形滚动进度
+   ========================================================= */
+.m-top{
+  position:fixed;right:22px;bottom:22px;width:44px;height:44px;border-radius:50%;
+  background:var(--card);border:1px solid var(--line-2);color:var(--ink-3);
+  box-shadow:var(--sh-2);z-index:70;display:grid;place-items:center;
+  opacity:0;transform:translate3d(0,12px,0) scale(.9);pointer-events:none;
+  transition:opacity .34s var(--m-ease),transform .34s var(--m-ease),
+             border-color .2s,color .2s,box-shadow .2s;
+}
+.m-top.on{opacity:1;transform:none;pointer-events:auto}
+.m-top:hover{border-color:var(--jade);color:var(--jade-d);box-shadow:var(--sh-3)}
+.m-top svg{width:15px;height:15px;display:block;position:relative;z-index:1}
+.m-top .ring{position:absolute;inset:-1px;width:auto;height:auto;transform:rotate(-90deg)}
+.m-top .ring circle{fill:none;stroke-width:1.6}
+.m-top .ring .b{stroke:var(--line-2)}
+.m-top .ring .f{
+  stroke:var(--jade);stroke-linecap:round;
+  stroke-dasharray:132;stroke-dashoffset:calc(132 - 132 * var(--sp,0));
+  transition:stroke-dashoffset .12s linear;
+}
+
+/* =========================================================
+   12. 通用：按钮箭头的推进
+   ========================================================= */
+.btn .ar{transition:transform .22s var(--m-ease),opacity .22s}
+.btn:hover .ar{transform:translateX(3px);opacity:.9}
+
+/* 表格行 hover 抬色 */
+table.matrix td a{
+  transition:background .18s var(--m-ease),color .18s var(--m-ease),transform .18s var(--m-ease);
+}
+table.matrix td a:hover{transform:scale(1.14)}
+
+/* =========================================================
+   13. 无障碍：尊重系统「减少动态效果」
+   ========================================================= */
+/* =========================================================
+   8. 速览卡片：从静态面板改成会呼吸、能点的仪表盘
+   ========================================================= */
+.spec{transition:box-shadow .45s var(--m-ease),border-color .45s var(--m-ease)}
+.spec:hover{
+  border-color:rgba(47,125,107,.32);
+  box-shadow:0 20px 46px -24px rgba(28,52,48,.32),var(--sh-2);
+}
+/* 顶部三像素色条：缓慢流光 */
+.spec::before{background-size:200% 100%;animation:mSpecTop 7s linear infinite}
+@keyframes mSpecTop{from{background-position:0% 0}to{background-position:200% 0}}
+
+/* 标题左侧呼吸点 */
+.spec-pulse{
+  display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--jade);
+  margin-right:6px;vertical-align:1px;animation:mSpecPulse 2.8s ease-out infinite;
+}
+@keyframes mSpecPulse{
+  0%{box-shadow:0 0 0 0 rgba(47,125,107,.46)}
+  65%{box-shadow:0 0 0 7px rgba(47,125,107,0)}
+  100%{box-shadow:0 0 0 0 rgba(47,125,107,0)}
+}
+
+/* 每一行都是入口 */
+.spec-row{position:relative;color:inherit;text-decoration:none}
+.spec-row::before{
+  content:'';position:absolute;left:-9px;top:5px;bottom:5px;width:2px;border-radius:2px;
+  background:var(--jade);opacity:0;transform:scaleY(.35);
+  transition:opacity .2s var(--m-ease),transform .24s var(--m-ease);
+}
+.spec-row:hover::before{opacity:1;transform:scaleY(1)}
+.spec-row .k{transition:color .2s var(--m-ease),transform .22s var(--m-ease)}
+.spec-row:hover .k{color:var(--ink-2);transform:translateX(3px)}
+.spec-row .v{transition:color .2s var(--m-ease)}
+.spec-row:hover .v{color:var(--jade-d)}
+.spec-row .go{
+  position:absolute;right:-2px;top:50%;font-style:normal;font-size:10px;line-height:1;
+  color:var(--jade);opacity:0;transform:translate(-5px,-50%);pointer-events:none;
+  transition:opacity .22s var(--m-ease),transform .22s var(--m-ease);
+}
+.spec-row:hover .go{opacity:1;transform:translate(0,-50%)}
+
+/* 难度三档各自可点 */
+.spec-row .diffv a{
+  color:var(--ink);text-decoration:none;padding:0 2px;border-radius:3px;
+  transition:color .16s var(--m-ease),background .16s var(--m-ease);
+}
+.spec-row .diffv a:hover{background:var(--jade-l);color:var(--jade-d)}
+.spec-row .diffv a[data-d="中"]:hover{background:rgba(178,106,57,.13);color:var(--clay)}
+.spec-row .diffv a[data-d="高"]:hover{background:rgba(176,90,81,.12);color:var(--bad)}
+
+/* 占比条：进场生长 + 悬停联动聚焦 */
+.spec-bar.is-link{height:5px;border-radius:3px}
+.spec-bar a{
+  display:block;height:100%;transform-origin:left center;
+  animation:mBarGrow .9s cubic-bezier(.22,.61,.36,1) both;
+  transition:opacity .2s var(--m-ease),filter .2s var(--m-ease);
+}
+.spec-bar a:nth-child(2){animation-delay:.09s}
+.spec-bar a:nth-child(3){animation-delay:.18s}
+@keyframes mBarGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.spec-bar.is-link:hover a{opacity:.36}
+.spec-bar.is-link a:hover{opacity:1;filter:saturate(1.28) brightness(1.06)}
+
+.spec-f a{color:var(--ink-4);text-decoration:none;transition:color .18s var(--m-ease)}
+.spec-f a:hover{color:var(--jade-d)}
+
+/* 8b. 三维倾斜：跟随鼠标轻微转向，离开回正 */
+.spec, .mcard{transition:transform .22s ease-out,box-shadow .45s var(--m-ease),border-color .45s var(--m-ease)}
+
+/* 8c. 行悬停：一道高光从左扫到右 */
+.spec-row::after{
+  content:'';position:absolute;inset:-1px -8px;border-radius:6px;pointer-events:none;opacity:0;
+  background:linear-gradient(100deg,transparent 22%,rgba(47,125,107,.10) 50%,transparent 78%);
+  background-size:230% 100%;background-position:-130% 0;
+  transition:opacity .3s var(--m-ease);
+}
+.spec-row:hover::after{opacity:1;animation:mRowSweep .9s var(--m-ease)}
+@keyframes mRowSweep{from{background-position:-130% 0}to{background-position:230% 0}}
+.spec-row .v{display:inline-block;transition:color .2s var(--m-ease),transform .28s var(--m-ease)}
+.spec-row:hover .v{transform:translateY(-1px)}
+
+/* 8d. 占比条：悬停时斜纹流动 */
+.spec-bar a{position:relative}
+.spec-bar a::after{
+  content:'';position:absolute;inset:0;opacity:0;transition:opacity .25s var(--m-ease);
+  background:repeating-linear-gradient(115deg,rgba(255,255,255,.30) 0 4px,transparent 4px 9px);
+  background-size:18px 100%;
+}
+.spec-bar a:hover::after{opacity:1;animation:mStripe .9s linear infinite}
+@keyframes mStripe{from{background-position:0 0}to{background-position:18px 0}}
+
+/* 8e. 方法构成条同款 */
+.comp-bar i{position:relative;overflow:hidden}
+.comp-legend a{transition:transform .2s var(--m-ease)}
+.comp-legend a:hover{transform:translateX(2px)}
+
+/* =========================================================
+   9. 方法×环节矩阵：密度热图 + 悬停浮层
+   ========================================================= */
+.matrix td{position:relative}
+.matrix td[data-m="cv"]{--mc:var(--c-cv)}
+.matrix td[data-m="ts"]{--mc:var(--c-ts)}
+.matrix td[data-m="nlp"]{--mc:var(--c-nlp)}
+.matrix td[data-m="opt"]{--mc:var(--c-opt)}
+.matrix td[data-m="kg"]{--mc:var(--c-kg)}
+.matrix td.heat a{
+  background:color-mix(in srgb, var(--mc) 16%, white);color:var(--mc);
+  border-radius:5px;font-weight:600;
+  transition:transform .18s var(--m-ease),box-shadow .18s var(--m-ease),background .18s var(--m-ease);
+}
+.matrix td.heat[data-n="2"] a{background:color-mix(in srgb, var(--mc) 38%, white);color:#fff}
+.matrix td.heat[data-n="3"] a{background:color-mix(in srgb, var(--mc) 62%, white);color:#fff}
+.matrix td.heat[data-n="4"] a{background:var(--mc);color:#fff}
+.matrix td.heat a:hover{
+  transform:scale(1.14);z-index:5;
+  box-shadow:0 8px 18px -7px var(--mc);
+}
+@supports not (background: color-mix(in srgb, red 50%, white)){
+  .matrix td.heat a{background:var(--mc);opacity:.85;color:#fff}
+}
+/* 悬停浮层：列出该交点的具体场景 */
+.mx-pop{
+  position:absolute;left:50%;bottom:calc(100% + 7px);transform:translate(-50%,5px);
+  width:216px;background:var(--card);border:1px solid var(--line-2);border-radius:9px;
+  box-shadow:0 18px 40px -18px rgba(28,52,48,.4);padding:9px 11px 8px;z-index:60;
+  opacity:0;pointer-events:none;text-align:left;
+  transition:opacity .18s var(--m-ease),transform .18s var(--m-ease);
+}
+.matrix tr:first-child .mx-pop,
+.matrix thead + tbody tr:first-child .mx-pop{
+  bottom:auto;top:calc(100% + 7px);transform:translate(-50%,-5px);
+}
+.matrix td:hover .mx-pop{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+.mx-t{display:block;font-size:10.5px;color:var(--ink-2);margin-bottom:4px;font-weight:700;letter-spacing:.02em}
+.mx-i{display:block;font-size:11px;color:var(--ink);padding:3px 0;border-top:1px dashed var(--line);line-height:1.35}
+.mx-i:first-of-type{border-top:0}
+.mx-run{font-style:normal;font-size:9px;color:var(--jade-d);border:1px solid rgba(47,125,107,.3);border-radius:3px;padding:0 3px;margin-left:3px;vertical-align:1px}
+.mx-more{display:block;font-size:10px;color:var(--ink-4);padding:3px 0 0}
+.mx-go{display:block;margin-top:6px;font-size:10.5px;color:var(--jade-d);text-decoration:none;font-weight:700}
+.mx-go:hover{text-decoration:underline}
+
+/* =========================================================
+   10. 案例库：封面卡片
+   ========================================================= */
+.case-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:15px}
+.case-tile{
+  border:1px solid var(--line-2);border-radius:11px;background:var(--card);
+  box-shadow:var(--sh-1);overflow:hidden;position:relative;
+  transition:box-shadow .35s var(--m-ease),border-color .35s var(--m-ease),transform .22s ease-out;
+}
+.case-tile:hover{
+  border-color:rgba(47,125,107,.32);
+  box-shadow:0 20px 44px -22px rgba(28,52,48,.36),var(--sh-1);
+  transform:translateY(-3px);
+}
+.case-tile.has-err{border-color:rgba(176,90,81,.4)}
+.ct-cover{display:block;position:relative;aspect-ratio:32/15;background:var(--card-soft);overflow:hidden;border-bottom:1px solid var(--line)}
+.ct-cover img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform .6s var(--m-ease)}
+.case-tile:hover .ct-cover img{transform:scale(1.05)}
+.ct-cover::after{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s var(--m-ease);
+  background:linear-gradient(180deg,rgba(20,32,28,0) 52%,rgba(20,32,28,.38));
+}
+.case-tile:hover .ct-cover::after{opacity:1}
+.ct-hint{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.88);
+  background:rgba(20,32,28,.74);color:#fff;font-size:11px;font-weight:600;letter-spacing:.04em;
+  padding:6px 13px;border-radius:20px;opacity:0;transition:.25s var(--m-ease);
+  backdrop-filter:blur(3px);white-space:nowrap;
+}
+.case-tile:hover .ct-hint{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.ct-cover.no-img img{display:none}
+.ct-cover.no-img{background:linear-gradient(135deg,var(--jade-l,#e7efe9),var(--card-soft,#f5f2ea))}
+.ct-nodemo{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-size:10.5px;color:var(--ink-4);border:1px dashed var(--line-2);border-radius:16px;padding:4px 12px;
+}
+.ct-body{padding:11px 13px 12px}
+.ct-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ct-id{font-size:9.5px;color:var(--ink-4);letter-spacing:.06em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ct-title{
+  display:block;margin-top:5px;font-size:13.5px;font-weight:700;color:var(--ink);
+  text-decoration:none;line-height:1.4;transition:color .18s var(--m-ease);
+}
+.ct-title:hover{color:var(--jade-d)}
+.ct-title .badge-local{margin-left:6px}
+.ct-sc{margin-top:3px;font-size:11px;color:var(--ink-4)}
+.ct-sc a{color:var(--ink-4);text-decoration:none;transition:color .16s}
+.ct-sc a:hover{color:var(--jade-d)}
+.ct-sc i{font-style:normal;margin:0 4px;color:var(--line-2)}
+.ct-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:8px}
+.ct-ver{margin-left:auto;font-size:9.5px;color:var(--ink-4)}
+.ct-foot{
+  display:flex;align-items:center;gap:9px;margin-top:10px;padding-top:9px;border-top:1px solid var(--line);
+}
+.ct-tabs{letter-spacing:.14em;font-size:10px}
+.ct-state{font-size:10.5px;color:var(--ink-4);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ct-acts{display:flex;align-items:center;gap:8px;margin-left:auto}
+.ct-acts .link-remove{font-size:10.5px;color:var(--ink-4);text-decoration:none;transition:color .16s}
+.ct-acts .link-remove:hover{color:var(--bad)}
+
+/* =========================================================
+   11. 场景页顶部：案例覆盖徽章
+   ========================================================= */
+.badge-cover{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--jade-l,#e7efe9);border:1px solid rgba(47,125,107,.3);color:var(--jade-d);
+  border-radius:20px;padding:3px 11px;font-size:11px;font-weight:600;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset;
+}
+.badge-cover b{font-family:var(--mono);font-size:13px;font-weight:700}
+.badge-cover a{color:var(--jade-d);text-decoration:none;font-weight:700}
+.badge-cover a:hover{text-decoration:underline}
+.pulse-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--jade);flex-shrink:0;
+  animation:mSpecPulse 2.8s ease-out infinite;
+}
+
+/* =========================================================
+   12. 窄屏微调
+   ========================================================= */
+@media (max-width:760px){
+  .m-hero-fx{opacity:.82}
+  .m-tk{height:32px}
+  .theme-toggle{width:28px;height:28px;font-size:12.5px;margin-right:6px}
+  .case-tiles{grid-template-columns:1fr}
+  /* 速览卡跟随屏宽；grid item 的 min-width:auto 会被内容撑破，显式归零 */
+  .spec{max-width:100%;width:100%;min-width:0;overflow:hidden}
+  .hero-grid{grid-template-columns:minmax(0,1fr)}
+  .spec-row{gap:8px}
+  .spec-row .k{min-width:0}
+  .spec-row .v{max-width:58%;white-space:normal;text-align:right;flex-shrink:1}
+  /* 导航：允许换行，页签行横向滑动 */
+  .hdr{height:auto}
+  .hdr-in{flex-wrap:wrap;height:auto;min-height:0;padding-top:8px;padding-bottom:8px}
+  .nav{width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .nav::-webkit-scrollbar{display:none}
+  .mx-pop{display:none}                     /* 触屏没有 hover，浮层改为直接点格子跳转 */
+  .spec::before,.spec-pulse,.pulse-dot{animation:none}
+  .m-hero-grid{animation:none;opacity:.8}   /* 窄屏网格静态化，省电省性能 */
+  .spec::after,.mcard::after{display:none}  /* 触屏无 hover，光效不出现 */
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .m-rv{opacity:1;transform:none}
+  .hero h1 .m-ln > i{transform:none}
+}
+
+/* =========================================================
+   14. 科技感增强层
+   14.1 HERO 网格座标纸：缓慢漂移 + 边缘径向淡出（JS 注入）
+   ========================================================= */
+.m-hero-grid{
+  position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;
+  /* 极淡的座标纸：96px 细格 + 每 5 格一根主刻度 480px，若隐若现，粒子当主角 */
+  background-image:
+    linear-gradient(var(--m-gm,rgba(88,110,128,.055)) 1px,transparent 1px),
+    linear-gradient(90deg,var(--m-gm,rgba(88,110,128,.055)) 1px,transparent 1px),
+    linear-gradient(var(--m-gl,rgba(88,110,128,.028)) 1px,transparent 1px),
+    linear-gradient(90deg,var(--m-gl,rgba(88,110,128,.028)) 1px,transparent 1px);
+  background-size:480px 480px,480px 480px,96px 96px,96px 96px;
+  -webkit-mask-image:radial-gradient(ellipse 108% 104% at 50% 32%,#000 30%,rgba(0,0,0,.28) 58%,transparent 80%);
+          mask-image:radial-gradient(ellipse 108% 104% at 50% 32%,#000 30%,rgba(0,0,0,.28) 58%,transparent 80%);
+  /* 两条动画叠加：缓慢对角漂移（≈4.8 px/s）+ 极缓呼吸，幅度刻意很小 */
+  animation:mGrid 20s linear infinite, mGridBreathe 17s ease-in-out infinite;
+  transform-origin:50% 30%;
+  will-change:transform,opacity,background-position;
+}
+/* 网格呼吸：亮度微起伏 + 极轻微缩放，让静态纹理"活"起来但不抢戏 */
+@keyframes mGridBreathe{
+  0%,100%{opacity:.85;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.012)}
+}
+@keyframes mGrid{from{background-position:0 0,0 0,0 0,0 0}to{background-position:480px 480px,480px 480px,96px 192px,96px 192px}}
+html.dark .m-hero-grid{
+  --m-gl:rgba(96,199,170,.045);
+  --m-gm:rgba(96,199,170,.085);
+}
+
+/* -- 14.2 标题强调字流光：玉青→浅碧 往复扫动 -- */
+.hero h1 em{
+  font-style:inherit;
+  background:linear-gradient(112deg,var(--jade-d,#2f7d6b) 18%,#7fd0b6 40%,var(--jade-d,#2f7d6b) 62%);
+  background-size:240% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  animation:mSheen 6s ease-in-out infinite;
+}
+html.dark .hero h1 em{
+  background-image:linear-gradient(112deg,#4fa78f 18%,#a8ecd2 42%,#4fa78f 66%);
+}
+@keyframes mSheen{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+
+/* -- 14.3 主按钮光泽扫过 -- */
+.hero-acts .btn{position:relative;overflow:hidden}
+.hero-acts .btn::after{
+  content:'';position:absolute;top:-45%;bottom:-45%;left:-32%;width:34%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.42),transparent);
+  transform:skewX(-18deg) translateX(-150%);
+  transition:transform .7s var(--m-ease,ease-out);pointer-events:none;
+}
+.hero-acts .btn:hover::after{transform:skewX(-18deg) translateX(460%)}
+.hero-acts .btn:not(.primary)::after{background:linear-gradient(105deg,transparent,rgba(47,125,107,.16),transparent)}
+
+/* -- 14.4 速览卡：hover 时边框出现旋转光弧（conic-gradient + mask 环） -- */
+@property --ma{syntax:'<angle>';inherits:false;initial-value:0deg}
+.spec::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;padding:1.4px;
+  background:conic-gradient(from var(--ma),
+    rgba(79,167,143,0) 0 62%,rgba(79,167,143,.9) 80%,rgba(122,168,228,.95) 90%,rgba(79,167,143,0) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+  opacity:0;transition:opacity .35s;pointer-events:none;
+}
+.spec:hover::after{opacity:1;animation:mOrbit 3.4s linear infinite}
+@keyframes mOrbit{to{--ma:360deg}}
+
+/* -- 14.5 方法卡：hover 时左侧竖向光束自上而下扫过 -- */
+.mcard::after{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,transparent 0%,var(--mc) 45%,var(--mc) 55%,transparent 100%);
+  transform:translateY(-101%);opacity:0;transition:opacity .25s;pointer-events:none;
+}
+.mcard:hover::after{opacity:1;animation:mBeam 1.7s linear infinite}
+@keyframes mBeam{from{transform:translateY(-101%)}to{transform:translateY(101%)}}
+
+/* -- 14.6 导航毛玻璃：吸顶后背景加模糊与饱和提升 -- */
+.hdr.solid{backdrop-filter:blur(12px) saturate(1.18);-webkit-backdrop-filter:blur(12px) saturate(1.18)}
+
+/* -- 14.7 无障碍降级：减少动态时全部转为静态 -- */
+@media (prefers-reduced-motion:reduce){
+  .m-hero-grid{animation:none;opacity:.9}   /* 网格保留静态纹理，不漂移不呼吸 */
+  .hero h1 em{animation:none;background-position:14% 0}
+  .hero-acts .btn::after{display:none}
+  .spec:hover::after,.mcard:hover::after{animation:none;opacity:0}
+}
