@@ -1407,7 +1407,11 @@
         return it.webkitGetAsEntry ? it.webkitGetAsEntry() : null;
       }).filter(Boolean);
 
-      if (!entries.length) { loadFiles(dt.files); return; }
+      /* 拖入的全是普通文件（含 zip）→ 直接走 dt.files 同步通道。
+         file:// 本地页面下 entry.file() 的回调可能永不触发（Chromium
+         安全限制），会让上传卡死在"正在读取"；只有真拖了文件夹才走递归。 */
+      var hasDir = entries.some(function (en) { return en.isDirectory; });
+      if (!hasDir) { loadFiles(dt.files); return; }
 
       tip('正在读取拖入的文件夹…', '');
       var collected = [];
