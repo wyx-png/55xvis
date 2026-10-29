@@ -1095,7 +1095,12 @@
         var flat = groups.reduce(function (a, b) { return a.concat(b); }, []);
         if (!flat.length && !rest.length) throw new Error('zip 里没有可用文件');
         tip('zip 解压完成，共 ' + (flat.length + rest.length) + ' 个文件…', '');
-        return Promise.all(flat.concat(rest).map(readOne));
+        /* zip 里的文件在解压时已经读好（结构与 readOne 的返回一致），
+           只有散装的 rest 才需要再走 FileReader，否则会对普通对象
+           调 readAsText 抛 "parameter 1 is not of type 'Blob'" */
+        return Promise.all(rest.map(readOne)).then(function (reads) {
+          return flat.concat(reads);
+        });
       }).then(function (arrs) {
         S.loading = false;
         stripRoot(arrs);
